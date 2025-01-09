@@ -9,7 +9,6 @@ from app.exceptions.users import (
     UnauthorizedAccess,
     UserNotFound,
 )
-from app.schemas.responses import ApiResponse
 from app.schemas.users import User
 
 router = CoreAPIRouter(prefix="/user", tags=["user"])

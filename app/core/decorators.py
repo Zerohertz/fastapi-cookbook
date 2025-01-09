@@ -5,7 +5,7 @@ from fastapi.responses import JSONResponse
 from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
 
 from app.exceptions.base import BusinessException
-from app.schemas.responses import ApiResponse
+from app.schemas.responses import APIResponse
 
 
 def exception(func):
@@ -15,13 +15,13 @@ def exception(func):
         name = exc.__class__.__name__
         if isinstance(exc, BusinessException):
             return JSONResponse(
-                content=ApiResponse.error(
+                content=APIResponse.error(
                     status=exc.status, message=f"[{name}] {exc.message}"
                 ).model_dump(mode="json"),
                 status_code=exc.status,
             )
         return JSONResponse(
-            content=ApiResponse.error(
+            content=APIResponse.error(
                 status=HTTP_500_INTERNAL_SERVER_ERROR,
                 message=f"""[{name}] {" ".join(exc.args)}""",
             ).model_dump(mode="json"),

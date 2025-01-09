@@ -5,7 +5,7 @@ from fastapi import APIRouter
 from fastapi.types import DecoratedCallable
 
 from app.schemas.base import BaseSchema
-from app.schemas.responses import ApiResponse
+from app.schemas.responses import APIResponse
 
 
 class CoreAPIRouter(APIRouter):
@@ -16,7 +16,7 @@ class CoreAPIRouter(APIRouter):
             @wraps(func)
             async def success(*_args: tuple, **_kwargs: dict) -> Awaitable:
                 response = await func(*_args, **_kwargs)
-                return ApiResponse[response_model].success(
+                return APIResponse[response_model].success(
                     status=status_code, data=response
                 )
 
@@ -24,7 +24,7 @@ class CoreAPIRouter(APIRouter):
                 path,
                 *args,
                 success,
-                response_model=ApiResponse[response_model],
+                response_model=APIResponse[response_model],
                 status_code=status_code,
                 **kwargs,
             )

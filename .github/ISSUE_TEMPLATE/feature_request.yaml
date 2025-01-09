@@ -1,0 +1,43 @@
+name: Feature Request
+description: ✨ Suggest an idea for this project ✨
+title: "[Feat] "
+labels: ["feat ✨"]
+assignees:
+  - Zerohertz
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to submit your feature request!
+  - type: textarea
+    id: problem-description
+    attributes:
+      label: Is your feature request related to a problem? Please describe.
+      description: A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
+      placeholder: Describe the problem you're facing.
+      value: "A problem occurred that needs a solution."
+    validations:
+      required: true
+  - type: textarea
+    id: proposed-solution
+    attributes:
+      label: Describe the solution you'd like
+      description: A clear and concise description of what you want to happen.
+      placeholder: Describe the solution you're envisioning.
+      value: "The solution you're proposing."
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives-considered
+    attributes:
+      label: Describe alternatives you've considered
+      description: A clear and concise description of any alternative solutions or features you've considered.
+      placeholder: Tell us about other alternatives you’ve thought about.
+      value: "Alternatives you've considered."
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional context
+      description: Add any other context or screenshots about the feature request here.
+      placeholder: Provide additional information or attach screenshots.
+      value: "Any extra context or files related to your request."

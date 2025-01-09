@@ -13,10 +13,22 @@ logging.getLogger("uvicorn.error").setLevel(logging.CRITICAL)
 app = FastAPI(
     title=configs.PROJECT_NAME,
     openapi_url=f"{configs.PREFIX}/openapi.json",
+    docs_url=f"{configs.PREFIX}/docs",
+    redoc_url=f"{configs.PREFIX}/redoc",
     version="0.0.1",
 )
 for routers in [v1_routers]:
     app.include_router(routers, prefix=configs.PREFIX)
+
+
+@app.on_event("startup")
+async def startup():
+    pass
+
+
+@app.on_event("shutdown")
+async def shutdown():
+    pass
 
 
 @app.exception_handler(Exception)

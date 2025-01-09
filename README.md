@@ -11,3 +11,12 @@
 <br />
 <img src="https://img.shields.io/badge/MySQL-4479A1?style=flat-square&logo=mysql&logoColor=white"/> <img src="https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=docker&logoColor=white"/> <img src="https://img.shields.io/badge/Kubernetes-326CE5?style=flat-square&logo=Kubernetes&logoColor=white"/>
 </p>
+
+---
+
+<h4 align = "center">
+    📜 References 📜
+</h4>
+
+- [fastapi/full-stack-fastapi-template/backend](https://github.com/fastapi/full-stack-fastapi-template/tree/master/backend)
+- [jujumilk3/fastapi-clean-architecture](https://github.com/jujumilk3/fastapi-clean-architecture)

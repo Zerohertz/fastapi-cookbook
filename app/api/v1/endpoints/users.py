@@ -1,9 +1,8 @@
 from datetime import datetime
-from sys import exception
 
-from fastapi import APIRouter
 from loguru import logger
 
+from app.core.router import CoreAPIRouter
 from app.exceptions.users import (
     InsufficientFunds,
     InvalidInput,
@@ -13,10 +12,16 @@ from app.exceptions.users import (
 from app.schemas.responses import ApiResponse
 from app.schemas.users import User
 
-router = APIRouter(prefix="/user", tags=["user"])
+router = CoreAPIRouter(prefix="/user", tags=["user"])
 
 
-@router.get("", response_model=ApiResponse[User])
+@router.get(
+    "",
+    response_model=User,
+    status_code=200,
+    summary="Get User Test",
+    description="1 ~ 7: Error!",
+)
 async def get_user(id: int):
     logger.info("[GET] User")
     try:
@@ -37,7 +42,4 @@ async def get_user(id: int):
     except Exception as error:
         logger.exception(repr(error))
         raise error
-    return ApiResponse[User].success(
-        status=200,
-        data=User(id=id, created_at=datetime.now(), updated_at=datetime.now()),
-    )
+    return User(id=id, created_at=datetime.now(), updated_at=datetime.now())

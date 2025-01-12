@@ -43,6 +43,17 @@ jobs:
           pip install uv
           uv sync
 
+      - name: Slack webhook
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          author_name: fastapi-boilerplate
+          fields: repo,message,commit,author,action,eventName,ref,workflow,job,took
+          if_mention: failure,cancelled
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_CHECK }}
+        if: always()
+
   lint:
     name: Lint
     runs-on: ubuntu-latest
@@ -61,6 +72,17 @@ jobs:
       - name: Check type, lint, format
         run: |
           make lint
+
+      - name: Slack webhook
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          author_name: fastapi-boilerplate
+          fields: repo,message,commit,author,action,eventName,ref,workflow,job,took
+          if_mention: failure,cancelled
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_CHECK }}
+        if: always()
 
   test:
     name: Test
@@ -90,3 +112,14 @@ jobs:
         uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Slack webhook
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          author_name: fastapi-boilerplate
+          fields: repo,message,commit,author,action,eventName,ref,workflow,job,took
+          if_mention: failure,cancelled
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_CHECK }}
+        if: always()

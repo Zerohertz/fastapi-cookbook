@@ -19,7 +19,7 @@ router = CoreAPIRouter(prefix="/user", tags=["user"])
     response_model=User,
     status_code=200,
     summary="Get User Test",
-    description="1 ~ 7: Error!",
+    description="1 ~ 5: Error!",
 )
 async def get_user(id: int):
     logger.info("[GET] User")
@@ -33,10 +33,6 @@ async def get_user(id: int):
         if id == 4:
             raise UserNotFound("User not found.")
         if id == 5:
-            asdf
-        if id == 6:
-            10 / 0
-        if id == 7:
             assert 1 == 0
     except Exception as error:
         logger.exception(repr(error))

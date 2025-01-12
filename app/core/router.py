@@ -1,5 +1,5 @@
 from functools import wraps
-from typing import Awaitable, Callable
+from typing import Any, Awaitable, Callable, Coroutine, Type, TypeVar
 
 from fastapi import APIRouter
 from fastapi.types import DecoratedCallable
@@ -7,24 +7,33 @@ from fastapi.types import DecoratedCallable
 from app.schemas.base import BaseSchema
 from app.schemas.responses import APIResponse
 
+T = TypeVar("T", bound=BaseSchema)
+
 
 class CoreAPIRouter(APIRouter):
-    def api_route(
-        self, path: str, *args, response_model: BaseSchema, status_code: int, **kwargs
-    ) -> Callable[[DecoratedCallable], DecoratedCallable]:
-        def decorator(func: DecoratedCallable) -> DecoratedCallable:
+    def api_route(  # type: ignore
+        self,
+        path: str,
+        *args,
+        response_model: Type[T],
+        status_code: int,
+        **kwargs,
+    ) -> Callable[
+        [DecoratedCallable], Callable[..., Coroutine[Any, Any, APIResponse[T]]]
+    ]:
+        def decorator(
+            func: DecoratedCallable,
+        ) -> Callable[..., Coroutine[Any, Any, APIResponse[T]]]:
             @wraps(func)
-            async def success(*_args: tuple, **_kwargs: dict) -> Awaitable:
-                response = await func(*_args, **_kwargs)
-                return APIResponse[response_model].success(
-                    status=status_code, data=response
-                )
+            async def success(*_args: tuple, **_kwargs: dict) -> APIResponse[T]:
+                response: T = await func(*_args, **_kwargs)
+                return APIResponse[T].success(status=status_code, data=response)
 
             self.add_api_route(
                 path,
-                *args,
                 success,
-                response_model=APIResponse[response_model],
+                *args,
+                response_model=APIResponse[T],
                 status_code=status_code,
                 **kwargs,
             )

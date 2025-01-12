@@ -34,7 +34,7 @@ spec:
   ports:
     - port: 8000
   selector:
-    app: backend
+    app: fastapi
 ---
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
@@ -47,7 +47,7 @@ spec:
     - match: Host(`api.zerohertz.xyz`)
       kind: Rule
       services:
-        - name: backend
+        - name: fastapi
           port: 8000
   tls:
     certResolver: zerohertz-resolver

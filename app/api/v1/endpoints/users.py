@@ -22,7 +22,6 @@ router = CoreAPIRouter(prefix="/user", tags=["user"])
     description="1 ~ 4: Error!",
 )
 async def get_user(user_id: int):
-    logger.info("[GET] User")
     try:
         if user_id == 1:
             raise InsufficientFunds

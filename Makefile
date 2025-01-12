@@ -27,7 +27,7 @@ lint:
 .PHONY: test
 test:
 	$(init)
-	pytest app --cov-branch --cov-report=xml
+	pytest --cov=app --cov-branch --cov-report=xml --junitxml=junit.xml -o junit_family=legacy
 
 .PHONY: local
 local:

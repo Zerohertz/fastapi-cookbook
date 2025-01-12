@@ -19,7 +19,7 @@ lint:
 	mypy app
 	# Linting
 	ruff check app
-	pylint -r -n app
+	pylint -r n app
 	flake8 app
 	# Formatting
 	isort app --check-only

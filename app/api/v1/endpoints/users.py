@@ -19,22 +19,20 @@ router = CoreAPIRouter(prefix="/user", tags=["user"])
     response_model=User,
     status_code=200,
     summary="Get User Test",
-    description="1 ~ 5: Error!",
+    description="1 ~ 4: Error!",
 )
-async def get_user(id: int):
+async def get_user(_id: int):
     logger.info("[GET] User")
     try:
-        if id == 1:
+        if _id == 1:
             raise InsufficientFunds
-        if id == 2:
+        if _id == 2:
             raise InvalidInput
-        if id == 3:
+        if _id == 3:
             raise UnauthorizedAccess("Unauthorized.")
-        if id == 4:
+        if _id == 4:
             raise UserNotFound("User not found.")
-        if id == 5:
-            assert 1 == 0
     except Exception as error:
         logger.exception(repr(error))
         raise error
-    return User(id=id, created_at=datetime.now(), updated_at=datetime.now())
+    return User(id=_id, created_at=datetime.now(), updated_at=datetime.now())

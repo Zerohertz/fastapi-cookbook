@@ -2,12 +2,10 @@ coverage:
   status:
     project:
       default:
-        # target: 80%
-        target: 0%
+        target: 80%
     patch:
       default:
-        # target: 80%
-        target: 0%
+        target: 80%
 
 comment:
   layout: "header, diff, flags, components, files, footer"
@@ -21,11 +19,9 @@ component_management:
   default_rules:
     statuses:
       - type: project
-        # target: 80%
-        target: 0%
+        target: 80%
       - type: patch
-        # target: 80%
-        target: 0%
+        target: 80%
   individual_components:
     - component_id: api/v1
       name: api/v1

@@ -28,7 +28,7 @@ lint:
 .PHONY: test
 test:
 	$(init)
-	pytest app
+	pytest app --cov-branch --cov-report=xml
 
 .PHONY: local
 local:

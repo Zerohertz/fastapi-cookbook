@@ -5,13 +5,13 @@ on:
     branches:
       - "*"
       - "*/*/*"
-    paths-ignore:
-      - "k8s/fastapi.yaml"
+    paths:
+      - "app/**"
   pull_request:
     branches:
       - main
-    paths-ignore:
-      - "k8s/fastapi.yaml"
+    paths:
+      - "app/**"
 
 permissions:
   contents: write

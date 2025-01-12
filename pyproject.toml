@@ -6,8 +6,21 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "alembic>=1.14.0",
+    "black>=24.10.0",
     "dependency-injector>=4.45.0",
-    "fastapi[standard]>=0.115.6",
+    "fastapi>=0.115.6",
+    "flake8>=7.1.1",
+    "isort>=5.13.2",
     "loguru>=0.7.3",
+    "mypy>=1.14.1",
     "pydantic-settings>=2.7.1",
+    "pylint>=3.3.3",
+    "ruff>=0.9.1",
+    "uvicorn>=0.34.0",
 ]
+
+[tool.black]
+target-version = ["py312"]
+
+[tool.isort]
+profile = "black"

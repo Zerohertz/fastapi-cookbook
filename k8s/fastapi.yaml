@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fastapi
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fastapi
+  template:
+    metadata:
+      labels:
+        app: fastapi
+    spec:
+      containers:
+        - name: fastapi
+          image: zerohertzkr/fastapi-boilerplate:latest
+          ports:
+            - name: http
+              containerPort: 8000
+          volumeMounts:
+            - name: fastapi-prod-env-volume
+              mountPath: /workspace/envs
+              subPath: prod.env
+      volumes:
+        - name: fastapi-prod-env-volume
+          configMap:
+            name: fastapi-prod-env
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fastapi
+spec:
+  ports:
+    - port: 8000
+  selector:
+    app: backend
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: fasapi
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`api.zerohertz.xyz`)
+      kind: Rule
+      services:
+        - name: backend
+          port: 8000
+  tls:
+    certResolver: zerohertz-resolver

@@ -20,7 +20,6 @@ lint:
 	# Linting
 	ruff check app
 	pylint -r n app
-	flake8 app
 	# Formatting
 	isort app --check-only
 	black app --check

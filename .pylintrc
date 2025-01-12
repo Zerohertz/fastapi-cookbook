@@ -1,8 +1,0 @@
-[MESSAGES CONTROL]
-disable = C0114, C0115, C0116, C0301, W0718
-
-; C0114: Missing module docstring (missing-module-docstring)
-; C0115: Missing class docstring (missing-class-docstring)
-; C0116: Missing function or method docstring (missing-function-docstring)
-; C0301: Line too long (103/100) (line-too-long)
-; W0718: Catching too general exception Exception (broad-exception-caught)

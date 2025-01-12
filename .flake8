@@ -1,5 +1,0 @@
-[flake8]
-ignore = E501, E701
-
-; E501 line too long (* > * characters)
-; E701 multiple statements on one line (colon)

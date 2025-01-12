@@ -4,8 +4,8 @@ on:
   push:
     branches:
       - main
-    paths-ignore:
-      - "k8s/fastapi.yaml"
+    paths:
+      - "app/**"
 
 jobs:
   image-build:

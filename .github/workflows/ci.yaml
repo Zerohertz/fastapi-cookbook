@@ -1,0 +1,127 @@
+name: "CI"
+
+on:
+  push:
+    branches:
+      - "*"
+      - "*/*/*"
+    paths-ignore:
+      - "k8s/fastapi.yaml"
+  pull_request:
+    branches:
+      - main
+    paths-ignore:
+      - "k8s/fastapi.yaml"
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  setup:
+    name: Setup
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.12
+
+      - name: Cache virtualenv
+        uses: actions/cache@v4
+        with:
+          path: .venv
+          key: ${{ runner.os }}-python-venv-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-python-venv-
+
+      - name: Install dependencies
+        run: |
+          pip install uv
+          uv sync
+
+      - name: Slack webhook
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          author_name: fastapi-boilerplate
+          fields: repo,message,commit,author,action,eventName,ref,workflow,job,took
+          if_mention: failure,cancelled
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_CHECK }}
+        if: always()
+
+  lint:
+    name: Lint
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Cache virtualenv
+        uses: actions/cache@v4
+        with:
+          path: .venv
+          key: ${{ runner.os }}-python-venv-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-python-venv-
+
+      - name: Check type, lint, format
+        run: |
+          make lint
+
+      - name: Slack webhook
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          author_name: fastapi-boilerplate
+          fields: repo,message,commit,author,action,eventName,ref,workflow,job,took
+          if_mention: failure,cancelled
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_CHECK }}
+        if: always()
+
+  test:
+    name: Test
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Cache virtualenv
+        uses: actions/cache@v4
+        with:
+          path: .venv
+          key: ${{ runner.os }}-python-venv-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-python-venv-
+
+      - name: Run pytest
+        run: |
+          make test
+
+      - name: Upload test results to Codecov
+        uses: codecov/test-results-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Upload results to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Slack webhook
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          author_name: fastapi-boilerplate
+          fields: repo,message,commit,author,action,eventName,ref,workflow,job,took
+          if_mention: failure,cancelled
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_CHECK }}
+        if: always()

@@ -1,7 +1,7 @@
 [project]
 name = "fastapi-boilerplate"
 version = "0.1.0"
-description = "Add your description here"
+description = "💨 Zerohertz's FastAPI Boilerplate 💨"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
@@ -9,18 +9,32 @@ dependencies = [
     "black>=24.10.0",
     "dependency-injector>=4.45.0",
     "fastapi>=0.115.6",
-    "flake8>=7.1.1",
+    "httpx>=0.28.1",
     "isort>=5.13.2",
     "loguru>=0.7.3",
     "mypy>=1.14.1",
     "pydantic-settings>=2.7.1",
     "pylint>=3.3.3",
+    "pytest>=8.3.4",
+    "pytest-cov>=6.0.0",
+    "pytest-dotenv>=0.5.2",
     "ruff>=0.9.1",
     "uvicorn>=0.34.0",
 ]
 
-[tool.black]
-target-version = ["py312"]
+[tool.pylint]
+disable = ["C0114", "C0115", "C0116", "C0301", "W0718"]
+# C0114: Missing module docstring (missing-module-docstring)
+# C0115: Missing class docstring (missing-class-docstring)
+# C0116: Missing function or method docstring (missing-function-docstring)
+# C0301: Line too long (103/100) (line-too-long)
+# W0718: Catching too general exception Exception (broad-exception-caught)
 
 [tool.isort]
 profile = "black"
+
+[tool.black]
+target-version = ["py312"]
+
+[tool.pytest.ini_options]
+env_files = ["envs/test.env"]

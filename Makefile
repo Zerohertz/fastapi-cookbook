@@ -1,4 +1,4 @@
-SHELL := /bin/zsh
+SHELL := /bin/bash
 .ONESHELL:
 
 define init
@@ -19,11 +19,15 @@ lint:
 	mypy app
 	# Linting
 	ruff check app
-	pylint -r -n app
-	flake8 app
+	pylint -r n app
 	# Formatting
 	isort app --check-only
 	black app --check
+
+.PHONY: test
+test:
+	$(init)
+	pytest --cov=app --cov-branch --cov-report=xml --junitxml=junit.xml -o junit_family=legacy
 
 .PHONY: local
 local:

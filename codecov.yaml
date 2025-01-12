@@ -1,0 +1,63 @@
+coverage:
+  status:
+    project:
+      default:
+        # target: 80%
+        target: 0%
+    patch:
+      default:
+        # target: 80%
+        target: 0%
+
+comment:
+  layout: "header, diff, flags, components, files, footer"
+  behavior: default
+  require_changes: false
+  require_base: false
+  require_head: false
+  hide_project_coverage: false
+
+component_management:
+  default_rules:
+    statuses:
+      - type: project
+        # target: 80%
+        target: 0%
+      - type: patch
+        # target: 80%
+        target: 0%
+  individual_components:
+    - component_id: api/v1
+      name: api/v1
+      paths:
+        - app/api/v1
+    - component_id: core
+      name: core
+      paths:
+        - app/core
+    - component_id: exceptions
+      name: exceptions
+      paths:
+        - app/exceptions
+    - component_id: models
+      name: models
+      paths:
+        - app/models
+    - component_id: repositories
+      name: repositories
+      paths:
+        - app/repositories
+    - component_id: schemas
+      name: schemas
+      paths:
+        - app/schemas
+    - component_id: services
+      name: services
+      paths:
+        - app/services
+    - component_id: utils
+      name: utils
+      paths:
+        - app/utils
+# ignore:
+#   -

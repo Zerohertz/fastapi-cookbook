@@ -25,6 +25,11 @@ lint:
 	isort app --check-only
 	black app --check
 
+.PHONY: test
+test:
+	$(init)
+	pytest app
+
 .PHONY: local
 local:
 	$(init)

@@ -1,5 +1,5 @@
 from functools import wraps
-from typing import Any, Awaitable, Callable, Coroutine, Type, TypeVar
+from typing import Any, Callable, Coroutine, Type, TypeVar
 
 from fastapi import APIRouter
 from fastapi.types import DecoratedCallable

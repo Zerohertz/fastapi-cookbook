@@ -11,7 +11,9 @@ from app.exceptions.handlers import global_exception_handler
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):
+async def lifespan(
+    app: FastAPI,
+):  # pylint: disable=unused-argument,redefined-outer-name
     logging.getLogger("uvicorn.error").setLevel(logging.CRITICAL)
     logger.remove()
     logger.add(sys.stderr, colorize=True)
@@ -27,5 +29,6 @@ app = FastAPI(
     exception_handlers={Exception: global_exception_handler},
     lifespan=lifespan,
 )
+
 for routers in [v1_routers]:
     app.include_router(routers, prefix=configs.PREFIX)

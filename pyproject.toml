@@ -23,11 +23,13 @@ dependencies = [
 ]
 
 [tool.pylint]
-disable = ["C0114", "C0115", "C0116", "C0301", "W0718"]
+disable = ["C0103", "C0114", "C0115", "C0116", "C0301", "R0903", "W0718"]
+# C0103: Class name "*" doesn't conform to PascalCase naming style (invalid-name)
 # C0114: Missing module docstring (missing-module-docstring)
 # C0115: Missing class docstring (missing-class-docstring)
 # C0116: Missing function or method docstring (missing-function-docstring)
-# C0301: Line too long (103/100) (line-too-long)
+# C0301: Line too long (*/*) (line-too-long)
+# R0903: Too few public methods (*/*) (too-few-public-methods)
 # W0718: Catching too general exception Exception (broad-exception-caught)
 
 [tool.isort]

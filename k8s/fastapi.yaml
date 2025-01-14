@@ -15,6 +15,12 @@ spec:
       containers:
         - name: fastapi
           image: zerohertzkr/fastapi-boilerplate:bdfae2a30822956601101c99b97cfb6c98ac008c
+          env:
+            - name: LOGURU_FORMAT
+              valueFrom:
+                configMapKeyRef:
+                  name: fastapi-prod-env
+                  key: LOGURU_FORMAT
           ports:
             - name: http
               containerPort: 8000
@@ -25,6 +31,9 @@ spec:
         - name: fastapi-prod-env-volume
           configMap:
             name: fastapi-prod-env
+            items:
+              - key: prod.env
+                path: prod.env
 ---
 apiVersion: v1
 kind: Service

@@ -1,24 +1,9 @@
-import logging
-import sys
-from contextlib import asynccontextmanager
-
 from fastapi import FastAPI
-from loguru import logger
 
 from app.api.v1.routers import routers as v1_routers
 from app.core.configs import configs
+from app.core.lifespan import lifespan
 from app.exceptions.handlers import global_exception_handler
-
-
-@asynccontextmanager
-async def lifespan(
-    app: FastAPI,
-):  # pylint: disable=unused-argument,redefined-outer-name
-    logging.getLogger("uvicorn.error").setLevel(logging.CRITICAL)
-    logger.remove()
-    logger.add(sys.stderr, colorize=True)
-    yield
-
 
 app = FastAPI(
     title=configs.PROJECT_NAME,

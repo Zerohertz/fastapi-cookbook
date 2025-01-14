@@ -1,41 +1,25 @@
 SHELL := /bin/bash
-.ONESHELL:
-
-define init
-@set -e
-set -x
-if [ "$$(which python)" != "$$(pwd)/.venv/bin/python" ]; then
-    if [ ! -d ".venv" ]; then
-        uv sync
-    fi
-	source .venv/bin/activate
-fi
-endef
 
 .PHONY: lint
 lint:
-	$(init)
 	# Static Typing
-	mypy app
+	uv run mypy app
 	# Linting
-	ruff check app
-	pylint -r n app
+	uv run ruff check app
+	uv run pylint -r n app
 	# Formatting
-	isort app --check-only
-	black app --check
+	uv run isort app --check-only
+	uv run black app --check
 
 .PHONY: test
 test:
-	$(init)
-	pytest --cov=app --cov-branch --cov-report=xml --junitxml=junit.xml -o junit_family=legacy
+	uv run pytest --cov=app --cov-branch --cov-report=xml --junitxml=junit.xml -o junit_family=legacy
 
 .PHONY: local
 local:
-	$(init)
 	source ./envs/local.env
-	uvicorn app.main:app --host 0.0.0.0 --port $${PORT} --env-file ./envs/local.env --reload --log-level debug
+	uv run uvicorn app.main:app --host 0.0.0.0 --port $${PORT} --env-file ./envs/local.env --reload --log-level debug
 
 .PHONY: prod
 prod:
-	$(init)
-	uvicorn app.main:app --host 0.0.0.0 --env-file ./envs/prod.env
+	uv run uvicorn app.main:app --host 0.0.0.0 --env-file ./envs/prod.env

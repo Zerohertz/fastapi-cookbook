@@ -173,4 +173,3 @@ cython_debug/
 # Credentials
 local.env
 prod.env
-k8s/configmap.yaml

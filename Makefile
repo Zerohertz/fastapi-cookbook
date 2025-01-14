@@ -17,8 +17,7 @@ test:
 
 .PHONY: local
 local:
-	source ./envs/local.env
-	uv run uvicorn app.main:app --host 0.0.0.0 --port $${PORT} --env-file ./envs/local.env --reload --log-level debug
+	source ./envs/local.env && uv run uvicorn app.main:app --host 0.0.0.0 --port $${PORT} --env-file ./envs/local.env --reload --log-level debug
 
 .PHONY: prod
 prod:

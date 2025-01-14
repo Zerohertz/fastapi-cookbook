@@ -3,10 +3,11 @@ from fastapi.responses import JSONResponse
 from loguru import logger
 from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
 
+from app.exceptions.base import BusinessException
 from app.schemas.responses import APIResponse
 
 
-def global_exception_handler(request: Request, exc: Exception) -> JSONResponse:
+async def global_exception_handler(request: Request, exc: Exception) -> JSONResponse:
     logger.error(f"{request=}, {exc=}")
     name = exc.__class__.__name__
     return JSONResponse(
@@ -18,7 +19,9 @@ def global_exception_handler(request: Request, exc: Exception) -> JSONResponse:
     )
 
 
-def business_exception_handler(request: Request, exc: Exception) -> JSONResponse:
+async def business_exception_handler(
+    request: Request, exc: BusinessException
+) -> JSONResponse:
     logger.error(f"{request=}, {exc=}")
     name = exc.__class__.__name__
     return JSONResponse(

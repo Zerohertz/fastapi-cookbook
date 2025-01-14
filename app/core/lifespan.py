@@ -1,5 +1,6 @@
 import logging
 import sys
+import time
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -10,5 +11,11 @@ from loguru import logger
 async def lifespan(app: FastAPI):  # pylint: disable=unused-argument
     logging.getLogger("uvicorn.error").setLevel(logging.CRITICAL)
     logger.remove()
-    logger.add(sys.stderr, colorize=True)
+    logger.add(
+        sys.stderr,
+        format="<green>{time:YYYY-MM-DD HH:mm:ss.SSS}</green> <fg #800a0a>"
+        + time.tzname[0]
+        + "</fg #800a0a> | <level>{level: <8}</level> | <fg #800a0a>{name}</fg #800a0a>:<fg #800a0a>{function}</fg #800a0a>:<fg #800a0a>{line}</fg #800a0a> - <level>{message}</level>",
+        colorize=True,
+    )
     yield

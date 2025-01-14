@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: fastapi
-          image: zerohertzkr/fastapi-boilerplate:53f779d066a3082fab5f1871557fe3591c53a939
+          image: zerohertzkr/fastapi-boilerplate:78050c1f83ac1790ffd78c1e9fbd8f91231ea5fe
           env:
             - name: LOGURU_FORMAT
               valueFrom:

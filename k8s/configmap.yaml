@@ -5,5 +5,5 @@ metadata:
 data:
   prod.env: |
     # PORT=""
-    PROJECT_NAME="💨 Zerohertz's FastAPI Boilerplate 💨 (prod)"
+    PROJECT_NAME="Zerohertz's FastAPI Boilerplate (prod)"
     PREFIX=""

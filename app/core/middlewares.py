@@ -4,7 +4,7 @@ from fastapi import Request, Response
 from loguru import logger
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 
-from app.core.logging import ANSI_BG_COLOR, ANSI_STYLE, ansi_format
+from app.utils.logging import ANSI_BG_COLOR, ANSI_STYLE, ansi_format
 
 
 class LoggingMiddleware(BaseHTTPMiddleware):

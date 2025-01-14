@@ -6,7 +6,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from loguru import logger
 
-from app.core.logging import remove_handler
+from app.utils.logging import remove_handler
 
 
 @asynccontextmanager

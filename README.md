@@ -3,6 +3,14 @@
 </h2>
 
 <p align="center">
+<a href="https://github.com/zerohertz/fastapi-boilerplate">
+    <img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=GitHub&logoColor=white"/>
+</a>
+<a href="https://api.zerohertz.xyz/docs">
+    <img src="https://img.shields.io/badge/Swagger-85EA2D?style=for-the-badge&logo=Swagger&logoColor=white"/>
+</a>
+<br />
+<br />
 <img src="https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=FastAPI&logoColor=white"/>
 <br />
 <img src="https://img.shields.io/badge/uv-DE5FE9?style=flat&logo=uv&logoColor=white"/> <img src="https://img.shields.io/badge/Pydantic-E92063?style=flat&logo=Pydantic&logoColor=white"/> <img src="https://img.shields.io/badge/SQLAlchemy-D71F00?style=flat&logo=SQLAlchemy&logoColor=white"/>

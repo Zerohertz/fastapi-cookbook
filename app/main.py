@@ -9,6 +9,8 @@ from app.exceptions.handlers import business_exception_handler, global_exception
 
 app = FastAPI(
     title=configs.PROJECT_NAME,
+    summary="",
+    description=configs.DESCRIPTION,
     version="0.0.1",
     openapi_url=f"{configs.PREFIX}/openapi.json",
     docs_url=f"{configs.PREFIX}/docs",

@@ -13,12 +13,12 @@ lint:
 
 .PHONY: test
 test:
-	uv run pytest --cov=app --cov-branch --cov-report=xml --junitxml=junit.xml -o junit_family=legacy
+	export DESCRIPTION=$$(cat README.md) && uv run pytest --cov=app --cov-branch --cov-report=xml --junitxml=junit.xml -o junit_family=legacy
 
 .PHONY: local
 local:
-	source ./envs/local.env && uv run uvicorn app.main:app --host 0.0.0.0 --port $${PORT} --env-file ./envs/local.env --reload --log-level debug
+	export DESCRIPTION=$$(cat README.md) && source ./envs/local.env && uv run uvicorn app.main:app --host 0.0.0.0 --port $${PORT} --env-file ./envs/local.env --reload --log-level debug
 
 .PHONY: prod
 prod:
-	uv run uvicorn app.main:app --host 0.0.0.0 --env-file ./envs/prod.env
+	export DESCRIPTION=$$(cat README.md) && uv run uvicorn app.main:app --host 0.0.0.0 --env-file ./envs/prod.env

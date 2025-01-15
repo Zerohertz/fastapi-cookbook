@@ -17,8 +17,8 @@ test:
 
 .PHONY: local
 local:
-	export DESCRIPTION=$$(cat README.md) && source ./envs/local.env && uv run uvicorn app.main:app --host 0.0.0.0 --port $${PORT} --env-file ./envs/local.env --reload --log-level debug
+	export DESCRIPTION=$$(cat README.md) && source ./envs/local.env && uv run uvicorn app.main:app --host 0.0.0.0 --port $${PORT} --env-file ./envs/local.env --proxy-headers --forwarded-allow-ips='*' --reload
 
 .PHONY: prod
 prod:
-	export DESCRIPTION=$$(cat README.md) && uv run uvicorn app.main:app --host 0.0.0.0 --env-file ./envs/prod.env
+	export DESCRIPTION=$$(cat README.md) && uv run uvicorn app.main:app --host 0.0.0.0 --env-file ./envs/prod.env --proxy-headers --forwarded-allow-ips='*'

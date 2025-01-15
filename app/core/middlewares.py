@@ -11,14 +11,22 @@ class LoggingMiddleware(BaseHTTPMiddleware):
     async def dispatch(
         self, request: Request, call_next: RequestResponseEndpoint
     ) -> Response:
-        if request.client:
-            ip = ansi_format(
-                f"{request.client.host}:{request.client.port}",
-                bg_color=ANSI_BG_COLOR.LIGHT_BLACK,
-                style=[ANSI_STYLE.UNDERLINE, ANSI_STYLE.BOLD],
-            )
+        if request.headers.get("x-real-ip"):
+            ip = request.headers.get("x-real-ip")
+            logger.info(ip)
+        elif request.headers.get("x-forwarded-for"):
+            ip = request.headers.get("x-forwarded-for")
+            logger.info(ip)
+        elif request.client:
+            ip = request.client.host
+            logger.info(ip)
         else:
             ip = "None"
+        ip = ansi_format(
+            f"{ip}",
+            bg_color=ANSI_BG_COLOR.LIGHT_BLACK,
+            style=[ANSI_STYLE.UNDERLINE, ANSI_STYLE.BOLD],
+        )
         url = ansi_format(
             str(request.url),
             bg_color=ANSI_BG_COLOR.LIGHT_BLACK,

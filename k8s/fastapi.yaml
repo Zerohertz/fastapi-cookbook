@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: fastapi
-          image: zerohertzkr/fastapi-boilerplate:c269b4666e88d4d8680ea02ba8b58edadeae5828
+          image: zerohertzkr/fastapi-boilerplate:539dbc2200053db18582c4b28239a8766ddf89df
           ports:
             - name: http
               containerPort: 8000

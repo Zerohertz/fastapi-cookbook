@@ -13,13 +13,10 @@ class LoggingMiddleware(BaseHTTPMiddleware):
     ) -> Response:
         if request.headers.get("x-real-ip"):
             ip = request.headers.get("x-real-ip")
-            logger.info(ip)
         elif request.headers.get("x-forwarded-for"):
             ip = request.headers.get("x-forwarded-for")
-            logger.info(ip)
         elif request.client:
             ip = request.client.host
-            logger.info(ip)
         else:
             ip = "None"
         ip = ansi_format(

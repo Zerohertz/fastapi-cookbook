@@ -10,6 +10,13 @@
     <img src="https://img.shields.io/badge/Swagger-85EA2D?style=for-the-badge&logo=Swagger&logoColor=white"/>
 </a>
 <br />
+<a href = "https://hub.docker.com/r/zerohertzkr/fastapi-boilerplate">
+    <img src="https://img.shields.io/docker/v/zerohertzkr/fastapi-boilerplate?style=flat&logo=Docker&label=docker.io/zerohertzkr/fastapi-boilerplate"/>
+</a>
+<a href = "https://github.com/Zerohertz/fastapi-boilerplate/pkgs/container/fastapi-boilerplate">
+    <img src="https://img.shields.io/docker/v/zerohertzkr/fastapi-boilerplate?style=flat&logo=Docker&label=ghcr.io/zerohertz/fastapi-boilerplate"/>
+</a>
+<br />
 <br />
 <img src="https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=FastAPI&logoColor=white"/>
 <br />

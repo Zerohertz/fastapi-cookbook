@@ -43,3 +43,7 @@ k8s:
 .PHONY: exec
 exec:
 	kubectl exec -it -n fastapi deploy/fastapi-dev -- zsh
+
+.PHONY: expose
+expose:
+	 kubectl expose -n fastapi po/mysql-0 --port 3306 --type=NodePort

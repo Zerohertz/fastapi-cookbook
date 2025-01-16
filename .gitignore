@@ -171,9 +171,10 @@ cython_debug/
 .pypirc
 
 # Credentials
-local.env
+dev.env
 prod.env
-local.yaml
+dev.yaml
+secrets.yaml
 
 # Etc
 junit.xml

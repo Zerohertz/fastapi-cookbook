@@ -15,6 +15,26 @@ spec:
       containers:
         - name: fastapi
           image: zerohertzkr/fastapi-boilerplate:539dbc2200053db18582c4b28239a8766ddf89df
+          env:
+            - name: DB_TYPE
+              value: mysql
+            - name: DB_HOST
+              value: mysql
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: mysql
+                  key: USER_NAME
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql
+                  key: USER_PASSWORD
+            - name: DB_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: mysql
+                  key: DATABASE
           ports:
             - name: http
               containerPort: 8000

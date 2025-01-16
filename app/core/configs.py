@@ -4,6 +4,7 @@ from pydantic_settings import BaseSettings
 class Configs(BaseSettings):
     PROJECT_NAME: str
     DESCRIPTION: str
+    VERSION: str
     PREFIX: str
 
 

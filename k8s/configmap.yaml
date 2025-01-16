@@ -14,4 +14,7 @@ kind: ConfigMap
 metadata:
   name: mysql
 data:
+  TYPE: "mysql+asyncmy"
+  HOST: "mysql"
+  PORT: "3306"
   DATABASE: "fastapi"

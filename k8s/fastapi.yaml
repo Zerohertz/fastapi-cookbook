@@ -17,9 +17,20 @@ spec:
           image: zerohertzkr/fastapi-boilerplate:539dbc2200053db18582c4b28239a8766ddf89df
           env:
             - name: DB_TYPE
-              value: mysql
+              valueFrom:
+                configMapKeyRef:
+                  name: mysql
+                  key: TYPE
             - name: DB_HOST
-              value: mysql
+              valueFrom:
+                configMapKeyRef:
+                  name: mysql
+                  key: HOST
+            - name: DB_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: mysql
+                  key: PORT
             - name: DB_USER
               valueFrom:
                 secretKeyRef:

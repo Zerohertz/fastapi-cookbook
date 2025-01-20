@@ -1,4 +1,9 @@
-from app.schemas.base import BaseSchema
+from app.schemas.base import BaseSchemaRequest, BaseSchemaResponse
 
 
-class User(BaseSchema): ...
+class UserCreateRequest(BaseSchemaRequest):
+    name: str
+
+
+class UserCreateResponse(BaseSchemaResponse):
+    name: str

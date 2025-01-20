@@ -1,6 +1,6 @@
 import abc
 
 
-class BusinessException(abc.ABC, Exception):
+class CoreException(abc.ABC, Exception):
     status: int
     message: str

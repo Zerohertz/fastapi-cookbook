@@ -3,7 +3,9 @@ from typing import Generic, Optional, TypeVar
 
 from pydantic import BaseModel
 
-T = TypeVar("T", bound=BaseModel)
+from app.schemas.base import BaseSchemaResponse
+
+T = TypeVar("T", bound=BaseSchemaResponse)
 
 
 class APIResponse(BaseModel, Generic[T]):
@@ -15,12 +17,15 @@ class APIResponse(BaseModel, Generic[T]):
         class User(BaseModel):
             name: str
 
-        >>> print(APIResponse[User].success(status=200, data=User(name="123")))
-        status=200 message='The request has been successfully processed.' data=User(name='123') timestamp=datetime.datetime(2025, 1, 8, 22, 46, 32, 337336)
-        >>> print(APIResponse.success(status=200, data=User(name="123")))
-        status=200 message='The request has been successfully processed.' data=User(name='123') timestamp=datetime.datetime(2025, 1, 8, 22, 46, 32, 337384)
-        >>> print(APIResponse.error(status=404, message="fail"))
-        status=404 message='fail' data=None timestamp=datetime.datetime(2025, 1, 8, 22, 46, 32, 337411)
+        >>> print(APIResponse[User].success(status=200, data=User(id=1, created_at=datetime.now(), updated_at=datetime.now(), name="123")).model_dump_json())
+        {"status":200,"message":"The request has been successfully processed.","data":{"id":1,"created_at":"2025-01-20T13:23:40.132620","updated_at":"2025-01-20T13:23:40.132627","name":"123"},"timestamp":"2025-01-20T13:23:40.132646"}
+        >>> print(APIResponse.success(status=200, data=User(id=1, created_at=datetime.now(), updated_at=datetime.now(), name="123")).model_dump_json())
+        {"status":200,"message":"The request has been successfully processed.","data":{"id":1,"created_at":"2025-01-20T13:24:19.341066","updated_at":"2025-01-20T13:24:19.341072","name":"123"},"timestamp":"2025-01-20T13:24:19.341090"}
+
+        >>> print(APIResponse[User].error(status=404, message="fail").model_dump_json())
+        {"status":404,"message":"fail","data":null,"timestamp":"2025-01-20T13:25:51.258688"}
+        >>> print(APIResponse.error(status=404, message="fail").model_dump_json())
+        {"status":404,"message":"fail","data":null,"timestamp":"2025-01-20T13:25:57.358318"}
     """
 
     status: int
@@ -44,9 +49,26 @@ class APIResponse(BaseModel, Generic[T]):
 
 if __name__ == "__main__":
 
-    class User(BaseModel):
+    class User(BaseSchemaResponse):
         name: str
 
-    print(APIResponse[User].success(status=200, data=User(name="123")))
-    print(APIResponse.success(status=200, data=User(name="123")))
-    print(APIResponse.error(status=404, message="fail"))
+    print(
+        APIResponse[User]
+        .success(
+            status=200,
+            data=User(
+                id=1, created_at=datetime.now(), updated_at=datetime.now(), name="123"
+            ),
+        )
+        .model_dump_json()
+    )
+    print(
+        APIResponse.success(
+            status=200,
+            data=User(
+                id=1, created_at=datetime.now(), updated_at=datetime.now(), name="123"
+            ),
+        ).model_dump_json()
+    )
+    print(APIResponse[User].error(status=404, message="fail").model_dump_json())
+    print(APIResponse.error(status=404, message="fail").model_dump_json())

@@ -13,24 +13,43 @@ dependencies = [
     "isort>=5.13.2",
     "loguru>=0.7.3",
     "mypy>=1.14.1",
+    "mysqlclient>=2.2.7",
     "pydantic-settings>=2.7.1",
     "pylint>=3.3.3",
     "pytest>=8.3.4",
     "pytest-cov>=6.0.0",
     "pytest-dotenv>=0.5.2",
+    "pytest-ordering>=0.6",
     "ruff>=0.9.1",
-    "sqlmodel>=0.0.22",
+    "sqlalchemy[mypy]>=2.0.36",
     "uvicorn>=0.34.0",
 ]
 
+[tool.mypy]
+plugins = ["sqlalchemy.ext.mypy.plugin"]
+
 [tool.pylint]
-disable = ["C0103", "C0114", "C0115", "C0116", "C0301", "R0903", "W0718"]
+disable = [
+    "C0103",
+    "C0114",
+    "C0115",
+    "C0116",
+    "C0301",
+    "E0611",
+    "E1102",
+    "R0903",
+    "W0622",
+    "W0718",
+]
 # C0103: Class name "*" doesn't conform to PascalCase naming style (invalid-name)
 # C0114: Missing module docstring (missing-module-docstring)
 # C0115: Missing class docstring (missing-class-docstring)
 # C0116: Missing function or method docstring (missing-function-docstring)
 # C0301: Line too long (*/*) (line-too-long)
+# E0611: No name '*' in module '*' (no-name-in-module)
+# E1102: * is not callable (not-callable)
 # R0903: Too few public methods (*/*) (too-few-public-methods)
+# W0622: Redefining built-in '*' (redefined-builtin)
 # W0718: Catching too general exception Exception (broad-exception-caught)
 
 [tool.isort]

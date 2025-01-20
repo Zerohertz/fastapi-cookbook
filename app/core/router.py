@@ -4,10 +4,10 @@ from typing import Any, Callable, Coroutine, Type, TypeVar
 from fastapi import APIRouter
 from fastapi.types import DecoratedCallable
 
-from app.schemas.base import BaseSchema
+from app.schemas.base import BaseSchemaResponse
 from app.schemas.responses import APIResponse
 
-T = TypeVar("T", bound=BaseSchema)
+T = TypeVar("T", bound=BaseSchemaResponse)
 
 
 class CoreAPIRouter(APIRouter):

@@ -21,6 +21,11 @@ spec:
                 configMapKeyRef:
                   name: mysql
                   key: TYPE
+            - name: DB_DRIVER
+              valueFrom:
+                configMapKeyRef:
+                  name: mysql
+                  key: DRIVER
             - name: DB_HOST
               valueFrom:
                 configMapKeyRef:
@@ -55,7 +60,7 @@ spec:
       volumes:
         - name: fastapi-prod-env-volume
           configMap:
-            name: fastapi-prod-env
+            name: fastapi-env
             items:
               - key: prod.env
                 path: prod.env

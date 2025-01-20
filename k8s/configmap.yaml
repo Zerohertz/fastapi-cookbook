@@ -1,20 +1,30 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: fastapi-prod-env
+  name: fastapi-env
 data:
+  dev.env: |
+    PORT="8000"
+    PROJECT_NAME="Zerohertz's FastAPI Boilerplate (dev)"
+    VERSION="v0.0.1"
+    PREFIX="/api"
+    DB_ECHO=true
+    DB_TABLE_CREATE=true
   prod.env: |
-    # PORT=""
+    PORT="8000"
     PROJECT_NAME="Zerohertz's FastAPI Boilerplate (prod)"
     VERSION="v0.0.1"
     PREFIX=""
+    DB_ECHO=false
+    DB_TABLE_CREATE=false
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: mysql
 data:
-  TYPE: "mysql+asyncmy"
+  TYPE: "mysql"
+  DRIVER: "mysqldb"
   HOST: "mysql"
   PORT: "3306"
   DATABASE: "fastapi"

@@ -103,7 +103,7 @@ jobs:
         image: mysql:8.0
         env:
           MYSQL_ROOT_PASSWORD: ${{ env.DB_ROOT }}
-          # MYSQL_PWD: ${{ env.DB_ROOT }}
+          MYSQL_PWD: ${{ env.DB_ROOT }}
           MYSQL_USER: ${{ env.DB_USER }}
           MYSQL_PASSWORD: ${{ env.DB_PASSWORD}}
           MYSQL_DATABASE: ${{ env.DB_NAME }}

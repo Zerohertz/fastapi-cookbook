@@ -92,7 +92,7 @@ jobs:
       DB_ROOT: "password"
       DB_TYPE: "mysql"
       DB_DRIVER: "mysqldb"
-      DB_HOST: "mysql"
+      DB_HOST: "localhost"
       DB_PORT: 3306
       DB_USER: "test"
       DB_PASSWORD: "test"

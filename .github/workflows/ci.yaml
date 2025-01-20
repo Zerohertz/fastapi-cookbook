@@ -88,6 +88,29 @@ jobs:
         if: always()
 
   test:
+    env:
+      DB_ROOT_PASSWORD: "root"
+      DB_TYPE: "mysql"
+      DB_DRIVER: "mysqldb"
+      DB_HOST: "localhost"
+      DB_PORT: 3306
+      DB_USER: "test"
+      DB_PASSWORD: "test"
+      DB_NAME: "test"
+      DB_TABLE_CREATE: true
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: ${{ env.DB_ROOT_PASSWORD }}
+          MYSQL_PWD: ${{ env.DB_ROOT_PASSWORD }}
+          MYSQL_USER: ${{ env.DB_USER }}
+          MYSQL_PASSWORD: ${{ env.DB_PASSWORD}}
+          MYSQL_DATABASE: ${{ env.DB_NAME }}
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping --silent" --health-interval=5s --health-timeout=3s --health-retries=3
+
     name: Test
     needs: setup
     runs-on: ubuntu-latest

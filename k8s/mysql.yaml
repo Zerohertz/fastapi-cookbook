@@ -61,7 +61,7 @@ spec:
       volumes:
         - name: mysql-storage
           hostPath:
-            path: /data/mysql/fastapi-boilerplate
+            path: /data/mysql/fastapi-cookbook
             type: DirectoryOrCreate
 # Reference: https://kubernetes.io/docs/tasks/run-application/run-replicated-stateful-application/
 ---

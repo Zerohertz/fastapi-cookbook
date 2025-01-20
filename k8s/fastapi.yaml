@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: fastapi
-          image: zerohertzkr/fastapi-boilerplate:539dbc2200053db18582c4b28239a8766ddf89df
+          image: zerohertzkr/fastapi-cookbook:539dbc2200053db18582c4b28239a8766ddf89df
           env:
             - name: DB_TYPE
               valueFrom:

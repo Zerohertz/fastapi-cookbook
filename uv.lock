@@ -189,7 +189,7 @@ wheels = [
 ]
 
 [[package]]
-name = "fastapi-boilerplate"
+name = "fastapi-cookbook"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [

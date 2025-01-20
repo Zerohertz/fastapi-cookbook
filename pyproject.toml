@@ -1,7 +1,7 @@
 [project]
-name = "fastapi-boilerplate"
+name = "fastapi-cookbook"
 version = "0.1.0"
-description = "💨 Zerohertz's FastAPI Boilerplate 💨"
+description = "💨 Zerohertz's FastAPI Cookbook 💨"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [

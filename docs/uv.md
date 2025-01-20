@@ -3,7 +3,7 @@
 ```shell
 $ pip install uv
 $ uv init
-Initialized project `fastapi-boilerplate`
+Initialized project `fastapi-cookbook`
 $ uv venv .venv
 Using CPython 3.12.7 interpreter at: /opt/homebrew/Caskroom/miniconda/base/bin/python3
 Creating virtual environment at: .venv

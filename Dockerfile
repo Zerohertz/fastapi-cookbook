@@ -1,7 +1,7 @@
 FROM python:3.12-slim
 
 LABEL maintainer="Zerohertz <ohg3417@gmail.com>"
-LABEL description="Zerohertz's FastAPI Boilerplate"
+LABEL description="Zerohertz's FastAPI Cookbook"
 LABEL license="MIT"
 
 ARG DEBIAN_FRONTEND=noninteractive

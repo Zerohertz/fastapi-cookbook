@@ -130,6 +130,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-python-venv-
 
+      - name: Install MySQL dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install default-libmysqlclient-dev build-essential pkg-config -y
+
       - name: Run pytest
         run: |
           source .venv/bin/activate

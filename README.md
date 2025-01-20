@@ -20,7 +20,7 @@
 <br />
 <img src="https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=FastAPI&logoColor=white"/>
 <br />
-<img src="https://img.shields.io/badge/uv-DE5FE9?style=flat&logo=uv&logoColor=white"/> <img src="https://img.shields.io/badge/Pydantic-E92063?style=flat&logo=Pydantic&logoColor=white"/> <img src="https://img.shields.io/badge/SQLModel-D71F00?style=flat&logo=SQLAlchemy&logoColor=white"/>
+<img src="https://img.shields.io/badge/uv-DE5FE9?style=flat&logo=uv&logoColor=white"/> <img src="https://img.shields.io/badge/Pydantic-E92063?style=flat&logo=Pydantic&logoColor=white"/> <img src="https://img.shields.io/badge/SQLAlchemy-D71F00?style=flat&logo=SQLAlchemy&logoColor=white"/>
 <br />
 <img src="https://img.shields.io/badge/Pytest-0A9EDC?style=flat&logo=pytest&logoColor=white"/> <a href="https://codecov.io/github/Zerohertz/fastapi-boilerplate" ><img src="https://codecov.io/github/Zerohertz/fastapi-boilerplate/graph/badge.svg?token=8318TEPMVO"/></a> <img src="https://img.shields.io/badge/GitHub Actions-2088FF?style=flat&logo=githubactions&logoColor=white"/>
 <br />

@@ -1,37 +1,87 @@
-from datetime import datetime
+from dependency_injector.wiring import Provide, inject
+from fastapi import Depends
+from starlette import status
 
-from loguru import logger
-
+from app.core.container import Container
 from app.core.router import CoreAPIRouter
-from app.exceptions.users import (
-    InsufficientFunds,
-    InvalidInput,
-    UnauthorizedAccess,
-    UserNotFound,
-)
-from app.schemas.users import User
+from app.schemas.users import UserCreateRequest, UserCreateResponse
+from app.services.users import UserService
 
 router = CoreAPIRouter(prefix="/user", tags=["user"])
 
 
-@router.get(
+@router.post(
     "",
-    response_model=User,
-    status_code=200,
-    summary="Get User Test",
-    description="1 ~ 4: Error!",
+    response_model=UserCreateResponse,
+    status_code=status.HTTP_201_CREATED,
+    summary="",
+    description="",
 )
-async def get_user(user_id: int):
-    try:
-        if user_id == 1:
-            raise InsufficientFunds
-        if user_id == 2:
-            raise InvalidInput
-        if user_id == 3:
-            raise UnauthorizedAccess("Unauthorized.")
-        if user_id == 4:
-            raise UserNotFound("User not found.")
-    except Exception as error:
-        logger.exception(repr(error))
-        raise error
-    return User(id=user_id, created_at=datetime.now(), updated_at=datetime.now())
+@inject
+async def create_user(
+    user: UserCreateRequest,
+    service: UserService = Depends(Provide[Container.user_service]),
+):
+    return service.create(user)
+
+
+@router.get(
+    "/{id}",
+    response_model=UserCreateResponse,
+    status_code=status.HTTP_200_OK,
+    summary="",
+    description="",
+)
+@inject
+async def get_user(
+    id: int,
+    service: UserService = Depends(Provide[Container.user_service]),
+):
+    return service.get_by_id(id)
+
+
+@router.put(
+    "/{id}",
+    response_model=UserCreateResponse,
+    status_code=status.HTTP_200_OK,
+    summary="",
+    description="",
+)
+@inject
+async def put_user(
+    id: int,
+    user: UserCreateRequest,
+    service: UserService = Depends(Provide[Container.user_service]),
+):
+    return service.put_by_id(id=id, schema=user)
+
+
+@router.patch(
+    "/{id}",
+    response_model=UserCreateResponse,
+    status_code=status.HTTP_200_OK,
+    summary="",
+    description="",
+)
+@inject
+async def patch_user(
+    id: int,
+    user: UserCreateRequest,
+    service: UserService = Depends(Provide[Container.user_service]),
+):
+    return service.patch_by_id(id=id, schema=user)
+
+
+@router.delete(
+    "/{id}",
+    response_model=UserCreateResponse,
+    status_code=status.HTTP_200_OK,
+    summary="",
+    description="",
+)
+@inject
+async def delete_user(
+    id: int,
+    service: UserService = Depends(Provide[Container.user_service]),
+):
+    return service.delete_by_id(id)

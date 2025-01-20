@@ -9,7 +9,10 @@ ARG DEBIAN_FRONTEND=noninteractive
 WORKDIR /workspace
 COPY ./ /workspace
 
-RUN apt-get update && apt-get install make tzdata -y && \
+RUN apt-get update && \
+    apt-get install make tzdata \
+    # NOTE: mysqlclient depndencies
+    default-libmysqlclient-dev build-essential pkg-config -y && \
     ln -sf /usr/share/zoneinfo/Asia/Seoul /etc/localtime && \
     dpkg-reconfigure --frontend noninteractive tzdata
 

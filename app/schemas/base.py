@@ -1,15 +1,15 @@
 import abc
 from datetime import datetime
-from typing import Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
-class BaseSchema(BaseModel, abc.ABC):
-    """
-    https://docs.pydantic.dev/latest/concepts/models/#abstract-base-classes
-    """
+class BaseSchemaRequest(BaseModel, abc.ABC):
+    model_config = ConfigDict(from_attributes=True)
 
+
+class BaseSchemaResponse(BaseModel, abc.ABC):
+    model_config = ConfigDict(from_attributes=True)
     id: int
-    created_at: Optional[datetime]
-    updated_at: Optional[datetime]
+    created_at: datetime
+    updated_at: datetime

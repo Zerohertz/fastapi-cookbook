@@ -132,6 +132,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-python-venv-
 
+      # NOTE: 기본적으로 GitHub Actions의 Ubuntu에는 아래 의존성이 설치된 것으로 확인
       # - name: Install MySQL dependencies
       #   run: |
       #     sudo apt-get update

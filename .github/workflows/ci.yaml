@@ -103,7 +103,7 @@ jobs:
         image: mysql:8.0
         env:
           MYSQL_ROOT_PASSWORD: ${{ env.DB_ROOT }}
-          # WARN: Kubernetes manifest의 livenessProbe와 다르게 MYSQL_PWD를 설정하면 아래 오류가 발생한다.
+          # WARN: MYSQL_PWD를 설정하면 아래 오류가 발생한다.
           # ERROR 1045 (28000): Access denied for user 'root'@'localhost' (using password: YES)
           # MYSQL_PWD: ${{ env.DB_ROOT }}
           MYSQL_USER: ${{ env.DB_USER }}

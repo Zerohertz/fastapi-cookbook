@@ -21,11 +21,13 @@ spec:
                 secretKeyRef:
                   name: mysql
                   key: ROOT_PASSWORD
-            - name: MYSQL_PWD
-              valueFrom:
-                secretKeyRef:
-                  name: mysql
-                  key: ROOT_PASSWORD
+            # WARN: MYSQL_PWD를 설정하면 아래 오류가 발생한다.
+            # error: 'Access denied for user 'root'@'localhost' (using password: YES)'
+            # - name: MYSQL_PWD
+            #   valueFrom:
+            #     secretKeyRef:
+            #       name: mysql
+            #       key: ROOT_PASSWORD
             - name: MYSQL_USER
               valueFrom:
                 secretKeyRef:
@@ -43,9 +45,6 @@ spec:
                   key: DATABASE
           ports:
             - containerPort: 3306
-          volumeMounts:
-            - name: mysql-storage
-              mountPath: /var/lib/mysql
           livenessProbe:
             exec:
               command: ["mysqladmin", "ping"]
@@ -54,10 +53,13 @@ spec:
             timeoutSeconds: 5
           readinessProbe:
             exec:
-              command: ["mysql", "-h", "127.0.0.1", "-e", "SELECT 1"]
+              command: ["mysql", "-e", "SELECT 1"]
             initialDelaySeconds: 5
             periodSeconds: 2
             timeoutSeconds: 1
+          volumeMounts:
+            - name: mysql-storage
+              mountPath: /var/lib/mysql
       volumes:
         - name: mysql-storage
           hostPath:

@@ -34,9 +34,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: .venv
-          key: ${{ runner.os }}-python-venv-${{ github.sha }}
+          key: ${{ runner.os }}-python-uv-venv-${{ github.sha }}
           restore-keys: |
-            ${{ runner.os }}-python-venv-
+            ${{ runner.os }}-python-uv-venv-
 
       - name: Install dependencies
         run: |
@@ -67,9 +67,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: .venv
-          key: ${{ runner.os }}-python-venv-${{ github.sha }}
+          key: ${{ runner.os }}-python-uv-venv-${{ github.sha }}
           restore-keys: |
-            ${{ runner.os }}-python-venv-
+            ${{ runner.os }}-python-uv-venv-
 
       - name: Check type, lint, format
         run: |
@@ -128,9 +128,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: .venv
-          key: ${{ runner.os }}-python-venv-${{ github.sha }}
+          key: ${{ runner.os }}-python-uv-venv-${{ github.sha }}
           restore-keys: |
-            ${{ runner.os }}-python-venv-
+            ${{ runner.os }}-python-uv-venv-
 
       # NOTE: 기본적으로 GitHub Actions의 Ubuntu에는 아래 의존성이 설치된 것으로 확인
       # - name: Install MySQL dependencies

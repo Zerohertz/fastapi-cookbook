@@ -3,7 +3,7 @@ from datetime import datetime
 from fastapi import APIRouter
 
 from app.schemas.shields import Shields
-from app.services.shields import dday
+from app.utils.shields import dday
 
 router = APIRouter(prefix="/shields", tags=["shields.io"])
 

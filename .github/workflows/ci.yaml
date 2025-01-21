@@ -209,3 +209,72 @@ jobs:
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_CHECK }}
         if: always()
+
+  test-postgresql:
+    env:
+      DB_TYPE: "postgre"
+      DB_DRIVER: "asyncpg"
+      DB_HOST: "127.0.0.1"
+      DB_PORT: 5432
+      DB_USER: "test"
+      DB_PASSWORD: "test"
+      DB_NAME: "test"
+      DB_TABLE_CREATE: true
+    services:
+      postgresql:
+        image: postgres:17
+        env:
+          PGPORT: ${{ env.DB_PORT }}
+          POSTGRES_USER: ${{ env.DB_USER }}
+          POSTGERS_PASSWORD: ${{ env.DB_PASSWORD }}
+          POSTGRES_DB: ${{ env.DB_NAME }}
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd=pg_isready -U "$POSTGRES_USER" -d "dbname=$POSTGRES_DB" -h 127.0.0.1 -p 5432
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
+    name: Test PostgreSQL
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Cache virtualenv
+        uses: actions/cache@v4
+        with:
+          path: .venv
+          key: ${{ runner.os }}-python-uv-venv-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-python-uv-venv-
+
+      - name: Run pytest
+        run: |
+          source .venv/bin/activate
+          make test
+
+      - name: Upload test results to Codecov
+        uses: codecov/test-results-action@v1
+        with:
+          flags: postgresql
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Upload results to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          flags: postgresql
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Slack webhook
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          author_name: fastapi-cookbook
+          fields: repo,message,commit,author,action,eventName,ref,workflow,job,took
+          if_mention: failure,cancelled
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_CHECK }}
+        if: always()

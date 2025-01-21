@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fastapi-env
+data:
+  dev.env: |
+    PORT="8000"
+    PROJECT_NAME="Zerohertz's FastAPI Cookbook (dev)"
+    VERSION="v0.0.2"
+    PREFIX="/api"
+    DB_ECHO=true
+    DB_TABLE_CREATE=true
+  prod.env: |
+    PORT="8000"
+    PROJECT_NAME="Zerohertz's FastAPI Cookbook (prod)"
+    VERSION="v0.0.2"
+    PREFIX=""
+    DB_ECHO=false
+    DB_TABLE_CREATE=false
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgresql
+data:
+  TYPE: "postgresql"
+  DRIVER: "asyncpg"
+  HOST: "postgresql"
+  PORT: "5432"
+  DATABASE: "fastapi"

@@ -36,9 +36,9 @@ prod:
 
 .PHONY: k8s
 k8s:
-	kubectl delete -n fastapi -f k8s/dev.yaml 2> /dev/null || echo "Not deployed to the dev environment! 🌎"
-	kubectl apply -n fastapi -f k8s/secrets.yaml
-	kubectl apply -n fastapi -f k8s/dev.yaml
+	kubectl delete -n fastapi -f k8s/postgresql/dev.yaml 2> /dev/null || echo "Not deployed to the dev environment! 🌎"
+	kubectl apply -n fastapi -f k8s/postgresql/secrets.yaml
+	kubectl apply -n fastapi -f k8s/postgresql/dev.yaml
 
 .PHONY: exec
 exec:
@@ -46,4 +46,4 @@ exec:
 
 .PHONY: expose
 expose:
-	 kubectl expose -n fastapi po/mysql-0 --port 3306 --type=NodePort
+	 kubectl expose -n fastapi po/postgresql-0 --port 5432 --type=NodePort

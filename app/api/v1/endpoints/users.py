@@ -22,7 +22,7 @@ async def create_user(
     user: UserCreateRequest,
     service: UserService = Depends(Provide[Container.user_service]),
 ):
-    return service.create(user)
+    return await service.create(user)
 
 
 @router.get(
@@ -37,7 +37,7 @@ async def get_user(
     id: int,
     service: UserService = Depends(Provide[Container.user_service]),
 ):
-    return service.get_by_id(id)
+    return await service.get_by_id(id)
 
 
 @router.put(
@@ -53,7 +53,7 @@ async def put_user(
     user: UserCreateRequest,
     service: UserService = Depends(Provide[Container.user_service]),
 ):
-    return service.put_by_id(id=id, schema=user)
+    return await service.put_by_id(id=id, schema=user)
 
 
 @router.patch(
@@ -69,7 +69,7 @@ async def patch_user(
     user: UserCreateRequest,
     service: UserService = Depends(Provide[Container.user_service]),
 ):
-    return service.patch_by_id(id=id, schema=user)
+    return await service.patch_by_id(id=id, schema=user)
 
 
 @router.delete(
@@ -84,4 +84,4 @@ async def delete_user(
     id: int,
     service: UserService = Depends(Provide[Container.user_service]),
 ):
-    return service.delete_by_id(id)
+    return await service.delete_by_id(id)

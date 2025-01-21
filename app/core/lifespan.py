@@ -31,6 +31,6 @@ async def lifespan(app: FastAPI):  # pylint: disable=unused-argument
     if configs.DB_TABLE_CREATE:
         logger.warning("Create database")
         database = container.database()
-        database.create_all()
+        await database.create_all()
 
     yield

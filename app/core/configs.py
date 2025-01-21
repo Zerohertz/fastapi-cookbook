@@ -33,6 +33,8 @@ class Configs(BaseSettings):
     @property
     def DATABASE_URI(self) -> str:
         if self.DB_TYPE == "sqlite" and self.DB_PORT == 0:
+            if self.DB_DRIVER:
+                return f"{self.DB_TYPE}+{self.DB_DRIVER}:///{self.DB_NAME}"
             return f"{self.DB_TYPE}:///{self.DB_NAME}"
         return str(
             MultiHostUrl.build(

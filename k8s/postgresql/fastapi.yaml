@@ -1,0 +1,92 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fastapi
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fastapi
+  template:
+    metadata:
+      labels:
+        app: fastapi
+    spec:
+      containers:
+        - name: fastapi
+          image: zerohertzkr/fastapi-cookbook:539dbc2200053db18582c4b28239a8766ddf89df
+          env:
+            - name: DB_TYPE
+              valueFrom:
+                configMapKeyRef:
+                  name: mysql
+                  key: TYPE
+            - name: DB_DRIVER
+              valueFrom:
+                configMapKeyRef:
+                  name: mysql
+                  key: DRIVER
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: mysql
+                  key: HOST
+            - name: DB_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: mysql
+                  key: PORT
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: mysql
+                  key: USER_NAME
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql
+                  key: USER_PASSWORD
+            - name: DB_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: mysql
+                  key: DATABASE
+          ports:
+            - name: http
+              containerPort: 8000
+          volumeMounts:
+            - name: fastapi-prod-env-volume
+              mountPath: /workspace/envs
+      volumes:
+        - name: fastapi-prod-env-volume
+          configMap:
+            name: fastapi-env
+            items:
+              - key: prod.env
+                path: prod.env
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fastapi
+spec:
+  ports:
+    - port: 8000
+  selector:
+    app: fastapi
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: fasapi
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`api.zerohertz.xyz`)
+      kind: Rule
+      services:
+        - name: fastapi
+          port: 8000
+  tls:
+    certResolver: zerohertz-resolver

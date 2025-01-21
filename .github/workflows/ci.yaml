@@ -87,7 +87,51 @@ jobs:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_CHECK }}
         if: always()
 
-  test:
+  test-sqlite:
+    name: Test SQLite
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Cache virtualenv
+        uses: actions/cache@v4
+        with:
+          path: .venv
+          key: ${{ runner.os }}-python-uv-venv-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-python-uv-venv-
+
+      - name: Run pytest
+        run: |
+          source .venv/bin/activate
+          make test
+
+      - name: Upload test results to Codecov
+        uses: codecov/test-results-action@v1
+        with:
+          flags: sqlite
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Upload results to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          flags: sqlite
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Slack webhook
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          author_name: fastapi-cookbook
+          fields: repo,message,commit,author,action,eventName,ref,workflow,job,took
+          if_mention: failure,cancelled
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_CHECK }}
+        if: always()
+
+  test-mysql:
     env:
       DB_ROOT: "password"
       DB_TYPE: "mysql"
@@ -117,8 +161,8 @@ jobs:
           --health-timeout=5s
           --health-retries=3
 
-    name: Test
-    needs: setup
+    name: Test MySQL
+    needs: lint
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -146,11 +190,13 @@ jobs:
       - name: Upload test results to Codecov
         uses: codecov/test-results-action@v1
         with:
+          flags: mysql
           token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Upload results to Codecov
         uses: codecov/codecov-action@v5
         with:
+          flags: mysql
           token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Slack webhook

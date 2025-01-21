@@ -226,7 +226,7 @@ jobs:
         env:
           PGPORT: ${{ env.DB_PORT }}
           POSTGRES_USER: ${{ env.DB_USER }}
-          POSTGERS_PASSWORD: ${{ env.DB_PASSWORD }}
+          POSTGRES_PASSWORD: ${{ env.DB_PASSWORD }}
           POSTGRES_DB: ${{ env.DB_NAME }}
         ports:
           - 5432:5432

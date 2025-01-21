@@ -212,7 +212,7 @@ jobs:
 
   test-postgresql:
     env:
-      DB_TYPE: "postgre"
+      DB_TYPE: "postgresql"
       DB_DRIVER: "asyncpg"
       DB_HOST: "127.0.0.1"
       DB_PORT: 5432
@@ -231,7 +231,7 @@ jobs:
         ports:
           - 5432:5432
         options: >-
-          --health-cmd=pg_isready -U "$POSTGRES_USER" -d "dbname=$POSTGRES_DB" -h 127.0.0.1 -p 5432
+          --health-cmd="pg_isready -U $POSTGRES_USER -d dbname=$POSTGRES_DB -h 127.0.0.1 -p 5432"
           --health-interval=10s
           --health-timeout=5s
           --health-retries=3

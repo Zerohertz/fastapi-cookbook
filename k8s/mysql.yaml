@@ -51,7 +51,7 @@ spec:
                 - /bin/bash
                 - -ec
                 - |
-                  mysqladmin status
+                  mysqladmin -h 127.0.0.1 status
             initialDelaySeconds: 30
             periodSeconds: 10
             timeoutSeconds: 5
@@ -61,7 +61,7 @@ spec:
                 - /bin/bash
                 - -ec
                 - |
-                  mysqladmin ping
+                  mysqladmin -h 127.0.0.1 ping
             initialDelaySeconds: 5
             periodSeconds: 2
             timeoutSeconds: 1

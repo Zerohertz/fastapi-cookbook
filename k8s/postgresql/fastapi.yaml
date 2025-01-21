@@ -19,37 +19,37 @@ spec:
             - name: DB_TYPE
               valueFrom:
                 configMapKeyRef:
-                  name: mysql
+                  name: postgresql
                   key: TYPE
             - name: DB_DRIVER
               valueFrom:
                 configMapKeyRef:
-                  name: mysql
+                  name: postgresql
                   key: DRIVER
             - name: DB_HOST
               valueFrom:
                 configMapKeyRef:
-                  name: mysql
+                  name: postgresql
                   key: HOST
             - name: DB_PORT
               valueFrom:
                 configMapKeyRef:
-                  name: mysql
+                  name: postgresql
                   key: PORT
             - name: DB_USER
               valueFrom:
                 secretKeyRef:
-                  name: mysql
+                  name: postgresql
                   key: USER_NAME
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: mysql
+                  name: postgresql
                   key: USER_PASSWORD
             - name: DB_NAME
               valueFrom:
                 configMapKeyRef:
-                  name: mysql
+                  name: postgresql
                   key: DATABASE
           ports:
             - name: http

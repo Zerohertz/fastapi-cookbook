@@ -103,7 +103,7 @@ jobs:
         image: mysql:8.0
         env:
           MYSQL_ROOT_PASSWORD: ${{ env.DB_ROOT }}
-          # WARN: MYSQL_PWD를 설정하면 아래 오류가 발생한다.
+          # WARN: mysql:8.0 사용 시 MYSQL_PWD를 설정하면 아래 오류가 발생한다.
           # ERROR 1045 (28000): Access denied for user 'root'@'localhost' (using password: YES)
           # MYSQL_PWD: ${{ env.DB_ROOT }}
           MYSQL_USER: ${{ env.DB_USER }}
@@ -112,7 +112,7 @@ jobs:
         ports:
           - 3306:3306
         options: >-
-          --health-cmd="mysqladmin ping"
+          --health-cmd="mysqladmin -h 127.0.0.1 ping"
           --health-interval=10s
           --health-timeout=5s
           --health-retries=3

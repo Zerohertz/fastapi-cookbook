@@ -21,7 +21,7 @@ spec:
                 secretKeyRef:
                   name: mysql
                   key: ROOT_PASSWORD
-            # WARN: MYSQL_PWD를 설정하면 아래 오류가 발생한다.
+            # WARN: mysql:8.0 사용 시 MYSQL_PWD를 설정하면 아래 오류가 발생한다.
             # error: 'Access denied for user 'root'@'localhost' (using password: YES)'
             # - name: MYSQL_PWD
             #   valueFrom:
@@ -47,13 +47,21 @@ spec:
             - containerPort: 3306
           livenessProbe:
             exec:
-              command: ["mysqladmin", "ping"]
+              command:
+                - /bin/bash
+                - -ec
+                - |
+                  mysqladmin status
             initialDelaySeconds: 30
             periodSeconds: 10
             timeoutSeconds: 5
           readinessProbe:
             exec:
-              command: ["mysql", "-e", "SELECT 1"]
+              command:
+                - /bin/bash
+                - -ec
+                - |
+                  mysqladmin ping
             initialDelaySeconds: 5
             periodSeconds: 2
             timeoutSeconds: 1
@@ -65,7 +73,7 @@ spec:
           hostPath:
             path: /data/mysql/fastapi-cookbook
             type: DirectoryOrCreate
-# Reference: https://kubernetes.io/docs/tasks/run-application/run-replicated-stateful-application/
+# References: https://github.com/bitnami/charts/blob/78bbe94ec731a0cb046e0387b5d610de41f97472/bitnami/mysql/templates/primary/statefulset.yaml#L247-L275
 ---
 apiVersion: v1
 kind: Service

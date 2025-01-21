@@ -36,6 +36,8 @@ spec:
                 configMapKeyRef:
                   name: postgresql
                   key: DATABASE
+            - name: TZ
+              value: Asia/Seoul
             - name: PGTZ
               value: Asia/Seoul
             - name: PGDATA

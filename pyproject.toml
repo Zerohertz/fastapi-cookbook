@@ -7,25 +7,32 @@ requires-python = ">=3.12"
 dependencies = [
     "alembic>=1.14.0",
     "asyncpg>=0.30.0",
-    "black>=24.10.0",
     "dependency-injector>=4.45.0",
     "fastapi>=0.115.6",
     "httpx>=0.28.1",
-    "isort>=5.13.2",
     "loguru>=0.7.3",
-    "mypy>=1.14.1",
     "pydantic-settings>=2.7.1",
+    "sqlalchemy>=2.0.37",
+    "uvicorn>=0.34.0",
+]
+
+[dependency-groups]
+lint = [
+    "black>=24.10.0",
+    "isort>=5.13.2",
+    "mypy>=1.14.1",
     "pylint>=3.3.3",
+    "ruff>=0.9.2",
+    "sqlalchemy[mypy]>=2.0.37",
+]
+test = [
     "pytest>=8.3.4",
     "pytest-cov>=6.0.0",
     "pytest-dotenv>=0.5.2",
     "pytest-ordering>=0.6",
-    "ruff>=0.9.1",
-    "sqlalchemy[mypy]>=2.0.36",
-    "uvicorn>=0.34.0",
-    # NOTE: For Tests
     "aiomysql>=0.2.0",
     "aiosqlite>=0.20.0",
+    "cryptography>=44.0.0",
     # NOTE: Sync Drivers
     # "mysqlclient>=2.2.7",
 ]

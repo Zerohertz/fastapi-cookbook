@@ -2,6 +2,7 @@ SHELL := /bin/bash
 
 .PHONY: lint
 lint:
+	uv sync --all-groups
 	# Static Typing
 	uv run mypy app
 	# Linting
@@ -13,6 +14,7 @@ lint:
 
 .PHONY: test
 test:
+	uv sync --group test
 	export DESCRIPTION=$$(cat README.md) && \
 		uv run pytest \
 		--cov=app --cov-branch --cov-report=xml \

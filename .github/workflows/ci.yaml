@@ -135,7 +135,7 @@ jobs:
     env:
       DB_ROOT: "password"
       DB_TYPE: "mysql"
-      DB_DRIVER: "mysqldb"
+      DB_DRIVER: "aiomysql"
       DB_HOST: "127.0.0.1"
       DB_PORT: 3306
       DB_USER: "test"

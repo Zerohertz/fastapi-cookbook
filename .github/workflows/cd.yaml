@@ -77,7 +77,7 @@ jobs:
 
       - name: Change manifest
         run: |
-          sed -i 's|${{ secrets.DOCKER_USERNAME }}/fastapi-cookbook:[^ ]*|${{ secrets.DOCKER_USERNAME }}/fastapi-cookbook:${{ github.sha }}|' k8s/fastapi.yaml
+          sed -i 's|${{ secrets.DOCKER_USERNAME }}/fastapi-cookbook:[^ ]*|${{ secrets.DOCKER_USERNAME }}/fastapi-cookbook:${{ github.sha }}|' k8s/postgresql/fastapi.yaml
 
       - name: git push
         run: |

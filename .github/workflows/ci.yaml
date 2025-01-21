@@ -41,7 +41,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install uv
-          uv sync
+          uv sync --all-groups
           uv pip install uv
 
       - name: Slack webhook

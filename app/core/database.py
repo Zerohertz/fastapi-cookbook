@@ -1,8 +1,7 @@
 from contextlib import asynccontextmanager
-from typing import Any, Generator
+from typing import AsyncIterator
 
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
-from sqlalchemy.orm import Session, scoped_session, sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 from app.core.configs import configs
 from app.models.base import BaseModel
@@ -11,7 +10,7 @@ from app.models.base import BaseModel
 class Database:
     def __init__(self) -> None:
         self.engine = create_async_engine(configs.DATABASE_URI, echo=configs.DB_ECHO)
-        self.sessionmaker = sessionmaker(
+        self.sessionmaker = async_sessionmaker(
             bind=self.engine, class_=AsyncSession, expire_on_commit=False
         )
 
@@ -20,7 +19,7 @@ class Database:
             await conn.run_sync(BaseModel.metadata.create_all)
 
     @asynccontextmanager
-    async def session(self) -> Generator[Any, Any, None]:
+    async def session(self) -> AsyncIterator[AsyncSession]:
         async with self.sessionmaker() as session:
             try:
                 yield session

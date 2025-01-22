@@ -21,6 +21,7 @@ class BaseRepository(Generic[T]):
         session = database.scoped_session()
         session.add(model)
         await session.flush()
+        await session.refresh(model)
         return model
 
     async def read_by_id(self, id: int, eager: bool = False) -> T:

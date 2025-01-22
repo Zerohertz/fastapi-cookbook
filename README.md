@@ -34,4 +34,6 @@
 </h4>
 
 - [fastapi/full-stack-fastapi-template/backend](https://github.com/fastapi/full-stack-fastapi-template/tree/master/backend)
+- [teamhide/fastapi-boilerplate](https://github.com/teamhide/fastapi-boilerplate)
 - [jujumilk3/fastapi-clean-architecture](https://github.com/jujumilk3/fastapi-clean-architecture)
+- [UponTheSky/How to implement a transactional decorator in FastAPI + SQLAlchemy - with reviewing other approaches](https://dev.to/uponthesky/python-post-reviewhow-to-implement-a-transactional-decorator-in-fastapi-sqlalchemy-ein)

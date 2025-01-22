@@ -8,6 +8,7 @@ from loguru import logger
 
 from app.core.configs import configs
 from app.core.container import Container
+from app.core.database import database
 from app.utils.logging import remove_handler
 
 
@@ -27,10 +28,8 @@ async def lifespan(app: FastAPI):  # pylint: disable=unused-argument
     # logging.getLogger("uvicorn.access").addHandler(LoguruHandler())
     # logging.getLogger("uvicorn.error").addHandler(LoguruHandler())
 
-    container = Container()
     if configs.DB_TABLE_CREATE:
-        logger.warning("Create database")
-        database = container.database()
         await database.create_all()
+    Container()
 
     yield

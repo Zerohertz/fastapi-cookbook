@@ -9,6 +9,9 @@ from app.core.configs import configs
 
 
 def test_create_user(client: TestClient) -> None:
+    """
+    Post user create-1, create-2
+    """
     for id in range(1, 3):
         name = f"create-{id}"
         response = client.post(f"{configs.PREFIX}/v1/user", json={"name": name})
@@ -18,6 +21,9 @@ def test_create_user(client: TestClient) -> None:
 
 @pytest.mark.run(after="test_create_user")
 def test_get_user(client: TestClient) -> None:
+    """
+    Get user create-1, create-2
+    """
     for id in range(1, 3):
         name = f"create-{id}"
         response = client.get(f"{configs.PREFIX}/v1/user/{id}")
@@ -30,6 +36,9 @@ def test_get_user(client: TestClient) -> None:
 
 @pytest.mark.run(after="test_get_user")
 def test_patch_user(client: TestClient) -> None:
+    """
+    Patch user create-1
+    """
     name = "patch"
     time.sleep(1)
     response = client.patch(f"{configs.PREFIX}/v1/user/1", json={"name": name})
@@ -45,6 +54,9 @@ def test_patch_user(client: TestClient) -> None:
 
 @pytest.mark.run(after="test_get_user")
 def test_put_user(client: TestClient) -> None:
+    """
+    Put user create-1
+    """
     name = "put"
     time.sleep(1)
     response = client.patch(f"{configs.PREFIX}/v1/user/2", json={"name": name})

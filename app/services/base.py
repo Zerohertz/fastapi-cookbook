@@ -1,5 +1,6 @@
 from typing import Any, Generic, TypeVar, overload
 
+from app.core.database import database
 from app.models.base import BaseModel
 from app.repositories.base import BaseRepository
 from app.schemas.base import BaseSchemaRequest, BaseSchemaResponse
@@ -22,19 +23,23 @@ class BaseService(Generic[T]):
             return self.repository.model(**data.model_dump())
         return BaseSchemaResponse.model_validate(data)
 
+    @database.transactional
     async def create(self, schema: BaseSchemaRequest) -> BaseSchemaResponse:
         model = self.mapper(schema)
         model = await self.repository.create(model=model)
         return self.mapper(model)
 
+    @database.transactional
     async def get_by_id(self, id: int) -> BaseSchemaResponse:
         model = await self.repository.read_by_id(id=id)
         return self.mapper(model)
 
+    @database.transactional
     async def put_by_id(self, id: int, schema: BaseSchemaRequest) -> BaseSchemaResponse:
         model = await self.repository.update_by_id(id=id, model=schema.model_dump())
         return self.mapper(model)
 
+    @database.transactional
     async def patch_by_id(
         self, id: int, schema: BaseSchemaRequest
     ) -> BaseSchemaResponse:
@@ -43,12 +48,14 @@ class BaseService(Generic[T]):
         )
         return self.mapper(model)
 
+    @database.transactional
     async def patch_attr_by_id(
         self, id: int, attr: str, value: Any
     ) -> BaseSchemaResponse:
         model = await self.repository.update_attr_by_id(id=id, column=attr, value=value)
         return self.mapper(model)
 
+    @database.transactional
     async def delete_by_id(self, id: int) -> BaseSchemaResponse:
         model = await self.repository.delete_by_id(id=id)
         return self.mapper(model)

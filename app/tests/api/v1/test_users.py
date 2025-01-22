@@ -1,6 +1,5 @@
 import time
 
-import pytest
 from fastapi.testclient import TestClient
 from loguru import logger
 from starlette import status
@@ -19,7 +18,6 @@ def test_create_user(client: TestClient) -> None:
         assert response.status_code == status.HTTP_201_CREATED
 
 
-@pytest.mark.run(after="test_create_user")
 def test_get_user(client: TestClient) -> None:
     """
     Get user create-1, create-2
@@ -34,7 +32,6 @@ def test_get_user(client: TestClient) -> None:
         assert data["name"] == name
 
 
-@pytest.mark.run(after="test_get_user")
 def test_patch_user(client: TestClient) -> None:
     """
     Patch user create-1
@@ -52,7 +49,6 @@ def test_patch_user(client: TestClient) -> None:
     assert data["created_at"] != data["updated_at"]
 
 
-@pytest.mark.run(after="test_get_user")
 def test_put_user(client: TestClient) -> None:
     """
     Put user create-1

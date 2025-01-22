@@ -30,7 +30,6 @@ test = [
     "pytest>=8.3.4",
     "pytest-cov>=6.0.0",
     "pytest-dotenv>=0.5.2",
-    "pytest-ordering>=0.6",
     "aiomysql>=0.2.0",
     "aiosqlite>=0.20.0",
     "cryptography>=44.0.0",

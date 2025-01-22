@@ -28,6 +28,7 @@ async def lifespan(app: FastAPI):  # pylint: disable=unused-argument
     # logging.getLogger("uvicorn.access").addHandler(LoguruHandler())
     # logging.getLogger("uvicorn.error").addHandler(LoguruHandler())
 
+    logger.info(f"{configs.ENV=}")
     if configs.DB_TABLE_CREATE:
         await database.create_all()
     Container()

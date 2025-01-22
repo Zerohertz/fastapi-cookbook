@@ -3,6 +3,7 @@ from functools import wraps
 from typing import Awaitable, Callable, Optional
 
 from loguru import logger
+from sqlalchemy import NullPool
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
     async_scoped_session,
@@ -10,7 +11,7 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
-from app.core.configs import configs
+from app.core.configs import ENVIRONMENT, configs
 from app.models.base import BaseModel
 
 
@@ -36,7 +37,15 @@ class Context:
 class Database:
     def __init__(self) -> None:
         self.context = Context()
-        self.engine = create_async_engine(configs.DATABASE_URI, echo=configs.DB_ECHO)
+        async_engine_kwargs = {
+            "url": configs.DATABASE_URI,
+            "echo": configs.DB_ECHO,
+        }
+        if configs.ENV == ENVIRONMENT.TEST and configs.DB_DRIVER != "aiosqlite":
+            # NOTE: PyTest 시 event loop 충돌 발생 (related: #19)
+            logger.warning("Using NullPool for async engine")
+            async_engine_kwargs["poolclass"] = NullPool  # type: ignore[assignment]
+        self.engine = create_async_engine(**async_engine_kwargs)  # type: ignore[arg-type]
         self.sessionmaker = async_sessionmaker(
             bind=self.engine,
             class_=AsyncSession,
@@ -45,12 +54,15 @@ class Database:
             expire_on_commit=False,
         )
         self.scoped_session = async_scoped_session(
-            session_factory=self.sessionmaker, scopefunc=self.context.get
+            session_factory=self.sessionmaker,
+            scopefunc=self.context.get,
         )
 
     async def create_all(self) -> None:
         logger.warning("Create database")
         async with self.engine.begin() as conn:
+            if configs.ENV == ENVIRONMENT.TEST:
+                await conn.run_sync(BaseModel.metadata.drop_all)
             await conn.run_sync(BaseModel.metadata.create_all)
 
     def transactional(self, func: Callable[..., Awaitable]) -> Callable[..., Awaitable]:

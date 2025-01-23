@@ -84,7 +84,7 @@ jobs:
           git config user.name ${{ secrets.GH_USERNAME }}
           git config user.email "ohg3417@gmail.com"
           git config credential.helper store
-          git add k8s/fastapi.yaml
+          git add k8s/postgresql/fastapi.yaml
           git commit -m ":tada: deploy: fastapi-cookbook [${{ github.sha }}]"
           git push origin ${{ github.ref_name }}
 

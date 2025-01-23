@@ -23,8 +23,8 @@ class BaseRepository(Generic[T]):
         session.add(model)
         try:
             await session.flush()
-        except IntegrityError:
-            raise EntityAlreadyExists
+        except IntegrityError as error:
+            raise EntityAlreadyExists from error
         await session.refresh(model)
         return model
 
@@ -52,8 +52,8 @@ class BaseRepository(Generic[T]):
             setattr(result, key, value)
         try:
             await session.flush()
-        except IntegrityError:
-            raise EntityAlreadyExists
+        except IntegrityError as error:
+            raise EntityAlreadyExists from error
         await session.refresh(result)
         return result
 
@@ -67,8 +67,8 @@ class BaseRepository(Generic[T]):
         setattr(result, column, value)
         try:
             await session.flush()
-        except IntegrityError:
-            raise EntityAlreadyExists
+        except IntegrityError as error:
+            raise EntityAlreadyExists from error
         await session.refresh(result)
         return result
 

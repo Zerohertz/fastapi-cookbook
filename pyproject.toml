@@ -26,6 +26,7 @@ lint = [
     "pylint>=3.3.3",
     "ruff>=0.9.2",
     "sqlalchemy[mypy]>=2.0.37",
+    "types-pytz>=2024.2.0.20241221",
 ]
 test = [
     "pytest>=8.3.4",

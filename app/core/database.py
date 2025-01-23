@@ -4,7 +4,6 @@ from typing import Awaitable, Callable, Optional
 
 from loguru import logger
 from sqlalchemy import NullPool
-from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
     async_scoped_session,
@@ -13,7 +12,6 @@ from sqlalchemy.ext.asyncio import (
 )
 
 from app.core.configs import ENVIRONMENT, configs
-from app.exceptions.database import EntityAlreadyExists
 from app.models.base import BaseModel
 
 

@@ -2,7 +2,6 @@ from contextvars import Token
 
 import pytest
 from loguru import logger
-from sqlalchemy import schema
 
 from app.core.container import Container
 from app.exceptions.database import EntityAlreadyExists, EntityNotFound

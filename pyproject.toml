@@ -34,7 +34,6 @@ test = [
     "aiosqlite>=0.20.0",
     "cryptography>=44.0.0",
     "pytest-asyncio>=0.25.2",
-    "pytest-ordering>=0.6",
 ]
 
 [tool.mypy]

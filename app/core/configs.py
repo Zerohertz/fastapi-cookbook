@@ -20,6 +20,7 @@ class Configs(BaseSettings):
     DESCRIPTION: str
     VERSION: str
     PREFIX: str
+    TZ: Optional[str] = "Asia/Seoul"
 
     # --------- DATABASE SETTINGS --------- #
     DB_TYPE: str

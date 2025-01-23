@@ -9,6 +9,7 @@ data:
     PROJECT_NAME="Zerohertz's FastAPI Cookbook (dev)"
     VERSION="v0.1.1"
     PREFIX="/api"
+    TZ="Asia/Seoul"
     DB_ECHO=true
     DB_TABLE_CREATE=true
   prod.env: |
@@ -17,6 +18,7 @@ data:
     PROJECT_NAME="Zerohertz's FastAPI Cookbook (prod)"
     VERSION="v0.1.1"
     PREFIX=""
+    TZ="Asia/Seoul"
     DB_ECHO=false
     DB_TABLE_CREATE=false
 ---

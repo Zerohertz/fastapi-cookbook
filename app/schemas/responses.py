@@ -1,8 +1,10 @@
 from datetime import datetime
 from typing import Generic, Optional, TypeVar
 
+import pytz
 from pydantic import BaseModel
 
+from app.core.configs import configs
 from app.schemas.base import BaseSchemaResponse
 
 T = TypeVar("T", bound=BaseSchemaResponse)
@@ -39,12 +41,17 @@ class APIResponse(BaseModel, Generic[T]):
             status=status,
             message="The request has been successfully processed.",
             data=data,
-            timestamp=datetime.now(),
+            timestamp=datetime.now().astimezone(pytz.timezone(configs.TZ)),
         )
 
     @classmethod
     def error(cls, *, status: int, message: str) -> "APIResponse[T]":
-        return cls(status=status, message=message, data=None, timestamp=datetime.now())
+        return cls(
+            status=status,
+            message=message,
+            data=None,
+            timestamp=datetime.now().astimezone(pytz.timezone(configs.TZ)),
+        )
 
 
 if __name__ == "__main__":

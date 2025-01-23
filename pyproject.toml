@@ -12,6 +12,7 @@ dependencies = [
     "httpx>=0.28.1",
     "loguru>=0.7.3",
     "pydantic-settings>=2.7.1",
+    "pytz>=2024.2",
     "sqlalchemy>=2.0.37",
     "uv>=0.5.21",
     "uvicorn>=0.34.0",

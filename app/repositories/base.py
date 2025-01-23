@@ -1,10 +1,11 @@
 from typing import Any, Generic, Type, TypeVar
 
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.future import select
 from sqlalchemy.orm import joinedload
 
 from app.core.database import database
-from app.exceptions.database import EntityNotFound
+from app.exceptions.database import EntityAlreadyExists, EntityNotFound
 from app.models.base import BaseModel
 
 T = TypeVar("T", bound=BaseModel)
@@ -20,7 +21,10 @@ class BaseRepository(Generic[T]):
     async def create(self, model: T) -> T:
         session = database.scoped_session()
         session.add(model)
-        await session.flush()
+        try:
+            await session.flush()
+        except IntegrityError:
+            raise EntityAlreadyExists
         await session.refresh(model)
         return model
 
@@ -46,6 +50,10 @@ class BaseRepository(Generic[T]):
             raise EntityNotFound
         for key, value in model.items():
             setattr(result, key, value)
+        try:
+            await session.flush()
+        except IntegrityError:
+            raise EntityAlreadyExists
         return result
 
     async def update_attr_by_id(self, id: int, column: str, value: Any) -> T:
@@ -56,6 +64,10 @@ class BaseRepository(Generic[T]):
         if not result:
             raise EntityNotFound
         setattr(result, column, value)
+        try:
+            await session.flush()
+        except IntegrityError:
+            raise EntityAlreadyExists
         return result
 
     async def delete_by_id(self, id: int) -> T:

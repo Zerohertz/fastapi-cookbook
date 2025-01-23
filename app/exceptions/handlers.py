@@ -19,14 +19,13 @@ async def global_exception_handler(request: Request, exc: Exception) -> JSONResp
     )
 
 
-async def business_exception_handler(
-    request: Request, exc: CoreException
+async def core_exception_handler(
+    request: Request, exc: CoreException  # pylint: disable=unused-argument
 ) -> JSONResponse:
-    logger.error(f"{request=}, {exc=}")
-    name = exc.__class__.__name__
+    logger.error(exc)
     return JSONResponse(
-        content=APIResponse.error(
-            status=exc.status, message=f"[{name}] {exc.message}"
-        ).model_dump(mode="json"),
+        content=APIResponse.error(status=exc.status, message=repr(exc)).model_dump(
+            mode="json"
+        ),
         status_code=exc.status,
     )

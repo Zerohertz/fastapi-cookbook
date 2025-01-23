@@ -1,3 +1,4 @@
+from enum import Enum
 from typing import Optional
 
 from pydantic import computed_field
@@ -5,12 +6,21 @@ from pydantic_core import MultiHostUrl
 from pydantic_settings import BaseSettings
 
 
+class ENVIRONMENT(Enum):
+    TEST = "TEST"
+    DEV = "DEV"
+    PROD = "PROD"
+
+
 class Configs(BaseSettings):
+    ENV: ENVIRONMENT
+
     # --------- APP SETTINGS --------- #
     PROJECT_NAME: str
     DESCRIPTION: str
     VERSION: str
     PREFIX: str
+    TZ: str = "Asia/Seoul"
 
     # --------- DATABASE SETTINGS --------- #
     DB_TYPE: str

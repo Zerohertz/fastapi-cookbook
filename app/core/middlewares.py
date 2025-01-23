@@ -4,6 +4,7 @@ from fastapi import Request, Response
 from loguru import logger
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 
+from app.core.database import database
 from app.utils.logging import ANSI_BG_COLOR, ANSI_STYLE, ansi_format
 
 
@@ -56,4 +57,19 @@ class LoggingMiddleware(BaseHTTPMiddleware):
         logger.info(
             f"[IP: {ip}] [URL: {url}] [Method: {method}] [Status: {status} (Elapsed Time: {elapsed_time})]"
         )
+        return response
+
+
+class SessionMiddleware(BaseHTTPMiddleware):
+    async def dispatch(
+        self, request: Request, call_next: RequestResponseEndpoint
+    ) -> Response:
+        try:
+            context = database.context.set(session_id=hash(request))
+            logger.trace(f"[Session Start]\tID: {database.context.get()}, {context=}")
+            response = await call_next(request)
+        finally:
+            await database.scoped_session.remove()
+            logger.trace(f"[Session End]\tID: {database.context.get()}, {context=}")
+            database.context.reset(context=context)
         return response

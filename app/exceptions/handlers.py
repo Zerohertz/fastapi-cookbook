@@ -19,9 +19,7 @@ async def global_exception_handler(request: Request, exc: Exception) -> JSONResp
     )
 
 
-async def business_exception_handler(
-    request: Request, exc: CoreException
-) -> JSONResponse:
+async def core_exception_handler(request: Request, exc: CoreException) -> JSONResponse:
     logger.error(f"{request=}, {exc=}")
     name = exc.__class__.__name__
     return JSONResponse(

@@ -5,7 +5,7 @@ from app.core.configs import configs
 from app.core.lifespan import lifespan
 from app.core.middlewares import LoggingMiddleware, SessionMiddleware
 from app.exceptions.base import CoreException
-from app.exceptions.handlers import business_exception_handler, global_exception_handler
+from app.exceptions.handlers import core_exception_handler, global_exception_handler
 
 app = FastAPI(
     title=configs.PROJECT_NAME,
@@ -17,7 +17,7 @@ app = FastAPI(
     redoc_url=f"{configs.PREFIX}/redoc",
     exception_handlers={
         Exception: global_exception_handler,
-        CoreException: business_exception_handler,
+        CoreException: core_exception_handler,
     },
     lifespan=lifespan,
 )

@@ -16,7 +16,7 @@ lint:
 test:
 	uv sync --group test
 	export DESCRIPTION=$$(cat README.md) && \
-		uv run pytest \
+		uv run pytest -vv \
 		--cov=app --cov-branch --cov-report=xml \
 		--junitxml=junit.xml -o junit_family=legacy
 

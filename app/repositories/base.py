@@ -54,6 +54,7 @@ class BaseRepository(Generic[T]):
             await session.flush()
         except IntegrityError:
             raise EntityAlreadyExists
+        await session.refresh(result)
         return result
 
     async def update_attr_by_id(self, id: int, column: str, value: Any) -> T:
@@ -68,6 +69,7 @@ class BaseRepository(Generic[T]):
             await session.flush()
         except IntegrityError:
             raise EntityAlreadyExists
+        await session.refresh(result)
         return result
 
     async def delete_by_id(self, id: int) -> T:

@@ -37,3 +37,5 @@ async def lifespan(app: FastAPI):  # pylint: disable=unused-argument
     app.container = Container()  # type: ignore[attr-defined]
 
     yield
+
+    await database.engine.dispose()

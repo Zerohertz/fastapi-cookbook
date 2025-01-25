@@ -1,7 +1,7 @@
 from typing import Any, Generic, Type, TypeVar
 
+from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.future import select
 from sqlalchemy.orm import joinedload
 
 from app.core.database import database
@@ -18,66 +18,66 @@ class BaseRepository(Generic[T]):
     ) -> None:
         self.model = model
 
-    async def create(self, model: T) -> T:
+    async def create(self, entity: T) -> T:
         session = database.scoped_session()
-        session.add(model)
+        session.add(entity)
         try:
             await session.flush()
         except IntegrityError as error:
             raise EntityAlreadyExists from error
-        await session.refresh(model)
-        return model
+        await session.refresh(entity)
+        return entity
 
     async def read_by_id(self, id: int, eager: bool = False) -> T:
-        query = select(self.model)
+        stmt = select(self.model)
         if eager:
             for _eager in getattr(self.model, "eagers"):
-                query = query.options(joinedload(getattr(self.model, _eager)))
-        query = query.filter(self.model.id == id)
+                stmt = stmt.options(joinedload(getattr(self.model, _eager)))
+        stmt = stmt.filter(self.model.id == id)
         session = database.scoped_session()
-        _query = await session.execute(query)
-        result = _query.scalar_one_or_none()
-        if not result:
+        result = await session.execute(stmt)
+        entity = result.scalar_one_or_none()
+        if not entity:
             raise EntityNotFound
-        return result
+        return entity
 
-    async def update_by_id(self, id: int, model: dict) -> T:
-        query = select(self.model).filter(self.model.id == id)
+    async def update_by_id(self, id: int, data: dict) -> T:
+        stmt = select(self.model).filter(self.model.id == id)
         session = database.scoped_session()
-        _query = await session.execute(query)
-        result = _query.scalar_one_or_none()
-        if not result:
+        result = await session.execute(stmt)
+        entity = result.scalar_one_or_none()
+        if not entity:
             raise EntityNotFound
-        for key, value in model.items():
-            setattr(result, key, value)
+        for key, value in data.items():
+            setattr(entity, key, value)
         try:
             await session.flush()
         except IntegrityError as error:
             raise EntityAlreadyExists from error
-        await session.refresh(result)
-        return result
+        await session.refresh(entity)
+        return entity
 
     async def update_attr_by_id(self, id: int, column: str, value: Any) -> T:
-        query = select(self.model).filter(self.model.id == id)
+        stmt = select(self.model).filter(self.model.id == id)
         session = database.scoped_session()
-        _query = await session.execute(query)
-        result = _query.scalar_one_or_none()
-        if not result:
+        result = await session.execute(stmt)
+        entity = result.scalar_one_or_none()
+        if not entity:
             raise EntityNotFound
-        setattr(result, column, value)
+        setattr(entity, column, value)
         try:
             await session.flush()
         except IntegrityError as error:
             raise EntityAlreadyExists from error
-        await session.refresh(result)
-        return result
+        await session.refresh(entity)
+        return entity
 
     async def delete_by_id(self, id: int) -> T:
-        query = select(self.model).filter(self.model.id == id)
+        stmt = select(self.model).filter(self.model.id == id)
         session = database.scoped_session()
-        _query = await session.execute(query)
-        result = _query.scalar_one_or_none()
-        if not result:
+        result = await session.execute(stmt)
+        entity = result.scalar_one_or_none()
+        if not entity:
             raise EntityNotFound
-        await session.delete(result)
-        return result
+        await session.delete(entity)
+        return entity

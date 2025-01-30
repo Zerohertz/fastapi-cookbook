@@ -3,7 +3,13 @@ from typing import overload
 from passlib.exc import UnknownHashError
 
 from app.core.database import database
-from app.exceptions.auth import LoginFailed, NotRegistered, UserAlreadyExists
+from app.exceptions.auth import (
+    LoginFailed,
+    NotAuthenticated,
+    NotRegistered,
+    UserAlreadyExists,
+)
+from app.exceptions.database import EntityNotFound
 from app.models.enums import OAuthProvider, Role
 from app.models.users import User
 from app.repositories.users import UserRepository
@@ -131,7 +137,10 @@ class UserService(BaseService[User]):
     @database.transactional
     async def verify(self, token: JwtAccessToken) -> UserOut:
         user_id = int(self.jwt_service.decode(token=token.access_token))
-        entity = await self.repository.read_by_id(user_id)
+        try:
+            entity = await self.repository.read_by_id(user_id)
+        except EntityNotFound as error:
+            raise NotAuthenticated from error
         entity.refresh_token = self.jwt_service.create_refresh_token(entity)
         return UserOut.model_validate(entity)
 

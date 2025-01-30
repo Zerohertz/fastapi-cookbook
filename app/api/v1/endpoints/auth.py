@@ -52,7 +52,7 @@ async def register_password(
 @router.post(
     "/login",
     response_model=JwtToken,
-    status_code=status.HTTP_302_FOUND,
+    status_code=status.HTTP_200_OK,
     summary="Log in with password",
     description="",
 )

@@ -10,19 +10,6 @@ from httpx import ASGITransport, AsyncClient
 from app.core.container import Container
 from app.core.database import database
 from app.main import app
-from app.models.base import BaseModel
-
-# @pytest_asyncio.fixture(scope="session", autouse=True)
-# async def initialize_database() -> AsyncGenerator[None, None]:
-#     from loguru import logger
-#
-#     logger.info("dab" * 100)
-#     await database.create_all()
-#     async with database.engine.begin() as conn:
-#         await conn.run_sync(BaseModel.metadata.create_all)
-#
-#     yield
-#
 
 
 @pytest_asyncio.fixture(scope="function")

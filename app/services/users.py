@@ -1,10 +1,10 @@
 from typing import overload
 
-from loguru import logger
 from passlib.exc import UnknownHashError
 
 from app.core.database import database
 from app.exceptions.auth import LoginFailed, NotRegistered, UserAlreadyExists
+from app.models.enums import OAuthProvider, Role
 from app.models.users import User
 from app.repositories.users import UserRepository
 from app.schemas.auth import JwtAccessToken, JwtRefreshToken, JwtToken
@@ -49,7 +49,8 @@ class UserService(BaseService[User]):
         schema = UserIn(
             name=schema.name,
             email=schema.email,
-            oauth="password",
+            role=Role.USER,
+            oauth=OAuthProvider.PASSWORD,
             password=self.crypt_service.hash(schema.password),
             refresh_token=None,
             github_token=None,
@@ -95,7 +96,8 @@ class UserService(BaseService[User]):
         schema = UserIn(
             name=github_name,
             email=github_email,
-            oauth="github",
+            role=Role.USER,
+            oauth=OAuthProvider.GITHUB,
             password=None,
             refresh_token=None,
             github_token=github_token,

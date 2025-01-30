@@ -1,5 +1,6 @@
 from typing import Optional
 
+from app.models.enums import OAuthProvider, Role
 from app.schemas.base import BaseSchemaRequest, BaseSchemaResponse
 
 
@@ -20,17 +21,19 @@ class UserPasswordRequest(BaseSchemaRequest):
 class UserResponse(BaseSchemaResponse):
     name: str
     email: str
-    oauth: str
+    oauth: OAuthProvider
 
 
 class UserIn(UserRequest):
-    oauth: str
+    role: Role
+    oauth: OAuthProvider
     password: Optional[str] = None
     refresh_token: Optional[str] = None
     github_token: Optional[str] = None
 
 
 class UserOut(UserResponse):
+    role: Role
     password: Optional[str] = None
     refresh_token: Optional[str] = None
     github_token: Optional[str] = None

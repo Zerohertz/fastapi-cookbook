@@ -6,6 +6,7 @@ from app.schemas.base import BaseSchemaRequest, BaseSchemaResponse
 
 class UserRequest(BaseSchemaRequest):
     name: str
+    # TODO: Email 검증
     email: str
 
 

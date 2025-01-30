@@ -1,14 +1,57 @@
 import time
+from typing import Optional
 
 from fastapi import Request, Response
 from loguru import logger
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 
 from app.core.database import database
-from app.utils.logging import ANSI_BG_COLOR, ANSI_STYLE, ansi_format, osc_format
+from app.utils.logging import (
+    ANSI_BG_COLOR,
+    ANSI_FG_COLOR,
+    ANSI_STYLE,
+    ansi_format,
+    osc_format,
+)
 
 
 class LoggingMiddleware(BaseHTTPMiddleware):
+    def info(
+        self,
+        *,
+        ip: str,
+        url: str,
+        method: str,
+        status: Optional[str] = None,
+        elapsed_time: Optional[str] = None,
+    ) -> None:
+        ip = osc_format(ip, href=f"https://db-ip.com/{ip}")
+        ip = ansi_format(
+            ip,
+            bg_color=ANSI_BG_COLOR.LIGHT_BLACK,
+            style=[ANSI_STYLE.UNDERLINE, ANSI_STYLE.BOLD],
+        )
+        ip = f"[IP: {ip}]"
+        url = ansi_format(f"[URL: {url}]", fg_color=ANSI_FG_COLOR.LIGHT_BLACK)
+        method = ansi_format(f"[Method: {method}]", fg_color=ANSI_FG_COLOR.LIGHT_BLACK)
+        if status and elapsed_time:
+            status = ansi_format(
+                status,
+                bg_color=ANSI_BG_COLOR.LIGHT_BLACK,
+                style=[ANSI_STYLE.UNDERLINE, ANSI_STYLE.BOLD],
+            )
+            elapsed_time = ansi_format(
+                elapsed_time,
+                bg_color=ANSI_BG_COLOR.LIGHT_BLACK,
+                style=[ANSI_STYLE.UNDERLINE, ANSI_STYLE.BOLD],
+            )
+            status = f"[Status: {status} (Elapsed Time: {elapsed_time})]"
+        else:
+            status = ansi_format(
+                "[Status: Processing...]", fg_color=ANSI_FG_COLOR.LIGHT_BLACK
+            )
+        logger.info(f"{ip} {url} {method} {status}")
+
     async def dispatch(
         self, request: Request, call_next: RequestResponseEndpoint
     ) -> Response:
@@ -20,28 +63,7 @@ class LoggingMiddleware(BaseHTTPMiddleware):
             ip = request.client.host
         else:
             ip = "None"
-        ip = osc_format(str(ip), href=f"https://db-ip.com/{ip}")
-        ip = ansi_format(
-            ip,
-            bg_color=ANSI_BG_COLOR.LIGHT_BLACK,
-            style=[ANSI_STYLE.UNDERLINE, ANSI_STYLE.BOLD],
-        )
-        url = ansi_format(
-            str(request.url),
-            bg_color=ANSI_BG_COLOR.LIGHT_BLACK,
-            style=[ANSI_STYLE.UNDERLINE],
-        )
-        method = ansi_format(
-            request.method,
-            bg_color=ANSI_BG_COLOR.LIGHT_BLACK,
-            style=[ANSI_STYLE.UNDERLINE],
-        )
-        status = ansi_format(
-            "Processing...",
-            bg_color=ANSI_BG_COLOR.LIGHT_BLACK,
-            style=[ANSI_STYLE.UNDERLINE],
-        )
-        logger.info(f"[IP: {ip}] [URL: {url}] [Method: {method}] [Status: {status}]")
+        self.info(ip=str(ip), url=str(request.url), method=str(request.method))
         start_time = time.time()
         response = await call_next(request)
         end_time = time.time()
@@ -55,8 +77,12 @@ class LoggingMiddleware(BaseHTTPMiddleware):
             bg_color=ANSI_BG_COLOR.LIGHT_BLACK,
             style=[ANSI_STYLE.UNDERLINE, ANSI_STYLE.BOLD],
         )
-        logger.info(
-            f"[IP: {ip}] [URL: {url}] [Method: {method}] [Status: {status} (Elapsed Time: {elapsed_time})]"
+        self.info(
+            ip=str(ip),
+            url=str(request.url),
+            method=str(request.method),
+            status=status,
+            elapsed_time=elapsed_time,
         )
         return response
 

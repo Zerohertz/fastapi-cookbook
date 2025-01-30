@@ -1,11 +1,12 @@
 from functools import wraps
-from typing import Any, Callable, Coroutine, Sequence, Type, TypeVar, cast
+from typing import Any, Callable, Coroutine, Type, TypeVar
 
 from fastapi import APIRouter, Response
 from fastapi.types import DecoratedCallable
 from loguru import logger
 from pydantic import BaseModel
 
+from app.exceptions.router import RouterTypeError
 from app.schemas.responses import APIResponse
 
 T = TypeVar("T", bound=BaseModel)
@@ -15,8 +16,9 @@ class CoreAPIRouter(APIRouter):
     def api_route(  # type: ignore
         self,
         path: str,
-        *args,
-        response_model: Type[T] | Type[Response],
+        *,
+        response_model: Type[T],
+        response_class: Type[Response],
         status_code: int,
         **kwargs,
     ) -> Callable[
@@ -27,30 +29,58 @@ class CoreAPIRouter(APIRouter):
             func: DecoratedCallable,
         ) -> Callable[..., Coroutine[Any, Any, APIResponse[T] | Response]]:
             @wraps(func)
-            async def success(
+            async def endpoint(
                 *_args: tuple, **_kwargs: dict
             ) -> APIResponse[T] | Response:
                 response: Any = await func(*_args, **_kwargs)
-                # FIXME: 우선 response_model이 List와 같은 Sequence로 구성된 경우는 차후에 해결 (#24)
-                if isinstance(response, Sequence):
-                    pass
-                elif not isinstance(response, response_model):
-                    logger.warning(f"{type(response)}: {response}")
-                    raise TypeError
-                if isinstance(response, (BaseModel, Sequence)):
-                    return APIResponse[T].success(
-                        status=status_code, data=cast(T, response)
+                if isinstance(response, response_class):
+                    return response
+                if isinstance(response, tuple):
+                    # NOTE: 아래 두 변수는 차후 사용 시 추가
+                    # media_type: str | None = None,
+                    # background: BackgroundTask | None = None,
+                    content, headers = response
+                    return response_class(
+                        content=APIResponse[response_model]  # type: ignore[valid-type]
+                        .success(
+                            status=status_code,
+                            data=content,
+                        )
+                        .model_dump(mode="json"),
+                        status_code=status_code,
+                        headers=headers,
                     )
-                return response
+                if isinstance(response, (BaseModel, list)):
+                    return response_class(
+                        content=APIResponse[response_model]  # type: ignore[valid-type]
+                        .success(
+                            status=status_code,
+                            data=response,
+                        )
+                        .model_dump(mode="json"),
+                        status_code=status_code,
+                    )
+                logger.error(f"{type(response)}: {response}")
+                raise RouterTypeError
 
-            self.add_api_route(
-                path,
-                success,
-                *args,
-                response_model=APIResponse[T],
-                status_code=status_code,
-                **kwargs,
-            )
-            return success
+            if response_model is None:
+                self.add_api_route(
+                    path=path,
+                    endpoint=endpoint,
+                    response_model=response_model,
+                    response_class=response_class,
+                    status_code=status_code,
+                    **kwargs,
+                )
+            else:
+                self.add_api_route(
+                    path=path,
+                    endpoint=endpoint,
+                    response_model=APIResponse[response_model],  # type: ignore[valid-type]
+                    response_class=response_class,
+                    status_code=status_code,
+                    **kwargs,
+                )
+            return endpoint
 
         return decorator

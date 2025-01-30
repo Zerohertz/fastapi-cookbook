@@ -1,7 +1,6 @@
-from typing import Sequence
-
 from dependency_injector.wiring import Provide, inject
 from fastapi import Depends, status
+from fastapi.responses import JSONResponse
 
 from app.core.auth import AdminDeps
 from app.core.container import Container
@@ -14,7 +13,8 @@ router = CoreAPIRouter(prefix="/user", tags=["admin"], dependencies=[AdminDeps])
 
 @router.get(
     "/",
-    response_model=Sequence[UserResponse],
+    response_model=list[UserResponse],
+    response_class=JSONResponse,
     status_code=status.HTTP_200_OK,
     summary="",
     description="",
@@ -29,6 +29,7 @@ async def get_users(
 @router.get(
     "/{id}",
     response_model=UserResponse,
+    response_class=JSONResponse,
     status_code=status.HTTP_200_OK,
     summary="",
     description="",
@@ -44,6 +45,7 @@ async def get_user(
 @router.put(
     "/{id}",
     response_model=UserResponse,
+    response_class=JSONResponse,
     status_code=status.HTTP_200_OK,
     summary="",
     description="",
@@ -60,6 +62,7 @@ async def put_user(
 @router.patch(
     "/{id}",
     response_model=UserResponse,
+    response_class=JSONResponse,
     status_code=status.HTTP_200_OK,
     summary="",
     description="",
@@ -76,6 +79,7 @@ async def patch_user(
 @router.delete(
     "/{id}",
     response_model=UserResponse,
+    response_class=JSONResponse,
     status_code=status.HTTP_200_OK,
     summary="",
     description="",

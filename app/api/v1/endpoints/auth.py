@@ -1,6 +1,6 @@
 from dependency_injector.wiring import Provide, inject
-from fastapi import Depends, Response, status
-from fastapi.responses import RedirectResponse
+from fastapi import Depends, status
+from fastapi.responses import JSONResponse, RedirectResponse
 
 from app.core.auth import AuthDeps
 from app.core.configs import configs
@@ -21,6 +21,7 @@ router = CoreAPIRouter(prefix="/auth", tags=["auth"])
 @router.post(
     "/refresh",
     response_model=JwtAccessToken,
+    response_class=JSONResponse,
     status_code=status.HTTP_200_OK,
     summary="",
     description="",
@@ -36,6 +37,7 @@ async def post_refresh_token(
 @router.post(
     "/register",
     response_model=UserResponse,
+    response_class=JSONResponse,
     status_code=status.HTTP_201_CREATED,
     summary="Register with password",
     description="",
@@ -51,6 +53,7 @@ async def register_password(
 @router.post(
     "/login",
     response_model=JwtToken,
+    response_class=JSONResponse,
     status_code=status.HTTP_200_OK,
     summary="Log in with password",
     description="",
@@ -65,14 +68,14 @@ async def log_in_password(
 
 @router.get(
     "/oauth/login/github",
-    response_model=Response,
+    response_model=None,
+    response_class=RedirectResponse,
     status_code=status.HTTP_302_FOUND,
     summary="Log in with GitHub OAuth",
     description="GitHub OAuth를 위해 redirection",
 )
 async def log_in_github():
     # NOTE: &scope=repo,user
-    # TODO: APIResponse (related: #24)
     return RedirectResponse(
         f"https://github.com/login/oauth/authorize?client_id={configs.GITHUB_OAUTH_CLIENT_ID}"
     )
@@ -81,6 +84,7 @@ async def log_in_github():
 @router.get(
     "/oauth/callback/github",
     response_model=JwtToken,
+    response_class=JSONResponse,
     status_code=status.HTTP_200_OK,
     summary="Callback for GitHub OAuth",
     description="GitHub OAuth에 의해 redirection될 endpoint",
@@ -106,6 +110,7 @@ async def callback_github(
 @router.get(
     "/me",
     response_model=UserOut,
+    response_class=JSONResponse,
     status_code=status.HTTP_200_OK,
     summary="",
     description="",

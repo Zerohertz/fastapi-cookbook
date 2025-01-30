@@ -68,4 +68,4 @@ class Configs(BaseSettings):
         )
 
 
-configs = Configs()  # type: ignore
+configs = Configs()  # type: ignore[call-arg]

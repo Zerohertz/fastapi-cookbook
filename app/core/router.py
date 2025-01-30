@@ -13,7 +13,7 @@ T = TypeVar("T", bound=BaseModel)
 
 
 class CoreAPIRouter(APIRouter):
-    def api_route(  # type: ignore
+    def api_route(  # type: ignore[override]
         self,
         path: str,
         *,

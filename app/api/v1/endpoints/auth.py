@@ -1,7 +1,6 @@
 from dependency_injector.wiring import Provide, inject
-from fastapi import Depends, Response
+from fastapi import Depends, Response, status
 from fastapi.responses import RedirectResponse
-from starlette import status
 
 from app.core.auth import AuthDeps
 from app.core.configs import configs

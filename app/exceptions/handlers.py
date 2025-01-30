@@ -1,7 +1,6 @@
-from fastapi import Request
+from fastapi import Request, status
 from fastapi.responses import JSONResponse
 from loguru import logger
-from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
 
 from app.exceptions.base import CoreException
 from app.schemas.responses import APIResponse
@@ -12,10 +11,10 @@ async def global_exception_handler(request: Request, exc: Exception) -> JSONResp
     name = exc.__class__.__name__
     return JSONResponse(
         content=APIResponse.error(
-            status=HTTP_500_INTERNAL_SERVER_ERROR,
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             message=f"""[{name}] {" ".join(exc.args)}""",
         ).model_dump(mode="json"),
-        status_code=HTTP_500_INTERNAL_SERVER_ERROR,
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
     )
 
 

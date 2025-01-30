@@ -1,8 +1,7 @@
 from typing import Sequence
 
 from dependency_injector.wiring import Provide, inject
-from fastapi import Depends
-from starlette import status
+from fastapi import Depends, status
 
 from app.core.auth import AdminDeps
 from app.core.container import Container

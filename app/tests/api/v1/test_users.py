@@ -1,8 +1,8 @@
 import pytest
 from faker import Faker
+from fastapi import status
 from fastapi.testclient import TestClient
 from loguru import logger
-from starlette import status
 
 from app.core.configs import configs
 from app.schemas.users import UserPasswordRequest, UserPatchRequest, UserRequest

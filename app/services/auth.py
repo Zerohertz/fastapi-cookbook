@@ -52,10 +52,10 @@ class JwtService:
                 token=token, key=self.secret, algorithms=self.algorithm
             )
             return payload["sub"]
-        except JWTError:
-            raise TokenDecode
-        except ExpiredSignatureError:
-            raise TokenExpired
+        except ExpiredSignatureError as error:
+            raise TokenExpired from error
+        except JWTError as error:
+            raise TokenDecode from error
 
 
 class GitHubService:
@@ -86,6 +86,6 @@ class GitHubService:
                 )
                 response.raise_for_status()
                 github_user = response.json()
-            except httpx.HTTPStatusError:
-                raise GitHubOAuth
+            except httpx.HTTPStatusError as error:
+                raise GitHubOAuth from error
         return github_token, github_user["login"], github_user["email"]

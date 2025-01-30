@@ -1,6 +1,6 @@
 from typing import Any, Generic, Type, TypeVar
 
-from sqlalchemy import select
+from sqlalchemy import Select, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import joinedload
 
@@ -34,11 +34,15 @@ class BaseRepository(Generic[T]):
         await session.refresh(entity)
         return entity
 
+    def _eager(self, stmt: Select) -> Select:
+        for _eager in getattr(self.model, "eagers"):
+            stmt = stmt.options(joinedload(getattr(self.model, _eager)))
+        return stmt
+
     async def read_by_id(self, id: int, eager: bool = False) -> T:
         stmt = select(self.model)
         if eager:
-            for _eager in getattr(self.model, "eagers"):
-                stmt = stmt.options(joinedload(getattr(self.model, _eager)))
+            stmt = self._eager(stmt)
         stmt = stmt.filter(self.model.id == id)
         session = database.scoped_session()
         result = await session.execute(stmt)

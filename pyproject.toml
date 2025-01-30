@@ -56,6 +56,8 @@ disable = [
     "E0611",
     "E1102",
     "R0903",
+    "W0221",
+    "W0511",
     "W0622",
     "W0718",
 ]
@@ -67,6 +69,9 @@ disable = [
 # E0611: No name '*' in module '*' (no-name-in-module)
 # E1102: * is not callable (not-callable)
 # R0903: Too few public methods (*/*) (too-few-public-methods)
+# W0221: Number of parameters was * in '*' and is now * in overriding '*' method (arguments-differ)
+# W0221: Variadics removed in overriding '*' method (arguments-differ)
+# W0511: TODO, FIXME
 # W0622: Redefining built-in '*' (redefined-builtin)
 # W0718: Catching too general exception Exception (broad-exception-caught)
 

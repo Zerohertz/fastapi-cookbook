@@ -30,8 +30,8 @@ class JwtBearer(HTTPBearer):
     async def __call__(self, request: Request) -> str:  # type: ignore
         try:
             authorization = await super().__call__(request)
-        except HTTPException:
-            raise NotAuthenticated
+        except HTTPException as error:
+            raise NotAuthenticated from error
         if authorization is None:
             raise NotAuthenticated
         return authorization.credentials

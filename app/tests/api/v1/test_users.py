@@ -38,6 +38,8 @@ def test_patch_user_password(sync_client: TestClient) -> None:
     assert response.status_code == status.HTTP_200_OK
     with pytest.raises(AssertionError):
         log_in(sync_client, UserPasswordRequest.model_validate(schema.model_dump()))
+    if request.password is None:
+        raise ValueError
     log_in(
         sync_client, UserPasswordRequest(email=schema.email, password=request.password)
     )

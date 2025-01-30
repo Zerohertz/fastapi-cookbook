@@ -26,8 +26,7 @@ class UserRepository(BaseRepository[User]):
     async def read_by_name(self, name: str, eager: bool = False) -> Optional[User]:
         stmt = select(self.model)
         if eager:
-            for _eager in getattr(self.model, "eagers"):
-                stmt = stmt.options(joinedload(getattr(self.model, _eager)))
+            stmt = self._eager(stmt)
         stmt = stmt.filter(self.model.name == name)
         session = database.scoped_session()
         result = await session.execute(stmt)

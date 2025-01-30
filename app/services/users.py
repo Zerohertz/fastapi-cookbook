@@ -87,7 +87,7 @@ class UserService(BaseService[User]):
         entity = await self.repository.read_by_email(schema.email)
         if not entity:
             raise NotRegistered
-        elif entity.oauth != "password":
+        if entity.oauth != "password":
             # TODO: 다른 OAuth로 로그인 했음을 밝혀야함
             pass
         try:

@@ -37,7 +37,7 @@ class CoreAPIRouter(APIRouter):
                 elif not isinstance(response, response_model):
                     logger.warning(f"{type(response)}: {response}")
                     raise TypeError
-                if isinstance(response, BaseModel) or isinstance(response, Sequence):
+                if isinstance(response, (BaseModel, Sequence)):
                     return APIResponse[T].success(
                         status=status_code, data=cast(T, response)
                     )

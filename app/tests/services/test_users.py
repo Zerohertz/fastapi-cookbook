@@ -26,7 +26,7 @@ def get_mock_user() -> UserIn:
 async def test_create_user(container: Container, context: Token) -> None:
     logger.warning(f"{context=}")
     user_service = container.user_service()
-    for id in range(10):
+    for _ in range(10):
         schema = get_mock_user()
         user = await user_service.create(schema=schema)
         assert user.name == schema.name
@@ -40,7 +40,7 @@ async def test_create_user(container: Container, context: Token) -> None:
 async def test_get_user(container: Container, context: Token) -> None:
     logger.warning(f"{context=}")
     user_service = container.user_service()
-    for id in range(10, 20):
+    for _ in range(10, 20):
         schema = get_mock_user()
         user = await user_service.create(schema=schema)
         user = await user_service.get_by_id(id=user.id)
@@ -54,7 +54,7 @@ async def test_get_user(container: Container, context: Token) -> None:
 async def test_put_user(container: Container, context: Token) -> None:
     logger.warning(f"{context=}")
     user_service = container.user_service()
-    for id in range(20, 30):
+    for _ in range(20, 30):
         schema = get_mock_user()
         user = await user_service.create(schema=schema)
         schema.name = fake.name()
@@ -74,7 +74,7 @@ async def test_put_user(container: Container, context: Token) -> None:
 async def test_patch_user(container: Container, context: Token) -> None:
     logger.warning(f"{context=}")
     user_service = container.user_service()
-    for id in range(30, 40):
+    for _ in range(30, 40):
         schema = get_mock_user()
         user = await user_service.create(schema=schema)
         schema.email = fake.email()

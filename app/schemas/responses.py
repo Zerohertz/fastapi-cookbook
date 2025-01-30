@@ -1,13 +1,12 @@
 from datetime import datetime
-from typing import Generic, Optional, TypeVar
+from typing import Generic, Optional, Sequence, TypeVar
 
 import pytz
 from pydantic import BaseModel
 
 from app.core.configs import configs
-from app.schemas.base import BaseSchemaResponse
 
-T = TypeVar("T", bound=BaseSchemaResponse)
+T = TypeVar("T", bound=BaseModel)
 
 
 class APIResponse(BaseModel, Generic[T]):
@@ -32,11 +31,11 @@ class APIResponse(BaseModel, Generic[T]):
 
     status: int
     message: str
-    data: Optional[T] = None
+    data: Optional[T | Sequence[T]] = None
     timestamp: datetime
 
     @classmethod
-    def success(cls, *, status: int, data: T) -> "APIResponse[T]":
+    def success(cls, *, status: int, data: T | Sequence[T]) -> "APIResponse[T]":
         return cls(
             status=status,
             message="The request has been successfully processed.",
@@ -52,30 +51,3 @@ class APIResponse(BaseModel, Generic[T]):
             data=None,
             timestamp=datetime.now().astimezone(pytz.timezone(configs.TZ)),
         )
-
-
-if __name__ == "__main__":
-
-    class User(BaseSchemaResponse):
-        name: str
-
-    print(
-        APIResponse[User]
-        .success(
-            status=200,
-            data=User(
-                id=1, created_at=datetime.now(), updated_at=datetime.now(), name="123"
-            ),
-        )
-        .model_dump_json()
-    )
-    print(
-        APIResponse.success(
-            status=200,
-            data=User(
-                id=1, created_at=datetime.now(), updated_at=datetime.now(), name="123"
-            ),
-        ).model_dump_json()
-    )
-    print(APIResponse[User].error(status=404, message="fail").model_dump_json())
-    print(APIResponse.error(status=404, message="fail").model_dump_json())

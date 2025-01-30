@@ -1,80 +1,75 @@
-import time
-from typing import Any
-
+import pytest
+from faker import Faker
 from fastapi.testclient import TestClient
 from loguru import logger
 from starlette import status
 
 from app.core.configs import configs
+from app.schemas.users import UserPasswordRequest, UserPatchRequest, UserRequest
+from app.tests.api.v1.test_auth import log_in, register_and_login
+
+fake = Faker()
 
 
-def test_crud_user(sync_client: TestClient) -> None:
-    ids = create_user(sync_client)
-    get_user(sync_client, ids)
-    patch_user(sync_client, ids)
-    put_user(sync_client, ids)
-    delete_user(sync_client, ids)
+def test_patch_user_name(sync_client: TestClient) -> None:
+    schema, access_token = register_and_login(sync_client)
+    request = UserPatchRequest(name=fake.name())
+    response = sync_client.patch(
+        f"{configs.PREFIX}/v1/user/",
+        headers={"Authorization": f"Bearer {access_token}"},
+        json=request.model_dump(),
+    )
+    logger.warning(response)
+    assert response.status_code == status.HTTP_200_OK
+    data = response.json()["data"]
+    assert data["name"] != schema.name
+    assert data["name"] == request.name
 
 
-def create_user(sync_client: TestClient) -> list[tuple[Any, int]]:
-    ids = []
-    for id in range(30):
-        name = f"routes-create-{id}"
-        response = sync_client.post(f"{configs.PREFIX}/v1/user", json={"name": name})
-        logger.warning(response)
-        assert response.status_code == status.HTTP_201_CREATED
-        data = response.json()["data"]
-        ids.append((data["id"], id))
-    return ids
+def test_patch_user_password(sync_client: TestClient) -> None:
+    schema, access_token = register_and_login(sync_client)
+    request = UserPatchRequest(password=fake.password())
+    response = sync_client.patch(
+        f"{configs.PREFIX}/v1/user/",
+        headers={"Authorization": f"Bearer {access_token}"},
+        json=request.model_dump(),
+    )
+    logger.warning(response)
+    assert response.status_code == status.HTTP_200_OK
+    with pytest.raises(AssertionError):
+        log_in(sync_client, UserPasswordRequest.model_validate(schema.model_dump()))
+    if request.password is None:
+        raise ValueError
+    log_in(
+        sync_client, UserPasswordRequest(email=schema.email, password=request.password)
+    )
 
 
-def get_user(sync_client: TestClient, ids: list[tuple[Any, int]]) -> None:
-    for pk, id in ids:
-        name = f"routes-create-{id}"
-        response = sync_client.get(f"{configs.PREFIX}/v1/user/{pk}")
-        logger.warning(response)
-        assert response.status_code == status.HTTP_200_OK
-        data = response.json()["data"]
-        logger.warning(data)
-        assert data["name"] == name
+def test_put_user(sync_client: TestClient) -> None:
+    schema, access_token = register_and_login(sync_client)
+    request = UserRequest(name=fake.name(), email=fake.email())
+    response = sync_client.put(
+        f"{configs.PREFIX}/v1/user/",
+        headers={"Authorization": f"Bearer {access_token}"},
+        json=request.model_dump(),
+    )
+    logger.warning(response)
+    assert response.status_code == status.HTTP_200_OK
+    data = response.json()["data"]
+    assert data["name"] != schema.name
+    assert data["email"] != schema.email
+    assert data["name"] == request.name
+    assert data["email"] == request.email
 
 
-def patch_user(sync_client: TestClient, ids: list[tuple[Any, int]]) -> None:
-    for pk, id in ids[:5]:
-        name = f"routes-patch-{id}"
-        time.sleep(1)
-        response = sync_client.patch(
-            f"{configs.PREFIX}/v1/user/{pk}", json={"name": name}
-        )
-        logger.warning(response)
-        assert response.status_code == status.HTTP_200_OK
-        response = sync_client.get(f"{configs.PREFIX}/v1/user/{pk}")
-        assert response.status_code == status.HTTP_200_OK
-        data = response.json()["data"]
-        logger.warning(data)
-        assert data["name"] == name
-        assert data["created_at"] != data["updated_at"]
-
-
-def put_user(sync_client: TestClient, ids: list[tuple[Any, int]]) -> None:
-    for pk, id in ids[:5]:
-        name = f"routes-put-{id}"
-        time.sleep(1)
-        response = sync_client.put(
-            f"{configs.PREFIX}/v1/user/{pk}", json={"name": name}
-        )
-        logger.warning(response)
-        assert response.status_code == status.HTTP_200_OK
-        response = sync_client.get(f"{configs.PREFIX}/v1/user/{pk}")
-        assert response.status_code == status.HTTP_200_OK
-        data = response.json()["data"]
-        logger.warning(data)
-        assert data["name"] == name
-        assert data["created_at"] != data["updated_at"]
-
-
-def delete_user(sync_client: TestClient, ids: list[tuple[Any, int]]) -> None:
-    for pk, _ in ids:
-        response = sync_client.delete(f"{configs.PREFIX}/v1/user/{pk}")
-        logger.warning(response)
-        assert response.status_code == status.HTTP_200_OK
+def test_delete_user(sync_client: TestClient) -> None:
+    schema, access_token = register_and_login(sync_client)
+    response = sync_client.delete(
+        f"{configs.PREFIX}/v1/user/",
+        headers={"Authorization": f"Bearer {access_token}"},
+    )
+    logger.warning(response)
+    assert response.status_code == status.HTTP_200_OK
+    data = response.json()["data"]
+    assert data["name"] == schema.name
+    assert data["email"] == schema.email

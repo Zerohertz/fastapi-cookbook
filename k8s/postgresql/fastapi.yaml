@@ -51,6 +51,41 @@ spec:
                 configMapKeyRef:
                   name: postgresql
                   key: DATABASE
+            - name: GITHUB_OAUTH_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: auth
+                  key: PROD_CLIENT_ID
+            - name: GITHUB_OAUTH_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: auth
+                  key: PROD_CLIENT_SECRET
+            - name: JWT_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: auth
+                  key: JWT_SECRET_KEY
+            - name: JWT_ALGORITHM
+              valueFrom:
+                secretKeyRef:
+                  name: auth
+                  key: JWT_ALGORITHM
+            - name: ADMIN_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: auth
+                  key: ADMIN_NAME
+            - name: ADMIN_EMAIL
+              valueFrom:
+                secretKeyRef:
+                  name: auth
+                  key: ADMIN_EMAIL
+            - name: ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: auth
+                  key: ADMIN_PASSWORD
           ports:
             - name: http
               containerPort: 8000

@@ -27,13 +27,13 @@ body:
       value: "The solution you're proposing."
     validations:
       required: true
-  - type: textarea
-    id: alternatives-considered
-    attributes:
-      label: Describe alternatives you've considered
-      description: A clear and concise description of any alternative solutions or features you've considered.
-      placeholder: Tell us about other alternatives you’ve thought about.
-      value: "Alternatives you've considered."
+  # - type: textarea
+  #   id: alternatives-considered
+  #   attributes:
+  #     label: Describe alternatives you've considered
+  #     description: A clear and concise description of any alternative solutions or features you've considered.
+  #     placeholder: Tell us about other alternatives you’ve thought about.
+  #     value: "Alternatives you've considered."
   - type: textarea
     id: additional-context
     attributes:

@@ -11,6 +11,9 @@
 
 #### What this PR does / why we need it
 
+- Description ({related|resolves|fixes: #})
+
+<!--
 #### Which issue(s) this PR fixes
 
 Fixes #
@@ -28,3 +31,4 @@ Fixes #
 ```docs
 
 ```
+-->

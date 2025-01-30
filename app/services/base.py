@@ -25,37 +25,39 @@ class BaseService(Generic[T]):
 
     @database.transactional
     async def create(self, schema: BaseSchemaRequest) -> BaseSchemaResponse:
-        model = self.mapper(schema)
-        model = await self.repository.create(model=model)
-        return self.mapper(model)
+        entity = self.mapper(schema)
+        entity = await self.repository.create(entity=entity)
+        return self.mapper(entity)
 
     @database.transactional
     async def get_by_id(self, id: int) -> BaseSchemaResponse:
-        model = await self.repository.read_by_id(id=id)
-        return self.mapper(model)
+        entity = await self.repository.read_by_id(id=id)
+        return self.mapper(entity)
 
     @database.transactional
     async def put_by_id(self, id: int, schema: BaseSchemaRequest) -> BaseSchemaResponse:
-        model = await self.repository.update_by_id(id=id, model=schema.model_dump())
-        return self.mapper(model)
+        entity = await self.repository.update_by_id(id=id, data=schema.model_dump())
+        return self.mapper(entity)
 
     @database.transactional
     async def patch_by_id(
         self, id: int, schema: BaseSchemaRequest
     ) -> BaseSchemaResponse:
-        model = await self.repository.update_by_id(
-            id=id, model=schema.model_dump(exclude_none=True)
+        entity = await self.repository.update_by_id(
+            id=id, data=schema.model_dump(exclude_none=True)
         )
-        return self.mapper(model)
+        return self.mapper(entity)
 
     @database.transactional
     async def patch_attr_by_id(
         self, id: int, attr: str, value: Any
     ) -> BaseSchemaResponse:
-        model = await self.repository.update_attr_by_id(id=id, column=attr, value=value)
-        return self.mapper(model)
+        entity = await self.repository.update_attr_by_id(
+            id=id, column=attr, value=value
+        )
+        return self.mapper(entity)
 
     @database.transactional
     async def delete_by_id(self, id: int) -> BaseSchemaResponse:
-        model = await self.repository.delete_by_id(id=id)
-        return self.mapper(model)
+        entity = await self.repository.delete_by_id(id=id)
+        return self.mapper(entity)

@@ -1,6 +1,5 @@
 from dependency_injector.wiring import Provide, inject
-from fastapi import Depends
-from starlette import status
+from fastapi import Depends, status
 
 from app.core.auth import AuthDeps
 from app.core.container import Container

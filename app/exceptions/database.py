@@ -4,8 +4,8 @@ from app.exceptions.base import CoreException
 
 
 class DatabaseException(CoreException):
-    status: int
-    message: str
+    status: int = status.HTTP_500_INTERNAL_SERVER_ERROR
+    message: str = "Database error occurred."
 
 
 class EntityAlreadyExists(DatabaseException):

@@ -1,11 +1,14 @@
 import time
 from typing import Any
 
+from faker import Faker
 from fastapi.testclient import TestClient
 from loguru import logger
 from starlette import status
 
 from app.core.configs import configs
+
+fake = Faker()
 
 
 def test_crud_user(sync_client: TestClient) -> None:
@@ -20,7 +23,9 @@ def create_user(sync_client: TestClient) -> list[tuple[Any, int]]:
     ids = []
     for id in range(30):
         name = f"routes-create-{id}"
-        response = sync_client.post(f"{configs.PREFIX}/v1/user", json={"name": name})
+        response = sync_client.post(
+            f"{configs.PREFIX}/v1/user", json={"name": name, "email": fake.email()}
+        )
         logger.warning(response)
         assert response.status_code == status.HTTP_201_CREATED
         data = response.json()["data"]
@@ -44,7 +49,7 @@ def patch_user(sync_client: TestClient, ids: list[tuple[Any, int]]) -> None:
         name = f"routes-patch-{id}"
         time.sleep(1)
         response = sync_client.patch(
-            f"{configs.PREFIX}/v1/user/{pk}", json={"name": name}
+            f"{configs.PREFIX}/v1/user/{pk}", json={"name": name, "email": fake.email()}
         )
         logger.warning(response)
         assert response.status_code == status.HTTP_200_OK
@@ -61,7 +66,7 @@ def put_user(sync_client: TestClient, ids: list[tuple[Any, int]]) -> None:
         name = f"routes-put-{id}"
         time.sleep(1)
         response = sync_client.put(
-            f"{configs.PREFIX}/v1/user/{pk}", json={"name": name}
+            f"{configs.PREFIX}/v1/user/{pk}", json={"name": name, "email": fake.email()}
         )
         logger.warning(response)
         assert response.status_code == status.HTTP_200_OK

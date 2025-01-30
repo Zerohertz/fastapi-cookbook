@@ -33,6 +33,13 @@ class Configs(BaseSettings):
     DB_ECHO: Optional[bool] = True
     DB_TABLE_CREATE: Optional[bool] = True
 
+    # --------- AUTH SETTINGS --------- #
+    GITHUB_OAUTH_CLIENT_ID: str
+    GITHUB_OAUTH_CLIENT_SECRET: str
+    # openssl rand -hex 32
+    JWT_SECRET_KEY: str
+    JWT_ALGORITHM: str
+
     @property
     def DB_SCHEME(self) -> str:
         if self.DB_DRIVER:

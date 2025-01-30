@@ -5,7 +5,11 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import joinedload
 
 from app.core.database import database
-from app.exceptions.database import EntityAlreadyExists, EntityNotFound
+from app.exceptions.database import (
+    DatabaseException,
+    EntityAlreadyExists,
+    EntityNotFound,
+)
 from app.models.base import BaseModel
 
 T = TypeVar("T", bound=BaseModel)
@@ -24,7 +28,9 @@ class BaseRepository(Generic[T]):
         try:
             await session.flush()
         except IntegrityError as error:
-            raise EntityAlreadyExists from error
+            # TODO: DB engine에 따라서 오류가 천차만별
+            # message 기반으로 하기는 어려울 것으로 보임
+            raise DatabaseException from error
         await session.refresh(entity)
         return entity
 

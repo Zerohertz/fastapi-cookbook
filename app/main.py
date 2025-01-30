@@ -14,7 +14,7 @@ app = FastAPI(
     version=configs.VERSION,
     openapi_url=f"{configs.PREFIX}/openapi.json",
     docs_url=f"{configs.PREFIX}/docs",
-    redoc_url=f"{configs.PREFIX}/redoc",
+    redoc_url=None,
     exception_handlers={
         Exception: global_exception_handler,
         CoreException: core_exception_handler,

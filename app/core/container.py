@@ -6,7 +6,13 @@ from app.services.users import UserService
 
 
 class Container(DeclarativeContainer):
-    wiring_config = WiringConfiguration(modules=["app.api.v1.endpoints.users"])
+    wiring_config = WiringConfiguration(
+        modules=[
+            "app.core.auth",
+            "app.api.v1.endpoints.users",
+            "app.api.v1.endpoints.auth",
+        ]
+    )
 
     user_repository = Factory(UserRepository)
 

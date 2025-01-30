@@ -4,7 +4,7 @@ from starlette import status
 
 from app.core.container import Container
 from app.core.router import CoreAPIRouter
-from app.schemas.users import UserCreateRequest, UserCreateResponse
+from app.schemas.users import UserRequest, UserResponse
 from app.services.users import UserService
 
 router = CoreAPIRouter(prefix="/user", tags=["user"])
@@ -12,14 +12,14 @@ router = CoreAPIRouter(prefix="/user", tags=["user"])
 
 @router.post(
     "",
-    response_model=UserCreateResponse,
+    response_model=UserResponse,
     status_code=status.HTTP_201_CREATED,
     summary="",
     description="",
 )
 @inject
 async def create_user(
-    user: UserCreateRequest,
+    user: UserRequest,
     service: UserService = Depends(Provide[Container.user_service]),
 ):
     return await service.create(user)
@@ -27,7 +27,7 @@ async def create_user(
 
 @router.get(
     "/{id}",
-    response_model=UserCreateResponse,
+    response_model=UserResponse,
     status_code=status.HTTP_200_OK,
     summary="",
     description="",
@@ -42,7 +42,7 @@ async def get_user(
 
 @router.put(
     "/{id}",
-    response_model=UserCreateResponse,
+    response_model=UserResponse,
     status_code=status.HTTP_200_OK,
     summary="",
     description="",
@@ -50,7 +50,7 @@ async def get_user(
 @inject
 async def put_user(
     id: int,
-    user: UserCreateRequest,
+    user: UserRequest,
     service: UserService = Depends(Provide[Container.user_service]),
 ):
     return await service.put_by_id(id=id, schema=user)
@@ -58,7 +58,7 @@ async def put_user(
 
 @router.patch(
     "/{id}",
-    response_model=UserCreateResponse,
+    response_model=UserResponse,
     status_code=status.HTTP_200_OK,
     summary="",
     description="",
@@ -66,7 +66,7 @@ async def put_user(
 @inject
 async def patch_user(
     id: int,
-    user: UserCreateRequest,
+    user: UserRequest,
     service: UserService = Depends(Provide[Container.user_service]),
 ):
     return await service.patch_by_id(id=id, schema=user)
@@ -74,7 +74,7 @@ async def patch_user(
 
 @router.delete(
     "/{id}",
-    response_model=UserCreateResponse,
+    response_model=UserResponse,
     status_code=status.HTTP_200_OK,
     summary="",
     description="",

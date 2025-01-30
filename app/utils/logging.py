@@ -81,3 +81,7 @@ def ansi_format(
         for _style in style:
             args.append(str(_style.value))
     return f"""\033[{";".join(args)}m{text}\033[0m"""
+
+
+def osc_format(text: str, *, href: str) -> str:
+    return f"\033]8;;{href}\033\\{text}\033]8;;\033\\"

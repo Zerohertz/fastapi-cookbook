@@ -5,7 +5,7 @@ from loguru import logger
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 
 from app.core.database import database
-from app.utils.logging import ANSI_BG_COLOR, ANSI_STYLE, ansi_format
+from app.utils.logging import ANSI_BG_COLOR, ANSI_STYLE, ansi_format, osc_format
 
 
 class LoggingMiddleware(BaseHTTPMiddleware):
@@ -20,8 +20,9 @@ class LoggingMiddleware(BaseHTTPMiddleware):
             ip = request.client.host
         else:
             ip = "None"
+        ip = osc_format(str(ip), href=f"https://db-ip.com/{ip}")
         ip = ansi_format(
-            f"{ip}",
+            ip,
             bg_color=ANSI_BG_COLOR.LIGHT_BLACK,
             style=[ANSI_STYLE.UNDERLINE, ANSI_STYLE.BOLD],
         )

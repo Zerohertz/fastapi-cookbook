@@ -11,6 +11,7 @@ class Container(DeclarativeContainer):
             "app.core.auth",
             "app.api.v1.endpoints.users",
             "app.api.v1.endpoints.auth",
+            "app.api.v1.endpoints.admin.users",
         ]
     )
 

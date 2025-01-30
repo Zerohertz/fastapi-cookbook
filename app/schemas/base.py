@@ -8,11 +8,11 @@ from typing_extensions import Self
 from app.core.configs import configs
 
 
-class BaseSchemaRequest(BaseModel, abc.ABC):
+class BaseRequest(BaseModel, abc.ABC):
     model_config = ConfigDict(from_attributes=True)
 
 
-class BaseSchemaResponse(BaseModel, abc.ABC):
+class BaseResponse(BaseModel, abc.ABC):
     model_config = ConfigDict(from_attributes=True)
     id: int
     created_at: datetime

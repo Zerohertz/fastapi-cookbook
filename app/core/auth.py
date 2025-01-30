@@ -27,7 +27,7 @@ class JwtBearer(HTTPBearer):
             auto_error=True,
         )
 
-    async def __call__(self, request: Request) -> str:  # type: ignore
+    async def __call__(self, request: Request) -> str:  # type: ignore[override]
         try:
             authorization = await super().__call__(request)
         except HTTPException as error:

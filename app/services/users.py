@@ -32,9 +32,9 @@ class UserService(BaseService[User]):
     def mapper(self, data: BaseSchemaRequest) -> User: ...
 
     @overload
-    def mapper(self, data: User) -> BaseSchemaResponse: ...
+    def mapper(self, data: User) -> UserResponse: ...
 
-    def mapper(self, data: BaseSchemaRequest | User) -> User | BaseSchemaResponse:
+    def mapper(self, data: BaseSchemaRequest | User) -> User | UserResponse:
         if isinstance(data, BaseSchemaRequest):
             return self.repository.model(**data.model_dump())
         return UserResponse.model_validate(data)
@@ -46,7 +46,7 @@ class UserService(BaseService[User]):
         )
         if entity:
             raise UserAlreadyExists
-        schema = UserIn(
+        _schema = UserIn(
             name=schema.name,
             email=schema.email,
             role=Role.USER,
@@ -55,7 +55,7 @@ class UserService(BaseService[User]):
             refresh_token=None,
             github_token=None,
         )
-        entity = self.mapper(schema)
+        entity = self.mapper(_schema)
         entity = await self.repository.create(entity=entity)
         return self.mapper(entity)
 

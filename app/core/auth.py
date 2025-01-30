@@ -26,14 +26,14 @@ class JwtBearer(HTTPBearer):
             auto_error=True,
         )
 
-    async def __call__(
-        self, request: Request
-    ) -> Optional[HTTPAuthorizationCredentials]:
+    async def __call__(self, request: Request) -> str:  # type: ignore
         try:
             authorization = await super().__call__(request)
-            return authorization.credentials
         except HTTPException:
             raise NotAuthenticated
+        if authorization is None:
+            raise NotAuthenticated
+        return authorization.credentials
 
 
 jwt_bearer = JwtBearer()
@@ -41,7 +41,7 @@ jwt_bearer = JwtBearer()
 
 @inject
 async def get_current_user(
-    access_token: Annotated[HTTPAuthorizationCredentials, Depends(jwt_bearer)],
+    access_token: Annotated[str, Depends(jwt_bearer)],
     service: UserService = Depends(Provide[Container.user_service]),
 ) -> UserOut:
     token = JwtAccessToken(access_token=access_token)

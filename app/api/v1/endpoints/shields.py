@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from fastapi import APIRouter
+from fastapi.responses import JSONResponse
 
 from app.schemas.shields import Shields
 from app.utils.shields import dday
@@ -11,6 +12,7 @@ router = APIRouter(prefix="/shields", tags=["shields.io"])
 @router.get(
     "/jmy",
     response_model=Shields,
+    response_class=JSONResponse,
     status_code=200,
     summary="",
     description="",

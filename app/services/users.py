@@ -14,7 +14,7 @@ from app.models.enums import OAuthProvider, Role
 from app.models.users import User
 from app.repositories.users import UserRepository
 from app.schemas.auth import JwtAccessToken, JwtRefreshToken, JwtToken
-from app.schemas.base import BaseSchemaRequest
+from app.schemas.base import BaseRequest
 from app.schemas.users import (
     UserIn,
     UserOut,
@@ -36,13 +36,13 @@ class UserService(BaseService[User]):
         self.github_service = GitHubService()
 
     @overload
-    def mapper(self, data: BaseSchemaRequest) -> User: ...
+    def mapper(self, data: BaseRequest) -> User: ...
 
     @overload
     def mapper(self, data: User) -> UserResponse: ...
 
-    def mapper(self, data: BaseSchemaRequest | User) -> User | UserResponse:
-        if isinstance(data, BaseSchemaRequest):
+    def mapper(self, data: BaseRequest | User) -> User | UserResponse:
+        if isinstance(data, BaseRequest):
             return self.repository.model(**data.model_dump())
         return UserResponse.model_validate(data)
 

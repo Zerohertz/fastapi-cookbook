@@ -178,3 +178,4 @@ secrets.yaml
 
 # Etc
 junit.xml
+test.db

@@ -12,15 +12,15 @@ from app.models.users import User
 from app.schemas.auth import JwtPayload
 
 
-class CryptService:
+class CryptService(CryptContext):
     def __init__(self) -> None:
-        self.context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+        super().__init__(schemes=["bcrypt"], deprecated="auto")
 
-    def hash(self, secret: str) -> str:
-        return self.context.hash(secret=secret)
+    def hash(self, secret: str) -> str:  # type: ignore
+        return super().hash(secret=secret)
 
-    def verify(self, secret: str, hash: str) -> bool:
-        return self.context.verify(secret=secret, hash=hash)
+    def verify(self, secret: str, hash: str) -> bool:  # type: ignore
+        return super().verify(secret=secret, hash=hash)
 
 
 class JwtService:

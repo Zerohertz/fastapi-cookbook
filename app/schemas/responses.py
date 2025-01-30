@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Generic, Optional, TypeVar
+from typing import Generic, Optional, Sequence, TypeVar
 
 import pytz
 from pydantic import BaseModel
@@ -31,11 +31,11 @@ class APIResponse(BaseModel, Generic[T]):
 
     status: int
     message: str
-    data: Optional[T] = None
+    data: Optional[T | Sequence[T]] = None
     timestamp: datetime
 
     @classmethod
-    def success(cls, *, status: int, data: T) -> "APIResponse[T]":
+    def success(cls, *, status: int, data: T | Sequence[T]) -> "APIResponse[T]":
         return cls(
             status=status,
             message="The request has been successfully processed.",

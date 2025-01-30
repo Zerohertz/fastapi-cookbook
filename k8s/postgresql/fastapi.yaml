@@ -71,6 +71,21 @@ spec:
                 secretKeyRef:
                   name: auth
                   key: JWT_ALGORITHM
+            - name: ADMIN_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: auth
+                  key: ADMIN_NAME
+            - name: ADMIN_EMAIL
+              valueFrom:
+                secretKeyRef:
+                  name: auth
+                  key: ADMIN_EMAIL
+            - name: ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: auth
+                  key: ADMIN_PASSWORD
           ports:
             - name: http
               containerPort: 8000

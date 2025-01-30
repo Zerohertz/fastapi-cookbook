@@ -2,10 +2,11 @@ from typing import Annotated, Optional
 
 from dependency_injector.wiring import Provide, inject
 from fastapi import Depends, HTTPException, Request
-from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from fastapi.security import HTTPBearer
 
 from app.core.container import Container
 from app.exceptions.auth import NotAuthenticated
+from app.models.enums import Role
 from app.schemas.auth import JwtAccessToken
 from app.schemas.users import UserOut
 from app.services.users import UserService
@@ -49,3 +50,12 @@ async def get_current_user(
 
 
 AuthDeps = Annotated[UserOut, Depends(get_current_user)]
+
+
+async def get_admin_user(user: AuthDeps) -> UserOut:
+    if user.role != Role.ADMIN:
+        raise NotAuthenticated
+    return user
+
+
+AdminDeps = Depends(get_admin_user)

@@ -39,6 +39,9 @@ class Configs(BaseSettings):
     # openssl rand -hex 32
     JWT_SECRET_KEY: str
     JWT_ALGORITHM: str
+    ADMIN_NAME: str
+    ADMIN_EMAIL: str
+    ADMIN_PASSWORD: str
 
     @property
     def DB_SCHEME(self) -> str:

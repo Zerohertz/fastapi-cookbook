@@ -18,6 +18,12 @@ class UserPasswordRequest(BaseSchemaRequest):
     password: str
 
 
+class UserPatchRequest(BaseSchemaRequest):
+    name: Optional[str] = None
+    email: Optional[str] = None
+    password: Optional[str] = None
+
+
 class UserResponse(BaseSchemaResponse):
     name: str
     email: str

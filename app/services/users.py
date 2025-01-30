@@ -8,11 +8,12 @@ from app.models.enums import OAuthProvider, Role
 from app.models.users import User
 from app.repositories.users import UserRepository
 from app.schemas.auth import JwtAccessToken, JwtRefreshToken, JwtToken
-from app.schemas.base import BaseSchemaRequest, BaseSchemaResponse
+from app.schemas.base import BaseSchemaRequest
 from app.schemas.users import (
     UserIn,
     UserOut,
     UserPasswordRequest,
+    UserPatchRequest,
     UserRegisterRequest,
     UserResponse,
 )
@@ -38,6 +39,22 @@ class UserService(BaseService[User]):
         if isinstance(data, BaseSchemaRequest):
             return self.repository.model(**data.model_dump())
         return UserResponse.model_validate(data)
+
+    async def get_all(self) -> list[UserResponse]:
+        entities = await self.repository.read_all()
+        schemas = []
+        for entity in entities:
+            schemas.append(self.mapper(entity))
+        return schemas
+
+    @database.transactional
+    async def patch_by_id(self, id: int, schema: UserPatchRequest) -> UserResponse:
+        if schema.password:
+            schema.password = self.crypt_service.hash(schema.password)
+        entity = await self.repository.update_by_id(
+            id=id, data=schema.model_dump(exclude_none=True)
+        )
+        return self.mapper(entity)
 
     @database.transactional
     async def register(self, schema: UserRegisterRequest) -> UserResponse:

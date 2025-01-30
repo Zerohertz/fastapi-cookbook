@@ -3,7 +3,7 @@ from functools import wraps
 from typing import Awaitable, Callable, Optional
 
 from loguru import logger
-from sqlalchemy import NullPool
+from sqlalchemy import NullPool, select
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
     async_scoped_session,
@@ -13,6 +13,9 @@ from sqlalchemy.ext.asyncio import (
 
 from app.core.configs import ENVIRONMENT, configs
 from app.models.base import BaseModel
+from app.models.enums import OAuthProvider, Role
+from app.models.users import User
+from app.services.auth import CryptService
 
 
 class Context:
@@ -64,6 +67,25 @@ class Database:
             if configs.ENV == ENVIRONMENT.TEST:
                 await conn.run_sync(BaseModel.metadata.drop_all)
             await conn.run_sync(BaseModel.metadata.create_all)
+        async with self.sessionmaker() as session:
+            stmt = select(User).filter_by(role=Role.ADMIN)
+            result = await session.execute(stmt)
+            entity = result.scalar_one_or_none()
+            if entity:
+                logger.warning(f"Admin user already exists: {entity}")
+                return
+            crypt_service = CryptService()
+            admin_user = User(
+                name=configs.ADMIN_NAME,
+                email=configs.ADMIN_EMAIL,
+                role=Role.ADMIN,
+                oauth=OAuthProvider.PASSWORD,
+                password=crypt_service.hash(configs.ADMIN_PASSWORD),
+                refresh_token=None,
+                github_token=None,
+            )
+            session.add(admin_user)
+            await session.commit()
 
     def transactional(self, func: Callable[..., Awaitable]) -> Callable[..., Awaitable]:
         @wraps(func)

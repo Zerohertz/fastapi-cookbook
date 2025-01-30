@@ -1,28 +1,30 @@
+from typing import Sequence
+
 from dependency_injector.wiring import Provide, inject
 from fastapi import Depends
 from starlette import status
 
+from app.core.auth import AdminDeps
 from app.core.container import Container
 from app.core.router import CoreAPIRouter
-from app.schemas.users import UserRequest, UserResponse
+from app.schemas.users import UserPatchRequest, UserRequest, UserResponse
 from app.services.users import UserService
 
-router = CoreAPIRouter(prefix="/user", tags=["user"])
+router = CoreAPIRouter(prefix="/user", tags=["user"], dependencies=[AdminDeps])
 
 
-@router.post(
-    "",
-    response_model=UserResponse,
-    status_code=status.HTTP_201_CREATED,
+@router.get(
+    "/",
+    response_model=Sequence[UserResponse],
+    status_code=status.HTTP_200_OK,
     summary="",
     description="",
 )
 @inject
-async def create_user(
-    user: UserRequest,
+async def get_users(
     service: UserService = Depends(Provide[Container.user_service]),
 ):
-    return await service.create(user)
+    return await service.get_all()
 
 
 @router.get(
@@ -66,7 +68,7 @@ async def put_user(
 @inject
 async def patch_user(
     id: int,
-    user: UserRequest,
+    user: UserPatchRequest,
     service: UserService = Depends(Provide[Container.user_service]),
 ):
     return await service.patch_by_id(id=id, schema=user)

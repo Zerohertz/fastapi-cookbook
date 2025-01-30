@@ -1,5 +1,5 @@
 from functools import wraps
-from typing import Any, Callable, Coroutine, Type, TypeVar, cast
+from typing import Any, Callable, Coroutine, Sequence, Type, TypeVar, cast
 
 from fastapi import APIRouter, Response
 from fastapi.types import DecoratedCallable
@@ -31,10 +31,13 @@ class CoreAPIRouter(APIRouter):
                 *_args: tuple, **_kwargs: dict
             ) -> APIResponse[T] | Response:
                 response: Any = await func(*_args, **_kwargs)
-                if not isinstance(response, response_model):
+                # FIXME: 우선 response_model이 List와 같은 Sequence로 구성된 경우는 차후에 해결 (#24)
+                if isinstance(response, Sequence):
+                    pass
+                elif not isinstance(response, response_model):
                     logger.warning(f"{type(response)}: {response}")
                     raise TypeError
-                if isinstance(response, BaseModel):
+                if isinstance(response, BaseModel) or isinstance(response, Sequence):
                     return APIResponse[T].success(
                         status=status_code, data=cast(T, response)
                     )

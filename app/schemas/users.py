@@ -10,15 +10,6 @@ class UserRequest(BaseRequest):
     email: str
 
 
-class UserRegisterRequest(UserRequest):
-    password: str
-
-
-class UserPasswordRequest(BaseRequest):
-    email: str
-    password: str
-
-
 class UserPatchRequest(BaseRequest):
     name: Optional[str] = None
     email: Optional[str] = None

@@ -7,9 +7,14 @@ from jose.exceptions import ExpiredSignatureError, JWTError
 from passlib.context import CryptContext
 
 from app.core.configs import configs
-from app.exceptions.auth import GitHubOAuth, TokenDecode, TokenExpired
+from app.exceptions.auth import (
+    GitHubOAuthFailed,
+    OAuthFormDataInvalid,
+    TokenDecodeError,
+    TokenExpired,
+)
 from app.models.users import User
-from app.schemas.auth import JwtPayload
+from app.schemas.auth import GitHubOAuthRequest, GitHubOAuthResponse, JwtPayload
 
 
 class CryptService(CryptContext):
@@ -55,7 +60,7 @@ class JwtService:
         except ExpiredSignatureError as error:
             raise TokenExpired from error
         except JWTError as error:
-            raise TokenDecode from error
+            raise TokenDecodeError from error
 
 
 class GitHubService:
@@ -63,7 +68,11 @@ class GitHubService:
         self.client_id = configs.GITHUB_OAUTH_CLIENT_ID
         self.client_secret = configs.GITHUB_OAUTH_CLIENT_SECRET
 
-    async def get_user(self, code: str) -> tuple[str, str, str]:
+    async def get_token_and_user(
+        self, schema: GitHubOAuthRequest
+    ) -> GitHubOAuthResponse:
+        if schema.grant_type != "authorization_code":
+            raise OAuthFormDataInvalid
         async with httpx.AsyncClient() as client:
             try:
                 response = await client.post(
@@ -71,12 +80,20 @@ class GitHubService:
                     json={
                         "client_id": self.client_id,
                         "client_secret": self.client_secret,
-                        "code": code,
+                        "code": schema.code,
+                        "redirect_uri": schema.redirect_uri,
                     },
                     headers={"Accept": "application/json"},
                 )
                 response.raise_for_status()
-                github_token = response.json()["access_token"]
+            except httpx.HTTPStatusError as error:
+                raise GitHubOAuthFailed from error
+        data = response.json()
+        github_token = data.get("access_token", None)
+        if github_token is None:
+            raise GitHubOAuthFailed
+        async with httpx.AsyncClient() as client:
+            try:
                 response = await client.get(
                     "https://api.github.com/user",
                     headers={
@@ -85,7 +102,14 @@ class GitHubService:
                     },
                 )
                 response.raise_for_status()
-                github_user = response.json()
             except httpx.HTTPStatusError as error:
-                raise GitHubOAuth from error
-        return github_token, github_user["login"], github_user["email"]
+                raise GitHubOAuthFailed from error
+        github_user = response.json()
+        github_name, github_email = github_user.get("login", None), github_user.get(
+            "email", None
+        )
+        if github_name is None or github_email is None:
+            raise GitHubOAuthFailed
+        return GitHubOAuthResponse(
+            token=github_token, name=github_name, email=github_email
+        )

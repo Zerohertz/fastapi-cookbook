@@ -1,5 +1,4 @@
 from enum import Enum
-from typing import Optional
 
 from pydantic import computed_field
 from pydantic_core import MultiHostUrl
@@ -24,14 +23,14 @@ class Configs(BaseSettings):
 
     # --------- DATABASE SETTINGS --------- #
     DB_TYPE: str
-    DB_DRIVER: Optional[str]
-    DB_HOST: Optional[str]
-    DB_PORT: Optional[int] = 0
-    DB_USER: Optional[str]
-    DB_PASSWORD: Optional[str]
-    DB_NAME: Optional[str]
-    DB_ECHO: Optional[bool] = True
-    DB_TABLE_CREATE: Optional[bool] = True
+    DB_DRIVER: str
+    DB_HOST: str
+    DB_PORT: int = 0
+    DB_USER: str
+    DB_PASSWORD: str
+    DB_NAME: str
+    DB_ECHO: bool = True
+    DB_TABLE_CREATE: bool = True
 
     # --------- AUTH SETTINGS --------- #
     GITHUB_OAUTH_CLIENT_ID: str
@@ -69,3 +68,11 @@ class Configs(BaseSettings):
 
 
 configs = Configs()  # type: ignore[call-arg]
+
+
+class OAuthEndpoints(BaseSettings):
+    PASSWORD: str = f"{configs.PREFIX}/v1/auth/token/password"
+    GITHUB: str = f"{configs.PREFIX}/v1/auth/token/github"
+
+
+oauth_endpoints = OAuthEndpoints()

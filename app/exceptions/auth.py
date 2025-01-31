@@ -3,41 +3,44 @@ from fastapi import status
 from app.exceptions.base import CoreException
 
 
-class AuthException(CoreException):
-    status: int
-    message: str
+class AuthException(CoreException): ...
 
 
-class UserAlreadyExists(CoreException):
+class UserAlreadyExists(AuthException):
     status: int = status.HTTP_409_CONFLICT
     message: str = "User already exists. Please use a different email."
 
 
-class NotRegistered(CoreException):
+class NotRegistered(AuthException):
     status: int = status.HTTP_404_NOT_FOUND
     message: str = "User not registered. Please sign up first."
 
 
-class LoginFailed(CoreException):
-    status: int = status.HTTP_401_UNAUTHORIZED
-    message: str = "Login failed. Invalid credentials."
-
-
-class GitHubOAuth(AuthException):
+class OAuthFormDataInvalid(AuthException):
     status: int = status.HTTP_400_BAD_REQUEST
-    message: str = "GitHub OAuth failed."
+    message: str = "Invalid form data or missing fields in OAuth request."
+
+
+class PasswordOAuthFailed(AuthException):
+    status: int = status.HTTP_401_UNAUTHORIZED
+    message: str = "Invalid username or password."
+
+
+class GitHubOAuthFailed(AuthException):
+    status: int = status.HTTP_400_BAD_REQUEST
+    message: str = "GitHub OAuth authentication failed."
 
 
 class NotAuthenticated(CoreException):
     status: int = status.HTTP_403_FORBIDDEN
-    message: str = "Not authenticated."
+    message: str = "Authentication required. Please log in."
 
 
-class TokenDecode(AuthException):
+class TokenDecodeError(AuthException):
     status: int = status.HTTP_400_BAD_REQUEST
     message: str = "Token decode error."
 
 
 class TokenExpired(AuthException):
-    status: int = status.HTTP_400_BAD_REQUEST
+    status: int = status.HTTP_401_UNAUTHORIZED
     message: str = "Expired token."

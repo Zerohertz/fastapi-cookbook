@@ -4,25 +4,27 @@ from passlib.exc import UnknownHashError
 
 from app.core.database import database
 from app.exceptions.auth import (
-    LoginFailed,
     NotAuthenticated,
     NotRegistered,
+    OAuthFormDataInvalid,
+    PasswordOAuthFailed,
+    TokenDecodeError,
     UserAlreadyExists,
 )
 from app.exceptions.database import EntityNotFound
 from app.models.enums import OAuthProvider, Role
 from app.models.users import User
 from app.repositories.users import UserRepository
-from app.schemas.auth import JwtAccessToken, JwtRefreshToken, JwtToken
-from app.schemas.base import BaseRequest
-from app.schemas.users import (
-    UserIn,
-    UserOut,
-    UserPasswordRequest,
-    UserPatchRequest,
-    UserRegisterRequest,
-    UserResponse,
+from app.schemas.auth import (
+    GitHubOAuthRequest,
+    JwtAccessToken,
+    JwtToken,
+    PasswordOAuthReigsterRequest,
+    PasswordOAuthRequest,
+    RefreshOAuthRequest,
 )
+from app.schemas.base import BaseRequest
+from app.schemas.users import UserIn, UserOut, UserPatchRequest, UserResponse
 from app.services.auth import CryptService, GitHubService, JwtService
 from app.services.base import BaseService
 
@@ -63,15 +65,17 @@ class UserService(BaseService[User]):
         return self.mapper(entity)
 
     @database.transactional
-    async def register(self, schema: UserRegisterRequest) -> UserResponse:
+    async def register(self, schema: PasswordOAuthReigsterRequest) -> UserResponse:
+        if schema.grant_type != "password":
+            raise OAuthFormDataInvalid
         entity = await self.repository.read_by_name_or_email(
-            name=schema.name, email=schema.email
+            name=schema.name, email=schema.username
         )
         if entity:
             raise UserAlreadyExists
         _schema = UserIn(
             name=schema.name,
-            email=schema.email,
+            email=schema.username,
             role=Role.USER,
             oauth=OAuthProvider.PASSWORD,
             password=self.crypt_service.hash(schema.password),
@@ -83,8 +87,10 @@ class UserService(BaseService[User]):
         return self.mapper(entity)
 
     @database.transactional
-    async def log_in_password(self, schema: UserPasswordRequest) -> JwtToken:
-        entity = await self.repository.read_by_email(schema.email)
+    async def log_in_password(self, schema: PasswordOAuthRequest) -> JwtToken:
+        if schema.grant_type != "password":
+            raise OAuthFormDataInvalid
+        entity = await self.repository.read_by_email(schema.username)
         if not entity:
             raise NotRegistered
         if entity.oauth != "password":
@@ -94,49 +100,61 @@ class UserService(BaseService[User]):
             is_verified = self.crypt_service.verify(schema.password, entity.password)
         except UnknownHashError as error:
             # TODO: 언제 UnknownHashError가 발생하는지 확인
-            raise LoginFailed from error
+            raise PasswordOAuthFailed from error
         if not is_verified:
-            raise LoginFailed
+            raise PasswordOAuthFailed
         access_token, refresh_token = self.jwt_service.create_access_token(
             entity
         ), self.jwt_service.create_refresh_token(entity)
         entity.refresh_token = refresh_token
-        jwt_token = JwtToken(access_token=access_token, refresh_token=refresh_token)
+        jwt_token = JwtToken(
+            access_token=access_token,
+            refresh_token=refresh_token,
+            expires_in=self.jwt_service.access_expire.seconds,
+        )
         return jwt_token
 
     @database.transactional
-    async def log_in_github(self, code: str) -> JwtToken:
-        github_token, github_name, github_email = await self.github_service.get_user(
-            code
+    async def log_in_github(self, schema: GitHubOAuthRequest) -> JwtToken:
+        github_oauth_response = await self.github_service.get_token_and_user(
+            schema=schema
         )
-        entity = await self.repository.read_by_name(name=github_name)
+        entity = await self.repository.read_by_name(name=github_oauth_response.name)
         if entity:
             access_token, refresh_token = self.jwt_service.create_access_token(
                 entity
             ), self.jwt_service.create_refresh_token(entity)
             entity.refresh_token = refresh_token
-            return JwtToken(access_token=access_token, refresh_token=refresh_token)
-        schema = UserIn(
-            name=github_name,
-            email=github_email,
+            return JwtToken(
+                access_token=access_token,
+                refresh_token=refresh_token,
+                expires_in=self.jwt_service.access_expire.seconds,
+            )
+        _schema = UserIn(
+            name=github_oauth_response.name,
+            email=github_oauth_response.email,
             role=Role.USER,
             oauth=OAuthProvider.GITHUB,
             password=None,
             refresh_token=None,
-            github_token=github_token,
+            github_token=github_oauth_response.token,
         )
-        entity = self.mapper(schema)
+        entity = self.mapper(_schema)
         entity = await self.repository.create(entity=entity)
         access_token, refresh_token = self.jwt_service.create_access_token(
             entity
         ), self.jwt_service.create_refresh_token(entity)
         entity.refresh_token = refresh_token
-        jwt_token = JwtToken(access_token=access_token, refresh_token=refresh_token)
+        jwt_token = JwtToken(
+            access_token=access_token,
+            refresh_token=refresh_token,
+            expires_in=self.jwt_service.access_expire.seconds,
+        )
         return jwt_token
 
     @database.transactional
-    async def verify(self, token: JwtAccessToken) -> UserOut:
-        user_id = int(self.jwt_service.decode(token=token.access_token))
+    async def verify(self, schema: JwtAccessToken) -> UserOut:
+        user_id = int(self.jwt_service.decode(token=schema.access_token))
         try:
             entity = await self.repository.read_by_id(user_id)
         except EntityNotFound as error:
@@ -144,7 +162,16 @@ class UserService(BaseService[User]):
         entity.refresh_token = self.jwt_service.create_refresh_token(entity)
         return UserOut.model_validate(entity)
 
-    async def refresh(self, token: JwtRefreshToken) -> JwtAccessToken:
-        user_id = int(self.jwt_service.decode(token=token.refresh_token).split(".")[0])
+    async def refresh(self, schema: RefreshOAuthRequest) -> JwtToken:
+        if schema != "refresh_token":
+            raise OAuthFormDataInvalid
+        sub = self.jwt_service.decode(token=schema.refresh_token)
+        if ".refresh" not in sub:
+            raise TokenDecodeError
+        user_id = int(sub.split(".")[0])
         entity = await self.repository.read_by_id(user_id)
-        return JwtAccessToken(access_token=self.jwt_service.create_access_token(entity))
+        return JwtToken(
+            access_token=self.jwt_service.create_access_token(entity),
+            refresh_token=sub,
+            expires_in=self.jwt_service.access_expire.seconds,
+        )

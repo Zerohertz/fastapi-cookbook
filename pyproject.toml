@@ -14,6 +14,7 @@ dependencies = [
     "passlib>=1.7.4",
     "pydantic-settings>=2.7.1",
     "python-jose>=3.3.0",
+    "python-multipart>=0.0.20",
     "pytz>=2024.2",
     "sqlalchemy>=2.0.37",
     "uv>=0.5.21",
@@ -55,6 +56,7 @@ disable = [
     "C0301",
     "E0611",
     "E1102",
+    "R0801",
     "R0903",
     "R0913",
     "W0221",
@@ -69,8 +71,9 @@ disable = [
 # C0301: Line too long (*/*) (line-too-long)
 # E0611: No name '*' in module '*' (no-name-in-module)
 # E1102: * is not callable (not-callable)
+# R0801: Similar lines in * files
 # R0903: Too few public methods (*/*) (too-few-public-methods)
-# R0913: Too many arguments (6/5) (too-many-arguments)
+# R0913: Too many arguments (*/*) (too-many-arguments)
 # W0221: Number of parameters was * in '*' and is now * in overriding '*' method (arguments-differ)
 # W0221: Variadics removed in overriding '*' method (arguments-differ)
 # W0511: TODO, FIXME

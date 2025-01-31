@@ -49,3 +49,9 @@ exec:
 .PHONY: expose
 expose:
 	 kubectl expose -n fastapi po/postgresql-0 --port 5432 --type=NodePort
+
+.PHONY: swagger
+swagger:
+	curl https://unpkg.com/swagger-ui-dist@5.18.3/swagger-ui-bundle.js > static/swagger-ui-bundle.js
+	curl https://unpkg.com/swagger-ui-dist@5.18.3/swagger-ui.css > static/swagger-ui.css
+	npx prettier --write "static/*.{js,css}"

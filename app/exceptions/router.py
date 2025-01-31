@@ -3,9 +3,7 @@ from fastapi import status
 from app.exceptions.base import CoreException
 
 
-class RouterException(CoreException):
-    status: int
-    message: str
+class RouterException(CoreException): ...
 
 
 class RouterTypeError(RouterException):

@@ -67073,54 +67073,54 @@
                   ),
                 ),
               (le === ae || le === Z || le === ie || le === ee) &&
-              (!fe || (fe && this.state.clientId)) &&
-              $e.createElement(
-                C,
-                null,
-                $e.createElement(
-                  "label",
-                  { htmlFor: `client_id_${le}` },
-                  "client_id:",
-                ),
-                fe
-                  ? $e.createElement("code", null, " ****** ")
-                  : $e.createElement(
-                    j,
-                    { tablet: 10, desktop: 10 },
-                    $e.createElement(U, {
-                      id: `client_id_${le}`,
-                      type: "text",
-                      required: le === ee,
-                      initialValue: this.state.clientId,
-                      "data-name": "clientId",
-                      onChange: this.onInputChange,
-                    }),
-                  ),
-              ),
-              (le === ae || le === ie || le === ee) &&
-              $e.createElement(
-                C,
-                null,
-                $e.createElement(
-                  "label",
-                  { htmlFor: `client_secret_${le}` },
-                  "client_secret:",
-                ),
-                fe
-                  ? $e.createElement("code", null, " ****** ")
-                  : $e.createElement(
-                    j,
-                    { tablet: 10, desktop: 10 },
-                    $e.createElement(U, {
-                      id: `client_secret_${le}`,
-                      initialValue: this.state.clientSecret,
-                      type: "password",
-                      "data-name": "clientSecret",
-                      onChange: this.onInputChange,
-                    }),
-                  ),
-              ),
-              !fe && de && de.size
+                // (!fe || (fe && this.state.clientId)) &&
+                // $e.createElement(
+                //   C,
+                //   null,
+                //   $e.createElement(
+                //     "label",
+                //     { htmlFor: `client_id_${le}` },
+                //     "client_id:",
+                //   ),
+                //   fe
+                //     ? $e.createElement("code", null, " ****** ")
+                //     : $e.createElement(
+                //       j,
+                //       { tablet: 10, desktop: 10 },
+                //       $e.createElement(U, {
+                //         id: `client_id_${le}`,
+                //         type: "text",
+                //         required: le === ee,
+                //         initialValue: this.state.clientId,
+                //         "data-name": "clientId",
+                //         onChange: this.onInputChange,
+                //       }),
+                //     ),
+                // ),
+                // (le === ae || le === ie || le === ee) &&
+                // $e.createElement(
+                //   C,
+                //   null,
+                //   $e.createElement(
+                //     "label",
+                //     { htmlFor: `client_secret_${le}` },
+                //     "client_secret:",
+                //   ),
+                //   fe
+                //     ? $e.createElement("code", null, " ****** ")
+                //     : $e.createElement(
+                //       j,
+                //       { tablet: 10, desktop: 10 },
+                //       $e.createElement(U, {
+                //         id: `client_secret_${le}`,
+                //         initialValue: this.state.clientSecret,
+                //         type: "password",
+                //         "data-name": "clientSecret",
+                //         onChange: this.onInputChange,
+                //       }),
+                //     ),
+                // ),
+                !fe && de && de.size
                 ? $e.createElement(
                   "div",
                   { className: "scopes" },

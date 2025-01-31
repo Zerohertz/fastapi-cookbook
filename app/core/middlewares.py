@@ -67,22 +67,12 @@ class LoggingMiddleware(BaseHTTPMiddleware):
         start_time = time.time()
         response = await call_next(request)
         end_time = time.time()
-        status = ansi_format(
-            str(response.status_code),
-            bg_color=ANSI_BG_COLOR.LIGHT_BLACK,
-            style=[ANSI_STYLE.UNDERLINE, ANSI_STYLE.BOLD],
-        )
-        elapsed_time = ansi_format(
-            f"{end_time - start_time:.3f}s",
-            bg_color=ANSI_BG_COLOR.LIGHT_BLACK,
-            style=[ANSI_STYLE.UNDERLINE, ANSI_STYLE.BOLD],
-        )
         self.info(
             ip=str(ip),
             url=str(request.url),
             method=str(request.method),
-            status=status,
-            elapsed_time=elapsed_time,
+            status=str(response.status_code),
+            elapsed_time=f"{end_time - start_time:.3f}s",
         )
         return response
 

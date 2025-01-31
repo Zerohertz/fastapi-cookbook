@@ -68,16 +68,17 @@ class CoreAPIRouter(APIRouter):
                 raise RouterTypeError
 
             _response_model: None | Type[BaseModel] | Type[APIResponse[T]]
-            if isinstance(response_model, BaseResponse) or (
-                response_model is not None
-                and hasattr(response_model, "__origin__")
-                and response_model.__origin__ is list
+            if response_model is not None and (
+                (
+                    hasattr(response_model, "__origin__")
+                    and response_model.__origin__ is list
+                )
+                or issubclass(response_model, BaseResponse)
             ):
                 _response_model = APIResponse[response_model]  # type: ignore[valid-type]
             elif response_model is None or issubclass(response_model, BaseModel):
                 _response_model = response_model
             else:
-                logger.error(f"{response_model=}")
                 raise RouterTypeError
             self.add_api_route(
                 path=path,

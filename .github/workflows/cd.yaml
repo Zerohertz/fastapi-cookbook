@@ -2,10 +2,8 @@ name: "CD"
 
 on:
   push:
-    branches:
-      - main
-    paths:
-      - "app/**"
+    tags:
+      - "v*"
 
 jobs:
   image-build:
@@ -14,20 +12,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      # - name: Determine new tag
-      #   id: new-tag
-      #   run: |
-      #     apiResponse=$(curl -s "https://hub.docker.com/v2/repositories/${{ secrets.DOCKER_USERNAME }}/${{ matrix.directory }}/tags/?page_size=100")
-      #     if echo "$apiResponse" | grep -q "httperror 404"; then
-      #       newTag="v1.0.0"
-      #     else
-      #       currentTag=$(echo "$apiResponse" | jq -r '.results[].name' | sort -V | grep v | tail -n 1)
-      #       version=$(echo "$currentTag" | sed 's/[^0-9.]//g')
-      #       IFS='.' read -r major minor patch <<< "$version"
-      #       newTag="v${major}.${minor}.$((patch + 1))"
-      #     fi
-      #     echo "new_tag=$newTag" >> $GITHUB_ENV
 
       - name: Login to DockerHub
         uses: docker/login-action@v3
@@ -42,17 +26,26 @@ jobs:
           username: ${{ secrets.GH_USERNAME }}
           password: ${{ secrets.GH_TOKEN }}
 
+      - name: Set tag based on ref
+        run: |
+          if [[ $GITHUB_REF == refs/tags/* ]]; then
+            TAG_NAME=${GITHUB_REF#refs/tags/}
+            echo "Tag name is $TAG_NAME"
+          else
+            TAG_NAME=${GITHUB_SHA}
+            echo "Using commit SHA as tag: $TAG_NAME"
+          fi
+          echo "tag_name=$TAG_NAME" >> $GITHUB_ENV
+
       - name: Build and push image
         uses: docker/build-push-action@v6
         with:
           push: true
-          # ${{ secrets.DOCKER_USERNAME }}/fastapi-cookbook:${{ env.new_tag }},
-          # ghcr.io/${{ secrets.GH_USERNAME }}/fastapi-cookbook:${{ env.new_tag }},
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/fastapi-cookbook:latest,
-            ${{ secrets.DOCKER_USERNAME }}/fastapi-cookbook:${{ github.sha }},
+            ${{ secrets.DOCKER_USERNAME }}/fastapi-cookbook:${{ env.tag_name }},
             ghcr.io/${{ secrets.GH_USERNAME }}/fastapi-cookbook:latest,
-            ghcr.io/${{ secrets.GH_USERNAME }}/fastapi-cookbook:${{ github.sha }}
+            ghcr.io/${{ secrets.GH_USERNAME }}/fastapi-cookbook:${{ env.tag_name }}
 
       - name: Slack webhook
         uses: 8398a7/action-slack@v3
@@ -65,36 +58,38 @@ jobs:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_CHECK }}
         if: always()
 
-  argo-cd:
-    name: Argo CD
-    needs: image-build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GH_TOKEN }}
-
-      - name: Change manifest
-        run: |
-          sed -i 's|${{ secrets.DOCKER_USERNAME }}/fastapi-cookbook:[^ ]*|${{ secrets.DOCKER_USERNAME }}/fastapi-cookbook:${{ github.sha }}|' k8s/postgresql/fastapi.yaml
-
-      - name: git push
-        run: |
-          git config user.name ${{ secrets.GH_USERNAME }}
-          git config user.email "ohg3417@gmail.com"
-          git config credential.helper store
-          git add k8s/postgresql/fastapi.yaml
-          git commit -m ":tada: deploy: fastapi-cookbook [${{ github.sha }}]"
-          git push origin ${{ github.ref_name }}
-
-      - name: Slack webhook
-        uses: 8398a7/action-slack@v3
-        with:
-          status: ${{ job.status }}
-          author_name: fastapi-cookbook
-          fields: repo,message,commit,author,action,eventName,ref,workflow,job,took
-          if_mention: failure,cancelled
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_CHECK }}
-        if: always()
+  # argo-cd:
+  #   name: Argo CD
+  #   needs: image-build
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v4
+  #       with:
+  #         token: ${{ secrets.GH_TOKEN }}
+  #
+  #     - name: Change manifest
+  #       run: |
+  #         sed -i 's|${{ secrets.DOCKER_USERNAME }}/fastapi-cookbook:[^ ]*|${{ secrets.DOCKER_USERNAME }}/fastapi-cookbook:${{ env.tag_name }}|' k8s/postgresql/fastapi.yaml
+  #
+  #     - name: git push
+  #       run: |
+  #         git config user.name ${{ secrets.GH_USERNAME }}
+  #         git config user.email "ohg3417@gmail.com"
+  #         git config credential.helper store
+  #         git add k8s/postgresql/fastapi.yaml
+  #         git commit -m ":tada: deploy: fastapi-cookbook [${{ env.tag_name }}]"
+  #         git fetch origin
+  #         git checkout -b main origin/main
+  #         git push origin main
+  #
+  #     - name: Slack webhook
+  #       uses: 8398a7/action-slack@v3
+  #       with:
+  #         status: ${{ job.status }}
+  #         author_name: fastapi-cookbook
+  #         fields: repo,message,commit,author,action,eventName,ref,workflow,job,took
+  #         if_mention: failure,cancelled
+  #       env:
+  #         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_CHECK }}
+  #       if: always()

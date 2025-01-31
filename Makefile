@@ -55,3 +55,13 @@ swagger:
 	curl https://unpkg.com/swagger-ui-dist@5.18.3/swagger-ui-bundle.js > static/swagger-ui-bundle.js
 	curl https://unpkg.com/swagger-ui-dist@5.18.3/swagger-ui.css > static/swagger-ui.css
 	npx prettier --write "static/*.{js,css}"
+
+.PHONY: deploy
+deploy:
+	echo $(tag)
+	sed -i 's|zerohertzkr/fastapi-cookbook:[^ ]*|zerohertzkr/fastapi-cookbook:$(tag)|' k8s/postgresql/fastapi.yaml
+	git add k8s/postgresql/fastapi.yaml
+	git commit -m ":ship: release: $(tag)"
+	git tag -a $(tag) -m ":ship: release: $(tag)"
+	git push origin main
+	git push origin $(tag)

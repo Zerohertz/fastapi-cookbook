@@ -27,8 +27,8 @@ def log_in_admin(sync_client: TestClient) -> tuple[MockUser, str]:
 
 
 def test_get_user_name(sync_client: TestClient) -> None:
-    admin_user, admin_access_token = log_in_admin(sync_client)
-    mock_user, user_access_token = register_and_log_in(sync_client)
+    _, admin_access_token = log_in_admin(sync_client)
+    _, user_access_token = register_and_log_in(sync_client)
     response = sync_client.get(
         f"{configs.PREFIX}/v1/user/",
         headers={"Authorization": f"Bearer {admin_access_token}"},
@@ -64,7 +64,7 @@ def test_get_user_name(sync_client: TestClient) -> None:
 
 
 def test_patch_user_password(sync_client: TestClient) -> None:
-    admin_user, admin_access_token = log_in_admin(sync_client)
+    _, admin_access_token = log_in_admin(sync_client)
     mock_user, user_access_token = register_and_log_in(sync_client)
     request = UserPatchRequest(password=fake.password())
     response = sync_client.patch(
@@ -83,7 +83,7 @@ def test_patch_user_password(sync_client: TestClient) -> None:
 
 
 def test_put_user(sync_client: TestClient) -> None:
-    admin_user, admin_access_token = log_in_admin(sync_client)
+    _, admin_access_token = log_in_admin(sync_client)
     mock_user, user_access_token = register_and_log_in(sync_client)
     request = UserRequest(name=fake.name(), email=fake.email())
     response = sync_client.put(
@@ -101,7 +101,7 @@ def test_put_user(sync_client: TestClient) -> None:
 
 
 def test_delete_user(sync_client: TestClient) -> None:
-    admin_user, admin_access_token = log_in_admin(sync_client)
+    _, admin_access_token = log_in_admin(sync_client)
     mock_user, user_access_token = register_and_log_in(sync_client)
     response = sync_client.delete(
         f"{configs.PREFIX}/v1/user/{mock_user.get_me(user_access_token)}",

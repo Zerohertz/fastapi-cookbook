@@ -55,6 +55,9 @@ class LoggingMiddleware(BaseHTTPMiddleware):
     async def dispatch(
         self, request: Request, call_next: RequestResponseEndpoint
     ) -> Response:
+        body = await request.body()
+        if body:
+            logger.trace(f"{body=}")
         if request.headers.get("x-real-ip"):
             ip = request.headers.get("x-real-ip")
         elif request.headers.get("x-forwarded-for"):

@@ -66727,7 +66727,7 @@
             case "implicit":
               $.push("response_type=token");
           }
-          "string" == typeof L && $.push("client_id=" + encodeURIComponent(L));
+          // "string" == typeof L && $.push("client_id=" + encodeURIComponent(L));
           let V = u.oauth2RedirectUrl;
           if (void 0 === V)
             return void i.newAuthErr({

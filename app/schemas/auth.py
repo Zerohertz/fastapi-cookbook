@@ -22,7 +22,7 @@ class PasswordOAuthRequest(OAuthRequest):
         str,
         Form(
             min_length=5,
-            max_length=30,
+            max_length=50,
             pattern=r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$",
         ),
     ]

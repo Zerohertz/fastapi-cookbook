@@ -55,9 +55,6 @@ class LoggingMiddleware(BaseHTTPMiddleware):
     async def dispatch(
         self, request: Request, call_next: RequestResponseEndpoint
     ) -> Response:
-        body = await request.body()
-        if body:
-            logger.trace(f"{body=}")
         if request.headers.get("x-real-ip"):
             ip = request.headers.get("x-real-ip")
         elif request.headers.get("x-forwarded-for"):
@@ -67,6 +64,9 @@ class LoggingMiddleware(BaseHTTPMiddleware):
         else:
             ip = "None"
         self.info(ip=str(ip), url=str(request.url), method=str(request.method))
+        body = await request.body()
+        if body:
+            logger.trace(f"{body=}")
         start_time = time.time()
         response = await call_next(request)
         end_time = time.time()

@@ -1,9 +1,9 @@
 from collections.abc import Generator
 from contextvars import Token
 from typing import AsyncGenerator
+from uuid import uuid4
 
 import pytest
-import pytest_asyncio
 from fastapi.testclient import TestClient
 from httpx import ASGITransport, AsyncClient
 
@@ -11,11 +11,20 @@ from app.core.container import Container
 from app.core.database import database
 from app.main import app
 
+pytestmark = pytest.mark.anyio
 
-@pytest_asyncio.fixture(scope="function")
+
+@pytest.fixture(scope="session")
+def anyio_backend():
+    return "asyncio"
+
+
+@pytest.fixture(scope="function")
 async def context() -> AsyncGenerator[Token, None]:
-    _context = database.context.set(session_id=hash(123))
+    _context = database.context.set(session_id=hash(uuid4()))
     yield _context
+    # NOTE: PyTest 시 event loop 충돌 발생 (related: #19)
+    await database.engine.dispose()
     database.context.reset(context=_context)
 
 
@@ -32,7 +41,7 @@ def sync_client() -> Generator[TestClient, None, None]:
         yield client
 
 
-@pytest_asyncio.fixture(scope="session", loop_scope="session")
+@pytest.fixture(scope="session")
 async def async_client() -> AsyncGenerator[AsyncClient, None]:
     async with AsyncClient(
         transport=ASGITransport(app=app), base_url="http://test"

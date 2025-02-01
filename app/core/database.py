@@ -3,7 +3,7 @@ from functools import wraps
 from typing import Awaitable, Callable, Optional
 
 from loguru import logger
-from sqlalchemy import NullPool, select
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
     async_scoped_session,
@@ -44,10 +44,6 @@ class Database:
             "url": configs.DATABASE_URI,
             "echo": configs.DB_ECHO,
         }
-        if configs.ENV == ENVIRONMENT.TEST and configs.DB_DRIVER != "aiosqlite":
-            # NOTE: PyTest 시 event loop 충돌 발생 (related: #19)
-            logger.warning("Using NullPool for async engine")
-            async_engine_kwargs["poolclass"] = NullPool  # type: ignore[assignment]
         self.engine = create_async_engine(**async_engine_kwargs)  # type: ignore[arg-type]
         self.sessionmaker = async_sessionmaker(
             bind=self.engine,

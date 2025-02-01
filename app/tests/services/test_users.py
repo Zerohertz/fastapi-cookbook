@@ -9,6 +9,7 @@ from app.exceptions.database import DatabaseException, EntityNotFound
 from app.models.enums import OAuthProvider, Role
 from app.schemas.users import UserIn, UserPatchRequest, UserRequest
 
+pytestmark = pytest.mark.anyio
 fake = Faker()
 
 
@@ -22,7 +23,6 @@ def get_mock_user() -> UserIn:
     )
 
 
-@pytest.mark.asyncio(loop_scope="function")
 async def test_create_user(container: Container, context: Token) -> None:
     logger.warning(f"{context=}")
     user_service = container.user_service()
@@ -36,7 +36,6 @@ async def test_create_user(container: Container, context: Token) -> None:
         user = await user_service.create(schema=schema)
 
 
-@pytest.mark.asyncio(loop_scope="function")
 async def test_get_user(container: Container, context: Token) -> None:
     logger.warning(f"{context=}")
     user_service = container.user_service()
@@ -50,7 +49,6 @@ async def test_get_user(container: Container, context: Token) -> None:
         user = await user_service.get_by_id(id=99999)
 
 
-@pytest.mark.asyncio(loop_scope="function")
 async def test_put_user(container: Container, context: Token) -> None:
     logger.warning(f"{context=}")
     user_service = container.user_service()
@@ -70,7 +68,6 @@ async def test_put_user(container: Container, context: Token) -> None:
         )
 
 
-@pytest.mark.asyncio(loop_scope="function")
 async def test_patch_user(container: Container, context: Token) -> None:
     logger.warning(f"{context=}")
     user_service = container.user_service()
@@ -98,7 +95,6 @@ async def test_patch_user(container: Container, context: Token) -> None:
         )
 
 
-@pytest.mark.asyncio(loop_scope="function")
 async def test_delete_user(container: Container, context: Token) -> None:
     logger.warning(f"{context=}")
     user_service = container.user_service()

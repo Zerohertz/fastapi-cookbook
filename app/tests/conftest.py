@@ -6,7 +6,6 @@ from uuid import uuid4
 import pytest
 from fastapi.testclient import TestClient
 from httpx import ASGITransport, AsyncClient
-from loguru import logger
 
 from app.core.container import Container
 from app.core.database import database
@@ -23,7 +22,6 @@ def anyio_backend():
 @pytest.fixture(scope="function")
 async def context() -> AsyncGenerator[Token, None]:
     _context = database.context.set(session_id=hash(uuid4()))
-    logger.error(database.context.get())
     yield _context
     # NOTE: PyTest 시 event loop 충돌 발생 (related: #19)
     await database.engine.dispose()

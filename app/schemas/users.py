@@ -33,6 +33,6 @@ class UserIn(UserRequest):
 
 class UserOut(UserResponse):
     role: Role
-    password: Optional[constr(min_length=8, max_length=30)] = None
+    password: Optional[str] = None
     refresh_token: Optional[str] = None
-    github_token: Optional[str] = None
+    oauth_token: Optional[str] = None

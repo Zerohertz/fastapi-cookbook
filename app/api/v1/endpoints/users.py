@@ -23,14 +23,14 @@ router = CoreAPIRouter(prefix="/user", tags=["user"])
     response_model=UserResponse,
     response_class=JSONResponse,
     status_code=status.HTTP_200_OK,
-    dependencies=[PasswordOAuthDeps, GitHubOAuthDeps],
+    dependencies=[PasswordOAuthDeps, GoogleOAuthDeps, GitHubOAuthDeps],
     summary="",
     description="",
 )
 @inject
 async def put_user(
     schema: UserRequest,
-    user: Annotated[UserOut, GoogleOAuthDeps, UserAuthDeps],
+    user: Annotated[UserOut, UserAuthDeps],
     service: UserService = Depends(Provide[Container.user_service]),
 ):
     return await service.put_by_id(id=user.id, schema=schema)

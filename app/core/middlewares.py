@@ -98,9 +98,9 @@ class SessionMiddleware(BaseHTTPMiddleware):
     async def dispatch(
         self, request: Request, call_next: RequestResponseEndpoint
     ) -> Response:
+        context = database.context.set(session_id=hash(request))
+        logger.trace(f"[Session Start]\tID: {database.context.get()}")
         try:
-            context = database.context.set(session_id=hash(request))
-            logger.trace(f"[Session Start]\tID: {database.context.get()}")
             response = await call_next(request)
         finally:
             await database.scoped_session.remove()

@@ -89,9 +89,7 @@ class Database:
             try:
                 session = self.scoped_session()
                 if session.in_transaction():
-                    logger.trace(
-                        f"[Session in transaction]\tID: {database.context.get()}, {self.context=}"
-                    )
+                    logger.trace(f"[Session in transaction]\tID: {self.context.get()}")
                     return await func(*args, **kwargs)
                 async with session.begin():
                     response = await func(*args, **kwargs)

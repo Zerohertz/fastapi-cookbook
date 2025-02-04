@@ -86,10 +86,10 @@ class SessionMiddleware(BaseHTTPMiddleware):
     ) -> Response:
         try:
             context = database.context.set(session_id=hash(request))
-            logger.trace(f"[Session Start]\tID: {database.context.get()}, {context=}")
+            logger.trace(f"[Session Start]\tID: {database.context.get()}")
             response = await call_next(request)
         finally:
             await database.scoped_session.remove()
-            logger.trace(f"[Session End]\tID: {database.context.get()}, {context=}")
+            logger.trace(f"[Session End]\tID: {database.context.get()}")
             database.context.reset(context=context)
         return response

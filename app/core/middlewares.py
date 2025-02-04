@@ -22,7 +22,7 @@ class LoggingMiddleware(BaseHTTPMiddleware):
         ip: str,
         url: str,
         method: str,
-        status: Optional[str] = None,
+        status: Optional[int] = None,
         elapsed_time: Optional[str] = None,
     ) -> None:
         ip = osc_format(ip, href=f"https://db-ip.com/{ip}")
@@ -35,11 +35,25 @@ class LoggingMiddleware(BaseHTTPMiddleware):
         url = ansi_format(f"[URL: {url}]", fg_color=ANSI_FG_COLOR.LIGHT_BLACK)
         method = ansi_format(f"[Method: {method}]", fg_color=ANSI_FG_COLOR.LIGHT_BLACK)
         if status and elapsed_time:
-            status = ansi_format(
-                status,
-                bg_color=ANSI_BG_COLOR.LIGHT_BLACK,
-                style=[ANSI_STYLE.UNDERLINE, ANSI_STYLE.BOLD],
-            )
+            if status < 400:
+                status = ansi_format(
+                    status,
+                    bg_color=ANSI_BG_COLOR.LIGHT_BLACK,
+                    style=[ANSI_STYLE.UNDERLINE, ANSI_STYLE.BOLD],
+                )
+            elif status < 500:
+                status = ansi_format(
+                    status,
+                    fg_color=ANSI_FG_COLOR.BLACK,
+                    bg_color=ANSI_BG_COLOR.LIGHT_YELLOW,
+                    style=[ANSI_STYLE.UNDERLINE, ANSI_STYLE.BOLD],
+                )
+            else:
+                status = ansi_format(
+                    status,
+                    bg_color=ANSI_BG_COLOR.RED,
+                    style=[ANSI_STYLE.UNDERLINE, ANSI_STYLE.BOLD],
+                )
             elapsed_time = ansi_format(
                 elapsed_time,
                 bg_color=ANSI_BG_COLOR.LIGHT_BLACK,
@@ -63,7 +77,7 @@ class LoggingMiddleware(BaseHTTPMiddleware):
             ip = request.client.host
         else:
             ip = "None"
-        self.info(ip=str(ip), url=str(request.url), method=str(request.method))
+        self.info(ip=ip, url=str(request.url), method=request.method)
         body = await request.body()
         if body:
             logger.trace(f"{body=}")
@@ -71,10 +85,10 @@ class LoggingMiddleware(BaseHTTPMiddleware):
         response = await call_next(request)
         end_time = time.time()
         self.info(
-            ip=str(ip),
+            ip=ip,
             url=str(request.url),
-            method=str(request.method),
-            status=str(response.status_code),
+            method=request.method,
+            status=response.status_code,
             elapsed_time=f"{end_time - start_time:.3f}s",
         )
         return response

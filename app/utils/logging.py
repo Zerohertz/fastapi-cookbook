@@ -64,7 +64,7 @@ class ANSI_BG_COLOR(Enum):
 
 
 def ansi_format(
-    text: str,
+    text: str | int,
     *,
     fg_color: Optional[ANSI_FG_COLOR] = None,
     bg_color: Optional[ANSI_BG_COLOR] = None,

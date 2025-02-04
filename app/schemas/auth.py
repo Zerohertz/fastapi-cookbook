@@ -33,13 +33,43 @@ class PasswordOAuthReigsterRequest(PasswordOAuthRequest):
     name: Annotated[str, Form(min_length=3, max_length=30)]
 
 
+class GoogleOAuthRequest(OAuthRequest):
+    # grant_type: Annotated[str, Form(pattern="authorization_code")]
+    # redirect_uri: Annotated[str, Form("")]
+    # code: Annotated[str, Form(...)]
+    # scope: Annotated[str, Form(...)]
+    # authuser: Annotated[int, Form(...)]
+    # prompt: Annotated[str, Form(...)]
+    grant_type: Annotated[str, Form(pattern="authorization_code")]
+    code: Annotated[str, Form(...)]
+    redirect_uri: Annotated[str, Form("")]
+
+
+class GoogleOAuthToken(BaseModel):
+    access_token: str
+    expires_in: int
+    scope: str
+    token_type: str
+    id_token: str
+
+
+class GoogleOAuthUser(BaseModel):
+    id: str
+    email: str
+    verified_email: bool
+    name: str
+    given_name: str
+    family_name: str
+    picture: str
+
+
 class GitHubOAuthRequest(OAuthRequest):
     grant_type: Annotated[str, Form(pattern="authorization_code")]
     code: Annotated[str, Form(...)]
     redirect_uri: Annotated[str, Form("")]
 
 
-class GitHubOAuthResponse(BaseModel):
+class OAuthResponse(BaseModel):
     token: str
     name: str
     email: str

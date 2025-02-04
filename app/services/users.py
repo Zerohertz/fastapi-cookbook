@@ -17,15 +17,17 @@ from app.models.users import User
 from app.repositories.users import UserRepository
 from app.schemas.auth import (
     GitHubOAuthRequest,
+    GoogleOAuthRequest,
     JwtAccessToken,
     JwtToken,
+    OAuthResponse,
     PasswordOAuthReigsterRequest,
     PasswordOAuthRequest,
     RefreshOAuthRequest,
 )
 from app.schemas.base import BaseRequest
 from app.schemas.users import UserIn, UserOut, UserPatchRequest, UserResponse
-from app.services.auth import CryptService, GitHubService, JwtService
+from app.services.auth import CryptService, GitHubService, GoogleService, JwtService
 from app.services.base import BaseService
 
 
@@ -35,6 +37,7 @@ class UserService(BaseService[User]):
         self.repository: UserRepository
         self.crypt_service = CryptService()
         self.jwt_service = JwtService()
+        self.google_service = GoogleService()
         self.github_service = GitHubService()
 
     @overload
@@ -80,7 +83,7 @@ class UserService(BaseService[User]):
             oauth=OAuthProvider.PASSWORD,
             password=self.crypt_service.hash(schema.password),
             refresh_token=None,
-            github_token=None,
+            oauth_token=None,
         )
         entity = self.mapper(_schema)
         entity = await self.repository.create(entity=entity)
@@ -115,11 +118,10 @@ class UserService(BaseService[User]):
         return jwt_token
 
     @database.transactional
-    async def log_in_github(self, schema: GitHubOAuthRequest) -> JwtToken:
-        github_oauth_response = await self.github_service.get_token_and_user(
-            schema=schema
-        )
-        entity = await self.repository.read_by_name(name=github_oauth_response.name)
+    async def _log_in_oauth(
+        self, schema: OAuthResponse, oauth: OAuthProvider
+    ) -> JwtToken:
+        entity = await self.repository.read_by_name(name=schema.name)
         if entity:
             access_token, refresh_token = self.jwt_service.create_access_token(
                 entity
@@ -131,13 +133,54 @@ class UserService(BaseService[User]):
                 expires_in=self.jwt_service.access_expire.seconds,
             )
         _schema = UserIn(
-            name=github_oauth_response.name,
-            email=github_oauth_response.email,
+            name=schema.name,
+            email=schema.email,
+            role=Role.USER,
+            oauth=oauth,
+            password=None,
+            refresh_token=None,
+            oauth_token=schema.token,
+        )
+        entity = self.mapper(_schema)
+        entity = await self.repository.create(entity=entity)
+        access_token, refresh_token = self.jwt_service.create_access_token(
+            entity
+        ), self.jwt_service.create_refresh_token(entity)
+        entity.refresh_token = refresh_token
+        jwt_token = JwtToken(
+            access_token=access_token,
+            refresh_token=refresh_token,
+            expires_in=self.jwt_service.access_expire.seconds,
+        )
+        return jwt_token
+
+    @database.transactional
+    async def log_in_google(self, schema: GoogleOAuthRequest) -> JwtToken:
+        oauth_response = await self.google_service.get_token_and_user(schema=schema)
+        return await self._log_in_oauth(oauth_response, OAuthProvider.GOOGLE)
+
+    @database.transactional
+    async def log_in_github(self, schema: GitHubOAuthRequest) -> JwtToken:
+        oauth_response = await self.github_service.get_token_and_user(schema=schema)
+        entity = await self.repository.read_by_name(name=oauth_response.name)
+        if entity:
+            access_token, refresh_token = self.jwt_service.create_access_token(
+                entity
+            ), self.jwt_service.create_refresh_token(entity)
+            entity.refresh_token = refresh_token
+            return JwtToken(
+                access_token=access_token,
+                refresh_token=refresh_token,
+                expires_in=self.jwt_service.access_expire.seconds,
+            )
+        _schema = UserIn(
+            name=oauth_response.name,
+            email=oauth_response.email,
             role=Role.USER,
             oauth=OAuthProvider.GITHUB,
             password=None,
             refresh_token=None,
-            github_token=github_oauth_response.token,
+            oauth_token=oauth_response.token,
         )
         entity = self.mapper(_schema)
         entity = await self.repository.create(entity=entity)

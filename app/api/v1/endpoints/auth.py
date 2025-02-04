@@ -4,11 +4,17 @@ from dependency_injector.wiring import Provide, inject
 from fastapi import Depends, Form, status
 from fastapi.responses import JSONResponse
 
-from app.core.auth import GitHubOAuthDeps, PasswordOAuthDeps, UserAuthDeps
+from app.core.auth import (
+    GitHubOAuthDeps,
+    GoogleOAuthDeps,
+    PasswordOAuthDeps,
+    UserAuthDeps,
+)
 from app.core.container import Container
 from app.core.router import CoreAPIRouter
 from app.schemas.auth import (
     GitHubOAuthRequest,
+    GoogleOAuthRequest,
     JwtToken,
     PasswordOAuthReigsterRequest,
     PasswordOAuthRequest,
@@ -73,6 +79,23 @@ async def log_in_password(
 
 
 @router.post(
+    "/token/google",
+    response_model=JwtToken,
+    response_class=JSONResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Obtain an access token via Google OAuth",
+    description="- Authenticate using Google OAuth and receive an access token.<br/>\n"
+    "- The client must provide an authorization code obtained from Google.",
+)
+@inject
+async def log_in_google(
+    request: Annotated[GoogleOAuthRequest, Form()],
+    service: UserService = Depends(Provide[Container.user_service]),
+):
+    return await service.log_in_google(request)
+
+
+@router.post(
     "/token/github",
     response_model=JwtToken,
     response_class=JSONResponse,
@@ -94,10 +117,18 @@ async def log_in_github(
     response_model=UserOut,
     response_class=JSONResponse,
     status_code=status.HTTP_200_OK,
-    dependencies=[PasswordOAuthDeps, GitHubOAuthDeps],
+    dependencies=[PasswordOAuthDeps, GoogleOAuthDeps, GitHubOAuthDeps],
     summary="Retrieve the current authenticated user's information",
     description="- Returns the authenticated user's details based on the provided access token.</br>\n"
     "- Requires a valid token obtained via password authentication or GitHub OAuth.",
 )
 async def get_me(user: Annotated[UserOut, UserAuthDeps]):
     return user
+
+
+# "https://accounts.google.com/o/oauth2/v2/auth?client_id=692089915426-bbbn0uo6vu21paev96a0djlfv4b2litq.apps.googleusercontent.com&response_type=code&scope=email&redirect_uri=https://dev.zerohertz.xyz/api/docs/oauth2-redirect"
+# https://dev.zerohertz.xyz/?
+# code=4%2F0ASVgi3LI0-zFQH9vT3WPWOeJXxWYBNKvocblaOKjBILbbRhDsOgcJDZGbn6SMBkEEBKPfA
+# &scope=email+openid+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email
+# &authuser=0
+# &prompt=none

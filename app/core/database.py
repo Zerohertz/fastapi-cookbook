@@ -78,7 +78,7 @@ class Database:
                 oauth=OAuthProvider.PASSWORD,
                 password=crypt_service.hash(configs.ADMIN_PASSWORD),
                 refresh_token=None,
-                github_token=None,
+                oauth_token=None,
             )
             session.add(admin_user)
             await session.commit()

@@ -33,6 +33,8 @@ class Configs(BaseSettings):
     DB_TABLE_CREATE: bool = True
 
     # --------- AUTH SETTINGS --------- #
+    GOOGLE_OAUTH_CLIENT_ID: str
+    GOOGLE_OAUTH_CLIENT_SECRET: str
     GITHUB_OAUTH_CLIENT_ID: str
     GITHUB_OAUTH_CLIENT_SECRET: str
     # openssl rand -hex 32
@@ -72,6 +74,7 @@ configs = Configs()  # type: ignore[call-arg]
 
 class OAuthEndpoints(BaseSettings):
     PASSWORD: str = f"{configs.PREFIX}/v1/auth/token/password"
+    GOOGLE: str = f"{configs.PREFIX}/v1/auth/token/google"
     GITHUB: str = f"{configs.PREFIX}/v1/auth/token/github"
 
 

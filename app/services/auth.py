@@ -4,17 +4,26 @@ import httpx
 import pytz
 from jose import jwt
 from jose.exceptions import ExpiredSignatureError, JWTError
+from loguru import logger
 from passlib.context import CryptContext
 
 from app.core.configs import configs
 from app.exceptions.auth import (
     GitHubOAuthFailed,
+    GoogleOAuthFailed,
     OAuthFormDataInvalid,
     TokenDecodeError,
     TokenExpired,
 )
 from app.models.users import User
-from app.schemas.auth import GitHubOAuthRequest, GitHubOAuthResponse, JwtPayload
+from app.schemas.auth import (
+    GitHubOAuthRequest,
+    GoogleOAuthRequest,
+    GoogleOAuthToken,
+    GoogleOAuthUser,
+    JwtPayload,
+    OAuthResponse,
+)
 
 
 class CryptService(CryptContext):
@@ -63,14 +72,66 @@ class JwtService:
             raise TokenDecodeError from error
 
 
+class GoogleService:
+    def __init__(self) -> None:
+        self.client_id = configs.GOOGLE_OAUTH_CLIENT_ID
+        self.client_secret = configs.GOOGLE_OAUTH_CLIENT_SECRET
+
+    async def _get_token(self, schema: GoogleOAuthRequest) -> GoogleOAuthToken:
+        if schema.grant_type != "authorization_code":
+            raise OAuthFormDataInvalid
+        async with httpx.AsyncClient() as client:
+            try:
+                response = await client.post(
+                    "https://oauth2.googleapis.com/token",
+                    json={
+                        "client_id": self.client_id,
+                        "client_secret": self.client_secret,
+                        "grant_type": schema.grant_type,
+                        "code": schema.code,
+                        "redirect_uri": schema.redirect_uri,
+                    },
+                    headers={"Accept": "application/json"},
+                )
+                response.raise_for_status()
+            except httpx.HTTPStatusError as error:
+                logger.error(response.json())
+                raise GoogleOAuthFailed from error
+        return GoogleOAuthToken.model_validate(response.json())
+
+    async def _get_user(self, schema: GoogleOAuthToken) -> GoogleOAuthUser:
+        # https://developers.google.com/identity/protocols/oauth2/scopes#oauth2
+        async with httpx.AsyncClient() as client:
+            try:
+                response = await client.get(
+                    "https://www.googleapis.com/oauth2/v2/userinfo",
+                    headers={
+                        "Accept": "application/json",
+                        "Authorization": f"Bearer {schema.access_token}",
+                    },
+                )
+                response.raise_for_status()
+            except httpx.HTTPStatusError as error:
+                logger.error(response.json())
+                raise GoogleOAuthFailed from error
+        return GoogleOAuthUser.model_validate(response.json())
+
+    async def get_token_and_user(self, schema: GoogleOAuthRequest) -> OAuthResponse:
+        google_oauth_token = await self._get_token(schema=schema)
+        google_oauth_user = await self._get_user(schema=google_oauth_token)
+        return OAuthResponse(
+            token=google_oauth_token.access_token,
+            name=google_oauth_user.name,
+            email=google_oauth_user.email,
+        )
+
+
 class GitHubService:
     def __init__(self) -> None:
         self.client_id = configs.GITHUB_OAUTH_CLIENT_ID
         self.client_secret = configs.GITHUB_OAUTH_CLIENT_SECRET
 
-    async def get_token_and_user(
-        self, schema: GitHubOAuthRequest
-    ) -> GitHubOAuthResponse:
+    async def get_token_and_user(self, schema: GitHubOAuthRequest) -> OAuthResponse:
         if schema.grant_type != "authorization_code":
             raise OAuthFormDataInvalid
         async with httpx.AsyncClient() as client:
@@ -110,6 +171,4 @@ class GitHubService:
         )
         if github_name is None or github_email is None:
             raise GitHubOAuthFailed
-        return GitHubOAuthResponse(
-            token=github_token, name=github_name, email=github_email
-        )
+        return OAuthResponse(token=github_token, name=github_name, email=github_email)

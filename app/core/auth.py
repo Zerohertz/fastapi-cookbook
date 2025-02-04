@@ -70,6 +70,18 @@ PasswordOAuthDeps = Depends(
         tokenUrl=oauth_endpoints.PASSWORD, scheme_name="Password OAuth"
     )
 )
+GoogleOAuthDeps = Depends(
+    OAuth2AuthorizationCodeBearer(
+        authorizationUrl=f"https://accounts.google.com/o/oauth2/v2/auth?client_id={configs.GOOGLE_OAUTH_CLIENT_ID}",
+        tokenUrl=oauth_endpoints.GOOGLE,
+        refreshUrl=None,
+        scheme_name="Google OAuth",
+        scopes={
+            "email": "Google Email",
+            "profile": "Google Profile",
+        },
+    )
+)
 GitHubOAuthDeps = Depends(
     OAuth2AuthorizationCodeBearer(
         authorizationUrl=f"https://github.com/login/oauth/authorize?client_id={configs.GITHUB_OAUTH_CLIENT_ID}",

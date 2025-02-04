@@ -4,7 +4,12 @@ from dependency_injector.wiring import Provide, inject
 from fastapi import Depends, status
 from fastapi.responses import JSONResponse
 
-from app.core.auth import GitHubOAuthDeps, PasswordOAuthDeps, UserAuthDeps
+from app.core.auth import (
+    GitHubOAuthDeps,
+    GoogleOAuthDeps,
+    PasswordOAuthDeps,
+    UserAuthDeps,
+)
 from app.core.container import Container
 from app.core.router import CoreAPIRouter
 from app.schemas.users import UserOut, UserPatchRequest, UserRequest, UserResponse
@@ -25,7 +30,7 @@ router = CoreAPIRouter(prefix="/user", tags=["user"])
 @inject
 async def put_user(
     schema: UserRequest,
-    user: Annotated[UserOut, UserAuthDeps],
+    user: Annotated[UserOut, GoogleOAuthDeps, UserAuthDeps],
     service: UserService = Depends(Provide[Container.user_service]),
 ):
     return await service.put_by_id(id=user.id, schema=schema)
@@ -36,7 +41,7 @@ async def put_user(
     response_model=UserResponse,
     response_class=JSONResponse,
     status_code=status.HTTP_200_OK,
-    dependencies=[PasswordOAuthDeps, GitHubOAuthDeps],
+    dependencies=[PasswordOAuthDeps, GoogleOAuthDeps, GitHubOAuthDeps],
     summary="",
     description="",
 )
@@ -54,7 +59,7 @@ async def patch_user(
     response_model=UserResponse,
     response_class=JSONResponse,
     status_code=status.HTTP_200_OK,
-    dependencies=[PasswordOAuthDeps, GitHubOAuthDeps],
+    dependencies=[PasswordOAuthDeps, GoogleOAuthDeps, GitHubOAuthDeps],
     summary="",
     description="",
 )

@@ -27,7 +27,7 @@ class UserIn(UserRequest):
     oauth: OAuthProvider
     password: Optional[str] = None
     refresh_token: Optional[str] = None
-    github_token: Optional[str] = None
+    oauth_token: Optional[str] = None
 
 
 class UserOut(UserResponse):

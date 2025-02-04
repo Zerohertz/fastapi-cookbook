@@ -2,7 +2,12 @@ from dependency_injector.wiring import Provide, inject
 from fastapi import Depends, status
 from fastapi.responses import JSONResponse
 
-from app.core.auth import AdminAuthDeps, GitHubOAuthDeps, PasswordOAuthDeps
+from app.core.auth import (
+    AdminAuthDeps,
+    GitHubOAuthDeps,
+    GoogleOAuthDeps,
+    PasswordOAuthDeps,
+)
 from app.core.container import Container
 from app.core.router import CoreAPIRouter
 from app.schemas.users import UserPatchRequest, UserRequest, UserResponse
@@ -11,7 +16,7 @@ from app.services.users import UserService
 router = CoreAPIRouter(
     prefix="/user",
     tags=["admin"],
-    dependencies=[AdminAuthDeps, PasswordOAuthDeps, GitHubOAuthDeps],
+    dependencies=[AdminAuthDeps, PasswordOAuthDeps, GoogleOAuthDeps, GitHubOAuthDeps],
 )
 
 

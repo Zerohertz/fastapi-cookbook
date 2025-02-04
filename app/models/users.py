@@ -15,4 +15,4 @@ class User(BaseModel):
     oauth = mapped_column(Enum(OAuthProvider), unique=False, nullable=False)
     password = mapped_column(String(255), unique=False, nullable=True)
     refresh_token = mapped_column(String(255), unique=False, nullable=True)
-    github_token = mapped_column(String(255), unique=False, nullable=True)
+    oauth_token = mapped_column(String(255), unique=False, nullable=True)

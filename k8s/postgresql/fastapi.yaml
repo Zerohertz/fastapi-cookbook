@@ -51,16 +51,26 @@ spec:
                 configMapKeyRef:
                   name: postgresql
                   key: DATABASE
+            - name: GOOGLE_OAUTH_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: auth
+                  key: GOOGLE_OAUTH_CLIENT_ID
+            - name: GOOGLE_OAUTH_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: auth
+                  key: GOOGLE_OAUTH_CLIENT_SECRET
             - name: GITHUB_OAUTH_CLIENT_ID
               valueFrom:
                 secretKeyRef:
                   name: auth
-                  key: PROD_CLIENT_ID
+                  key: GITHUB_OAUTH_CLIENT_ID_PROD
             - name: GITHUB_OAUTH_CLIENT_SECRET
               valueFrom:
                 secretKeyRef:
                   name: auth
-                  key: PROD_CLIENT_SECRET
+                  key: GITHUB_OAUTH_CLIENT_SECRET_PROD
             - name: JWT_SECRET_KEY
               valueFrom:
                 secretKeyRef:

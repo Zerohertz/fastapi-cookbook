@@ -34,12 +34,6 @@ class PasswordOAuthReigsterRequest(PasswordOAuthRequest):
 
 
 class GoogleOAuthRequest(OAuthRequest):
-    # grant_type: Annotated[str, Form(pattern="authorization_code")]
-    # redirect_uri: Annotated[str, Form("")]
-    # code: Annotated[str, Form(...)]
-    # scope: Annotated[str, Form(...)]
-    # authuser: Annotated[int, Form(...)]
-    # prompt: Annotated[str, Form(...)]
     grant_type: Annotated[str, Form(pattern="authorization_code")]
     code: Annotated[str, Form(...)]
     redirect_uri: Annotated[str, Form("")]
@@ -67,6 +61,25 @@ class GitHubOAuthRequest(OAuthRequest):
     grant_type: Annotated[str, Form(pattern="authorization_code")]
     code: Annotated[str, Form(...)]
     redirect_uri: Annotated[str, Form("")]
+
+
+class GitHubOAuthToken(BaseModel):
+    access_token: str
+    token_type: str
+    scope: str
+
+
+class GitHubOAuthUser(BaseModel):
+    id: int
+    login: str
+    avatar_url: str
+    gravatar_id: str
+    html_url: str
+    name: str
+    company: str
+    blog: str
+    location: str
+    email: str
 
 
 class OAuthResponse(BaseModel):

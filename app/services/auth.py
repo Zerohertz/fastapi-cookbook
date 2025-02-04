@@ -18,6 +18,8 @@ from app.exceptions.auth import (
 from app.models.users import User
 from app.schemas.auth import (
     GitHubOAuthRequest,
+    GitHubOAuthToken,
+    GitHubOAuthUser,
     GoogleOAuthRequest,
     GoogleOAuthToken,
     GoogleOAuthUser,
@@ -131,7 +133,7 @@ class GitHubService:
         self.client_id = configs.GITHUB_OAUTH_CLIENT_ID
         self.client_secret = configs.GITHUB_OAUTH_CLIENT_SECRET
 
-    async def get_token_and_user(self, schema: GitHubOAuthRequest) -> OAuthResponse:
+    async def _get_token(self, schema: GitHubOAuthRequest) -> GitHubOAuthToken:
         if schema.grant_type != "authorization_code":
             raise OAuthFormDataInvalid
         async with httpx.AsyncClient() as client:
@@ -148,27 +150,31 @@ class GitHubService:
                 )
                 response.raise_for_status()
             except httpx.HTTPStatusError as error:
+                logger.error(response.json())
                 raise GitHubOAuthFailed from error
-        data = response.json()
-        github_token = data.get("access_token", None)
-        if github_token is None:
-            raise GitHubOAuthFailed
+        return GitHubOAuthToken.model_validate(response.json())
+
+    async def _get_user(self, schema: GitHubOAuthToken) -> GitHubOAuthUser:
         async with httpx.AsyncClient() as client:
             try:
                 response = await client.get(
                     "https://api.github.com/user",
                     headers={
                         "Accept": "application/json",
-                        "Authorization": f"Bearer {github_token}",
+                        "Authorization": f"Bearer {schema.access_token}",
                     },
                 )
                 response.raise_for_status()
             except httpx.HTTPStatusError as error:
+                logger.error(response.json())
                 raise GitHubOAuthFailed from error
-        github_user = response.json()
-        github_name, github_email = github_user.get("login", None), github_user.get(
-            "email", None
+        return GitHubOAuthUser.model_validate(response.json())
+
+    async def get_token_and_user(self, schema: GitHubOAuthRequest) -> OAuthResponse:
+        github_oauth_token = await self._get_token(schema=schema)
+        github_oauth_user = await self._get_user(github_oauth_token)
+        return OAuthResponse(
+            token=github_oauth_token.access_token,
+            name=github_oauth_user.name,
+            email=github_oauth_user.email,
         )
-        if github_name is None or github_email is None:
-            raise GitHubOAuthFailed
-        return OAuthResponse(token=github_token, name=github_name, email=github_email)

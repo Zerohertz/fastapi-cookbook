@@ -13,6 +13,7 @@ dependencies = [
     "loguru>=0.7.3",
     "passlib>=1.7.4",
     "pydantic-settings>=2.7.1",
+    "pydantic[email]>=2.10.5",
     "python-jose>=3.3.0",
     "python-multipart>=0.0.20",
     "pytz>=2024.2",

@@ -10,6 +10,19 @@ def remove_handler(_logger: logging.Logger) -> None:
         _logger.removeHandler(handler)
 
 
+def update_logger_format():
+    for logger_name, _logger in logging.Logger.manager.loggerDict.items():
+        if isinstance(_logger, logging.Logger):
+            if not _logger.handlers:
+                continue
+            for handler in _logger.handlers:
+                handler.setFormatter(
+                    logging.Formatter(
+                        "%(asctime)s | %(levelname)s | %(name)s - %(message)s"
+                    )
+                )
+
+
 class LoguruHandler(logging.Handler):
     def emit(self, record: logging.LogRecord) -> None:
         getattr(logger, record.levelname.lower(), logger.info)(record.getMessage())

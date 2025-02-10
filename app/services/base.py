@@ -9,8 +9,11 @@ T = TypeVar("T", bound=BaseModel)
 
 
 class BaseService(Generic[T]):
-    def __init__(self, repository: BaseRepository[T]) -> None:
+    def __init__(
+        self, repository: BaseRepository[T], schema: type[BaseResponse]
+    ) -> None:
         self.repository = repository
+        self.schema = schema
 
     @overload
     def mapper(self, data: BaseRequest) -> T: ...
@@ -21,7 +24,7 @@ class BaseService(Generic[T]):
     def mapper(self, data: BaseRequest | T) -> T | BaseResponse:
         if isinstance(data, BaseRequest):
             return self.repository.model(**data.model_dump())
-        return BaseResponse.model_validate(data)
+        return self.schema.model_validate(data, strict=False)
 
     @database.transactional
     async def create(self, schema: BaseRequest) -> BaseResponse:
@@ -29,9 +32,8 @@ class BaseService(Generic[T]):
         entity = await self.repository.create(entity=entity)
         return self.mapper(entity)
 
-    @database.transactional
-    async def get_by_id(self, id: int) -> BaseResponse:
-        entity = await self.repository.read_by_id(id=id)
+    async def get_by_id(self, id: int, eager: bool = False) -> BaseResponse:
+        entity = await self.repository.read_by_id(id=id, eager=eager)
         return self.mapper(entity)
 
     @database.transactional
@@ -54,6 +56,6 @@ class BaseService(Generic[T]):
         return self.mapper(entity)
 
     @database.transactional
-    async def delete_by_id(self, id: int) -> BaseResponse:
-        entity = await self.repository.delete_by_id(id=id)
+    async def delete_by_id(self, id: int, eager: bool = False) -> BaseResponse:
+        entity = await self.repository.delete_by_id(id=id, eager=eager)
         return self.mapper(entity)

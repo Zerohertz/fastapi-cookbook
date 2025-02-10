@@ -22,6 +22,11 @@ class BaseRepository(Generic[T]):
     ) -> None:
         self.model = model
 
+    def _eager(self, *, stmt: Select) -> Select:
+        for _eager in getattr(self.model, "eagers"):
+            stmt = stmt.options(joinedload(getattr(self.model, _eager)))
+        return stmt
+
     async def create(self, entity: T) -> T:
         session = database.scoped_session()
         session.add(entity)
@@ -31,19 +36,14 @@ class BaseRepository(Generic[T]):
             # TODO: DB engine에 따라서 오류가 천차만별
             # message 기반으로 하기는 어려울 것으로 보임
             raise DatabaseException from error
-        await session.refresh(entity)
+        await session.refresh(instance=entity)
         return entity
-
-    def _eager(self, stmt: Select) -> Select:
-        for _eager in getattr(self.model, "eagers"):
-            stmt = stmt.options(joinedload(getattr(self.model, _eager)))
-        return stmt
 
     async def read_by_id(self, id: int, eager: bool = False) -> T:
         stmt = select(self.model)
         if eager:
-            stmt = self._eager(stmt)
-        stmt = stmt.filter(self.model.id == id)
+            stmt = self._eager(stmt=stmt)
+        stmt = stmt.where(self.model.id == id)
         session = database.scoped_session()
         result = await session.execute(stmt)
         entity = result.scalar_one_or_none()
@@ -52,7 +52,7 @@ class BaseRepository(Generic[T]):
         return entity
 
     async def update_by_id(self, id: int, data: dict) -> T:
-        stmt = select(self.model).filter(self.model.id == id)
+        stmt = select(self.model).where(self.model.id == id)
         session = database.scoped_session()
         result = await session.execute(stmt)
         entity = result.scalar_one_or_none()
@@ -68,7 +68,7 @@ class BaseRepository(Generic[T]):
         return entity
 
     async def update_attr_by_id(self, id: int, column: str, value: Any) -> T:
-        stmt = select(self.model).filter(self.model.id == id)
+        stmt = select(self.model).where(self.model.id == id)
         session = database.scoped_session()
         result = await session.execute(stmt)
         entity = result.scalar_one_or_none()
@@ -82,8 +82,10 @@ class BaseRepository(Generic[T]):
         await session.refresh(entity)
         return entity
 
-    async def delete_by_id(self, id: int) -> T:
-        stmt = select(self.model).filter(self.model.id == id)
+    async def delete_by_id(self, id: int, eager: bool = False) -> T:
+        stmt = select(self.model).where(self.model.id == id)
+        if eager:
+            stmt = self._eager(stmt=stmt)
         session = database.scoped_session()
         result = await session.execute(stmt)
         entity = result.scalar_one_or_none()

@@ -12,10 +12,11 @@ from sqlalchemy.ext.asyncio import (
 )
 
 from app.core.configs import ENVIRONMENT, configs
+from app.models.auth import OAuth
 from app.models.base import BaseModel
 from app.models.enums import OAuthProvider, Role
 from app.models.users import User
-from app.services.auth import CryptService
+from app.services.security import CryptService
 
 
 class Context:
@@ -64,23 +65,26 @@ class Database:
                 await conn.run_sync(BaseModel.metadata.drop_all)
             await conn.run_sync(BaseModel.metadata.create_all)
         async with self.sessionmaker() as session:
-            stmt = select(User).filter_by(role=Role.ADMIN)
+            stmt = select(User).where(User.role == Role.ADMIN)
             result = await session.execute(stmt)
-            entity = result.scalar_one_or_none()
-            if entity:
-                logger.warning(f"Admin user already exists: {entity}")
+            user = result.scalar_one_or_none()
+            if user:
+                logger.warning(f"Admin user already exists: {user}")
                 return
             crypt_service = CryptService()
-            admin_user = User(
+            user = User(
                 name=configs.ADMIN_NAME,
                 email=configs.ADMIN_EMAIL,
                 role=Role.ADMIN,
-                oauth=OAuthProvider.PASSWORD,
-                password=crypt_service.hash(configs.ADMIN_PASSWORD),
                 refresh_token=None,
-                oauth_token=None,
+                oauth=[
+                    OAuth(
+                        provider=OAuthProvider.PASSWORD,
+                        password=crypt_service.hash(configs.ADMIN_PASSWORD),
+                    )
+                ],
             )
-            session.add(admin_user)
+            session.add(user)
             await session.commit()
 
     def transactional(self, func: Callable[..., Awaitable]) -> Callable[..., Awaitable]:

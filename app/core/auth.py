@@ -14,7 +14,7 @@ from app.exceptions.auth import NotAuthenticated
 from app.models.enums import Role
 from app.schemas.auth import JwtAccessToken
 from app.schemas.users import UserOut
-from app.services.users import UserService
+from app.services.auth import AuthService
 
 
 class JwtBearer(HTTPBearer):
@@ -48,7 +48,7 @@ jwt_bearer = JwtBearer()
 @inject
 async def get_current_user(
     access_token: Annotated[str, Depends(jwt_bearer)],
-    service: UserService = Depends(Provide[Container.user_service]),
+    service: AuthService = Depends(Provide[Container.auth_service]),
 ) -> UserOut:
     schema = JwtAccessToken(access_token=access_token)
     return await service.verify(schema=schema)

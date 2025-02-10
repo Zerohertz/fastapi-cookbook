@@ -21,7 +21,7 @@ from app.schemas.auth import (
     RefreshOAuthRequest,
 )
 from app.schemas.users import UserOut, UserResponse
-from app.services.users import UserService
+from app.services.auth import AuthService
 
 router = CoreAPIRouter(prefix="/auth", tags=["auth"])
 
@@ -38,7 +38,7 @@ router = CoreAPIRouter(prefix="/auth", tags=["auth"])
 @inject
 async def refresh(
     request: Annotated[RefreshOAuthRequest, Form(...)],
-    service: UserService = Depends(Provide[Container.user_service]),
+    service: AuthService = Depends(Provide[Container.auth_service]),
 ):
     return await service.refresh(request)
 
@@ -55,7 +55,7 @@ async def refresh(
 @inject
 async def register_password(
     request: Annotated[PasswordOAuthReigsterRequest, Form(...)],
-    service: UserService = Depends(Provide[Container.user_service]),
+    service: AuthService = Depends(Provide[Container.auth_service]),
 ):
     return await service.register(request)
 
@@ -73,7 +73,7 @@ async def register_password(
 async def log_in_password(
     # NOTE: OAuth2PasswordRequestForm
     request: Annotated[PasswordOAuthRequest, Form(...)],
-    service: UserService = Depends(Provide[Container.user_service]),
+    service: AuthService = Depends(Provide[Container.auth_service]),
 ):
     return await service.log_in_password(schema=request)
 
@@ -90,7 +90,7 @@ async def log_in_password(
 @inject
 async def log_in_google(
     request: Annotated[GoogleOAuthRequest, Form()],
-    service: UserService = Depends(Provide[Container.user_service]),
+    service: AuthService = Depends(Provide[Container.auth_service]),
 ):
     return await service.log_in_google(request)
 
@@ -107,7 +107,7 @@ async def log_in_google(
 @inject
 async def log_in_github(
     request: Annotated[GitHubOAuthRequest, Form()],
-    service: UserService = Depends(Provide[Container.user_service]),
+    service: AuthService = Depends(Provide[Container.auth_service]),
 ):
     return await service.log_in_github(request)
 
@@ -124,11 +124,3 @@ async def log_in_github(
 )
 async def get_me(user: Annotated[UserOut, UserAuthDeps]):
     return user
-
-
-# "https://accounts.google.com/o/oauth2/v2/auth?client_id=692089915426-bbbn0uo6vu21paev96a0djlfv4b2litq.apps.googleusercontent.com&response_type=code&scope=email&redirect_uri=https://dev.zerohertz.xyz/api/docs/oauth2-redirect"
-# https://dev.zerohertz.xyz/?
-# code=4%2F0ASVgi3LI0-zFQH9vT3WPWOeJXxWYBNKvocblaOKjBILbbRhDsOgcJDZGbn6SMBkEEBKPfA
-# &scope=email+openid+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email
-# &authuser=0
-# &prompt=none

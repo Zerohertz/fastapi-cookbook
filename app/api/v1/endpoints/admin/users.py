@@ -10,7 +10,7 @@ from app.core.auth import (
 )
 from app.core.container import Container
 from app.core.router import CoreAPIRouter
-from app.schemas.users import UserPatchRequest, UserRequest, UserResponse
+from app.schemas.users import UserOut, UserPatchRequest, UserRequest
 from app.services.users import UserService
 
 router = CoreAPIRouter(
@@ -22,7 +22,7 @@ router = CoreAPIRouter(
 
 @router.get(
     "/",
-    response_model=list[UserResponse],
+    response_model=list[UserOut],
     response_class=JSONResponse,
     status_code=status.HTTP_200_OK,
     summary="",
@@ -37,7 +37,7 @@ async def get_users(
 
 @router.get(
     "/{id}",
-    response_model=UserResponse,
+    response_model=UserOut,
     response_class=JSONResponse,
     status_code=status.HTTP_200_OK,
     summary="",
@@ -48,12 +48,12 @@ async def get_user(
     id: int,
     service: UserService = Depends(Provide[Container.user_service]),
 ):
-    return await service.get_by_id(id)
+    return await service.get_by_id(id=id)
 
 
 @router.put(
     "/{id}",
-    response_model=UserResponse,
+    response_model=UserOut,
     response_class=JSONResponse,
     status_code=status.HTTP_200_OK,
     summary="",
@@ -70,7 +70,7 @@ async def put_user(
 
 @router.patch(
     "/{id}",
-    response_model=UserResponse,
+    response_model=UserOut,
     response_class=JSONResponse,
     status_code=status.HTTP_200_OK,
     summary="",
@@ -87,7 +87,7 @@ async def patch_user(
 
 @router.delete(
     "/{id}",
-    response_model=UserResponse,
+    response_model=UserOut,
     response_class=JSONResponse,
     status_code=status.HTTP_200_OK,
     summary="",
@@ -98,4 +98,4 @@ async def delete_user(
     id: int,
     service: UserService = Depends(Provide[Container.user_service]),
 ):
-    return await service.delete_by_id(id)
+    return await service.delete_by_id(id=id)

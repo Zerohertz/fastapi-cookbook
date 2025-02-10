@@ -21,7 +21,7 @@ async def global_exception_handler(request: Request, exc: Exception) -> JSONResp
 async def core_exception_handler(
     request: Request, exc: CoreException  # pylint: disable=unused-argument
 ) -> JSONResponse:
-    logger.exception(exc)
+    logger.error(exc)
     return JSONResponse(
         content=APIResponse.error(status=exc.status, message=repr(exc)).model_dump(
             mode="json"

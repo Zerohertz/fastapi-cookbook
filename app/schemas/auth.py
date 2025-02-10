@@ -1,10 +1,24 @@
 from datetime import datetime
-from typing import Annotated
+from typing import Annotated, Optional
 
 from fastapi import Form
 from pydantic import BaseModel
 
-from app.schemas.base import BaseRequest
+from app.models.enums import OAuthProvider
+from app.schemas.base import BaseRequest, BaseResponse
+
+
+class AuthRequest(BaseRequest): ...
+
+
+class AuthResponse(BaseResponse):
+    provider: OAuthProvider
+
+
+class AuthOut(AuthResponse):
+    password: Optional[str] = None
+    oauth_id: Optional[str] = None
+    oauth_token: Optional[str] = None
 
 
 class OAuthRequest(BaseRequest):
@@ -18,6 +32,7 @@ class RefreshOAuthRequest(OAuthRequest):
 
 class PasswordOAuthRequest(OAuthRequest):
     grant_type: Annotated[str, Form(pattern="password")]
+    # NOTE: username is email
     username: Annotated[
         str,
         Form(
@@ -70,7 +85,7 @@ class GitHubOAuthToken(BaseModel):
 
 
 class GitHubOAuthUser(BaseModel):
-    id: int
+    id: str
     login: str
     avatar_url: str
     gravatar_id: str
@@ -83,6 +98,7 @@ class GitHubOAuthUser(BaseModel):
 
 
 class OAuthResponse(BaseModel):
+    id: str
     token: str
     name: str
     email: str

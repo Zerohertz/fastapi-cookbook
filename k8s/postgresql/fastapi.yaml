@@ -101,7 +101,8 @@ spec:
               containerPort: 8000
           volumeMounts:
             - name: fastapi-prod-env-volume
-              mountPath: /workspace/envs
+              mountPath: /workspace/envs/prod.env
+              subPath: prod.env
       volumes:
         - name: fastapi-prod-env-volume
           configMap:

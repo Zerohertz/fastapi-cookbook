@@ -16,7 +16,7 @@ lint:
 test:
 	uv sync --group test
 	export DESCRIPTION=$$(cat README.md) && \
-		uv run pytest -vv \
+		PYTHONASYNCIODEBUG=1 uv run pytest -vv \
 		--cov=app --cov-branch --cov-report=xml \
 		--junitxml=junit.xml -o junit_family=legacy
 
@@ -24,7 +24,8 @@ test:
 dev:
 	export DESCRIPTION=$$(cat README.md) && \
 		source ./envs/dev.env && \
-		uv run uvicorn app.main:app --host 0.0.0.0 --port $${PORT} \
+		PYTHONASYNCIODEBUG=1 uv run uvicorn app.main:app --host 0.0.0.0 --port $${PORT} \
+		--loop uvloop --http httptools \
 		--env-file ./envs/dev.env \
 		--proxy-headers --forwarded-allow-ips='*' \
 		--reload

@@ -2,7 +2,7 @@ from typing import Annotated
 
 from dependency_injector.wiring import Provide, inject
 from fastapi import Depends, status
-from fastapi.responses import JSONResponse
+from fastapi.responses import ORJSONResponse
 
 from app.core.auth import (
     GitHubOAuthDeps,
@@ -22,7 +22,7 @@ router = CoreAPIRouter(prefix="/user", tags=["user"])
 @router.put(
     "",
     response_model=UserResponse,
-    response_class=JSONResponse,
+    response_class=ORJSONResponse,
     status_code=status.HTTP_200_OK,
     dependencies=[PasswordOAuthDeps, GoogleOAuthDeps, GitHubOAuthDeps],
     summary="",
@@ -40,7 +40,7 @@ async def put_user(
 @router.patch(
     "",
     response_model=UserResponse,
-    response_class=JSONResponse,
+    response_class=ORJSONResponse,
     status_code=status.HTTP_200_OK,
     dependencies=[PasswordOAuthDeps, GoogleOAuthDeps, GitHubOAuthDeps],
     summary="",
@@ -58,7 +58,7 @@ async def patch_user(
 @router.delete(
     "",
     response_model=UserResponse,
-    response_class=JSONResponse,
+    response_class=ORJSONResponse,
     status_code=status.HTTP_200_OK,
     dependencies=[PasswordOAuthDeps, GoogleOAuthDeps, GitHubOAuthDeps],
     summary="",

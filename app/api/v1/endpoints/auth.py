@@ -2,7 +2,7 @@ from typing import Annotated
 
 from dependency_injector.wiring import Provide, inject
 from fastapi import Depends, Form, status
-from fastapi.responses import JSONResponse
+from fastapi.responses import ORJSONResponse
 
 from app.core.auth import (
     GitHubOAuthDeps,
@@ -29,7 +29,7 @@ router = CoreAPIRouter(prefix="/auth", tags=["auth"])
 @router.post(
     "/refresh",
     response_model=JwtToken,
-    response_class=JSONResponse,
+    response_class=ORJSONResponse,
     status_code=status.HTTP_200_OK,
     summary="Refresh access token",
     description="- Refresh the access token using a valid refresh token.</br>\n"
@@ -46,7 +46,7 @@ async def refresh(
 @router.post(
     "/register/password",
     response_model=UserResponse,
-    response_class=JSONResponse,
+    response_class=ORJSONResponse,
     status_code=status.HTTP_201_CREATED,
     summary="Register a new account with a password",
     description="- Create a new user account using an email and password.</br>\n"
@@ -63,7 +63,7 @@ async def register_password(
 @router.post(
     "/token/password",
     response_model=JwtToken,
-    response_class=JSONResponse,
+    response_class=ORJSONResponse,
     status_code=status.HTTP_200_OK,
     summary="Obtain an access token via password authentication",
     description="- Authenticate using an email and password to obtain an access token.</br>\n"
@@ -81,7 +81,7 @@ async def log_in_password(
 @router.post(
     "/token/google",
     response_model=JwtToken,
-    response_class=JSONResponse,
+    response_class=ORJSONResponse,
     status_code=status.HTTP_200_OK,
     summary="Obtain an access token via Google OAuth",
     description="- Authenticate using Google OAuth and receive an access token.<br/>\n"
@@ -98,7 +98,7 @@ async def log_in_google(
 @router.post(
     "/token/github",
     response_model=JwtToken,
-    response_class=JSONResponse,
+    response_class=ORJSONResponse,
     status_code=status.HTTP_200_OK,
     summary="Obtain an access token via GitHub OAuth",
     description="- Authenticate using GitHub OAuth and receive an access token.<br/>\n"
@@ -115,7 +115,7 @@ async def log_in_github(
 @router.get(
     "/me",
     response_model=UserOut,
-    response_class=JSONResponse,
+    response_class=ORJSONResponse,
     status_code=status.HTTP_200_OK,
     dependencies=[PasswordOAuthDeps, GoogleOAuthDeps, GitHubOAuthDeps],
     summary="Retrieve the current authenticated user's information",

@@ -1,12 +1,12 @@
 from datetime import datetime
 
-from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 
+from app.core.router import CoreAPIRouter
 from app.schemas.shields import Shields
 from app.utils.shields import dday
 
-router = APIRouter(prefix="/shields", tags=["shields.io"])
+router = CoreAPIRouter(prefix="/shields", tags=["shields.io"])
 
 
 @router.get(

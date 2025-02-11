@@ -1,37 +1,38 @@
-from typing import Optional
+from typing import Annotated, Sequence
 
-from app.models.enums import OAuthProvider, Role
+from pydantic import EmailStr, StringConstraints
+
+from app.models.enums import Role
+from app.schemas.auth import AuthOut, AuthResponse
 from app.schemas.base import BaseRequest, BaseResponse
 
 
 class UserRequest(BaseRequest):
-    name: str
-    # TODO: Email 검증
-    email: str
+    name: Annotated[str, StringConstraints(min_length=3, max_length=30)]
 
 
-class UserPatchRequest(BaseRequest):
-    name: Optional[str] = None
-    email: Optional[str] = None
-    password: Optional[str] = None
+class UserPasswordRequest(BaseRequest):
+    password_old: Annotated[str, StringConstraints(min_length=8, max_length=30)]
+    password_new: Annotated[str, StringConstraints(min_length=8, max_length=30)]
+
+
+class UserPasswordAdminRequest(BaseRequest):
+    password: Annotated[str, StringConstraints(min_length=8, max_length=30)]
 
 
 class UserResponse(BaseResponse):
-    name: str
-    email: str
-    oauth: OAuthProvider
+    name: Annotated[str, StringConstraints(min_length=3, max_length=30)]
+    email: EmailStr
+    role: Role
+    oauth: Sequence[AuthResponse] = []
 
 
 class UserIn(UserRequest):
+    email: EmailStr
     role: Role
-    oauth: OAuthProvider
-    password: Optional[str] = None
-    refresh_token: Optional[str] = None
-    github_token: Optional[str] = None
+    refresh_token: str | None = None
 
 
 class UserOut(UserResponse):
-    role: Role
-    password: Optional[str] = None
-    refresh_token: Optional[str] = None
-    github_token: Optional[str] = None
+    refresh_token: str | None = None
+    oauth: Sequence[AuthOut] = []

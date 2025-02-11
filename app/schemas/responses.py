@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Generic, Optional, TypeVar
+from typing import Generic, TypeVar
 
 import pytz
 from pydantic import BaseModel
@@ -31,7 +31,7 @@ class APIResponse(BaseModel, Generic[T]):
 
     status: int
     message: str
-    data: Optional[T] = None
+    data: T | None = None
     timestamp: datetime
 
     @classmethod

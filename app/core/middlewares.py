@@ -1,5 +1,4 @@
 import time
-from typing import Optional
 
 from fastapi import Request, Response
 from loguru import logger
@@ -22,8 +21,8 @@ class LoggingMiddleware(BaseHTTPMiddleware):
         ip: str,
         url: str,
         method: str,
-        status: Optional[int] = None,
-        elapsed_time: Optional[str] = None,
+        status: int | None = None,
+        elapsed_time: str | None = None,
     ) -> None:
         ip = osc_format(ip, href=f"https://db-ip.com/{ip}")
         ip = ansi_format(
@@ -36,20 +35,20 @@ class LoggingMiddleware(BaseHTTPMiddleware):
         method = ansi_format(f"[Method: {method}]", fg_color=ANSI_FG_COLOR.LIGHT_BLACK)
         if status and elapsed_time:
             if status < 400:
-                status = ansi_format(
+                _status = ansi_format(
                     status,
                     bg_color=ANSI_BG_COLOR.LIGHT_BLACK,
                     style=[ANSI_STYLE.UNDERLINE, ANSI_STYLE.BOLD],
                 )
             elif status < 500:
-                status = ansi_format(
+                _status = ansi_format(
                     status,
                     fg_color=ANSI_FG_COLOR.BLACK,
                     bg_color=ANSI_BG_COLOR.LIGHT_YELLOW,
                     style=[ANSI_STYLE.UNDERLINE, ANSI_STYLE.BOLD],
                 )
             else:
-                status = ansi_format(
+                _status = ansi_format(
                     status,
                     bg_color=ANSI_BG_COLOR.RED,
                     style=[ANSI_STYLE.UNDERLINE, ANSI_STYLE.BOLD],
@@ -59,12 +58,12 @@ class LoggingMiddleware(BaseHTTPMiddleware):
                 bg_color=ANSI_BG_COLOR.LIGHT_BLACK,
                 style=[ANSI_STYLE.UNDERLINE, ANSI_STYLE.BOLD],
             )
-            status = f"[Status: {status} (Elapsed Time: {elapsed_time})]"
+            _status = f"[Status: {_status} (Elapsed Time: {elapsed_time})]"
         else:
-            status = ansi_format(
+            _status = ansi_format(
                 "[Status: Processing...]", fg_color=ANSI_FG_COLOR.LIGHT_BLACK
             )
-        logger.info(f"{ip} {url} {method} {status}")
+        logger.info(f"{ip} {url} {method} {_status}")
 
     async def dispatch(
         self, request: Request, call_next: RequestResponseEndpoint
@@ -77,7 +76,7 @@ class LoggingMiddleware(BaseHTTPMiddleware):
             ip = request.client.host
         else:
             ip = "None"
-        self.info(ip=ip, url=str(request.url), method=request.method)
+        self.info(ip=str(ip), url=str(request.url), method=request.method)
         body = await request.body()
         if body:
             logger.trace(f"{body=}")
@@ -85,7 +84,7 @@ class LoggingMiddleware(BaseHTTPMiddleware):
         response = await call_next(request)
         end_time = time.time()
         self.info(
-            ip=ip,
+            ip=str(ip),
             url=str(request.url),
             method=request.method,
             status=response.status_code,
@@ -98,9 +97,9 @@ class SessionMiddleware(BaseHTTPMiddleware):
     async def dispatch(
         self, request: Request, call_next: RequestResponseEndpoint
     ) -> Response:
+        context = database.context.set(session_id=hash(request))
+        logger.trace(f"[Session Start]\tID: {database.context.get()}")
         try:
-            context = database.context.set(session_id=hash(request))
-            logger.trace(f"[Session Start]\tID: {database.context.get()}")
             response = await call_next(request)
         finally:
             await database.scoped_session.remove()

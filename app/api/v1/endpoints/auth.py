@@ -4,18 +4,24 @@ from dependency_injector.wiring import Provide, inject
 from fastapi import Depends, Form, status
 from fastapi.responses import JSONResponse
 
-from app.core.auth import GitHubOAuthDeps, PasswordOAuthDeps, UserAuthDeps
+from app.core.auth import (
+    GitHubOAuthDeps,
+    GoogleOAuthDeps,
+    PasswordOAuthDeps,
+    UserAuthDeps,
+)
 from app.core.container import Container
 from app.core.router import CoreAPIRouter
 from app.schemas.auth import (
     GitHubOAuthRequest,
+    GoogleOAuthRequest,
     JwtToken,
     PasswordOAuthReigsterRequest,
     PasswordOAuthRequest,
     RefreshOAuthRequest,
 )
 from app.schemas.users import UserOut, UserResponse
-from app.services.users import UserService
+from app.services.auth import AuthService
 
 router = CoreAPIRouter(prefix="/auth", tags=["auth"])
 
@@ -32,7 +38,7 @@ router = CoreAPIRouter(prefix="/auth", tags=["auth"])
 @inject
 async def refresh(
     request: Annotated[RefreshOAuthRequest, Form(...)],
-    service: UserService = Depends(Provide[Container.user_service]),
+    service: AuthService = Depends(Provide[Container.auth_service]),
 ):
     return await service.refresh(request)
 
@@ -49,7 +55,7 @@ async def refresh(
 @inject
 async def register_password(
     request: Annotated[PasswordOAuthReigsterRequest, Form(...)],
-    service: UserService = Depends(Provide[Container.user_service]),
+    service: AuthService = Depends(Provide[Container.auth_service]),
 ):
     return await service.register(request)
 
@@ -67,9 +73,26 @@ async def register_password(
 async def log_in_password(
     # NOTE: OAuth2PasswordRequestForm
     request: Annotated[PasswordOAuthRequest, Form(...)],
-    service: UserService = Depends(Provide[Container.user_service]),
+    service: AuthService = Depends(Provide[Container.auth_service]),
 ):
     return await service.log_in_password(schema=request)
+
+
+@router.post(
+    "/token/google",
+    response_model=JwtToken,
+    response_class=JSONResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Obtain an access token via Google OAuth",
+    description="- Authenticate using Google OAuth and receive an access token.<br/>\n"
+    "- The client must provide an authorization code obtained from Google.",
+)
+@inject
+async def log_in_google(
+    request: Annotated[GoogleOAuthRequest, Form()],
+    service: AuthService = Depends(Provide[Container.auth_service]),
+):
+    return await service.log_in_google(request)
 
 
 @router.post(
@@ -84,7 +107,7 @@ async def log_in_password(
 @inject
 async def log_in_github(
     request: Annotated[GitHubOAuthRequest, Form()],
-    service: UserService = Depends(Provide[Container.user_service]),
+    service: AuthService = Depends(Provide[Container.auth_service]),
 ):
     return await service.log_in_github(request)
 
@@ -94,7 +117,7 @@ async def log_in_github(
     response_model=UserOut,
     response_class=JSONResponse,
     status_code=status.HTTP_200_OK,
-    dependencies=[PasswordOAuthDeps, GitHubOAuthDeps],
+    dependencies=[PasswordOAuthDeps, GoogleOAuthDeps, GitHubOAuthDeps],
     summary="Retrieve the current authenticated user's information",
     description="- Returns the authenticated user's details based on the provided access token.</br>\n"
     "- Requires a valid token obtained via password authentication or GitHub OAuth.",

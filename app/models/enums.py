@@ -9,3 +9,4 @@ class Role(Enum):
 class OAuthProvider(Enum):
     PASSWORD = "password"
     GITHUB = "github"
+    GOOGLE = "google"

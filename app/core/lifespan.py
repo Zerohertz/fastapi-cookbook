@@ -15,7 +15,7 @@ from app.utils.logging import remove_handler
 @asynccontextmanager
 async def lifespan(app: FastAPI):  # pylint: disable=unused-argument
     remove_handler(logging.getLogger("uvicorn.access"))
-    remove_handler(logging.getLogger("uvicorn.error"))
+    logging.getLogger("uvicorn.error").setLevel(level=logging.CRITICAL)
     logger.remove()
     level = 0
     if configs.ENV == ENVIRONMENT.PROD:

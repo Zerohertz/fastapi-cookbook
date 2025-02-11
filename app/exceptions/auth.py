@@ -26,6 +26,11 @@ class PasswordOAuthFailed(AuthException):
     message: str = "Invalid username or password."
 
 
+class GoogleOAuthFailed(AuthException):
+    status: int = status.HTTP_400_BAD_REQUEST
+    message: str = "Google OAuth authentication failed."
+
+
 class GitHubOAuthFailed(AuthException):
     status: int = status.HTTP_400_BAD_REQUEST
     message: str = "GitHub OAuth authentication failed."

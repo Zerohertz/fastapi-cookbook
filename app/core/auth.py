@@ -1,4 +1,4 @@
-from typing import Annotated, Optional
+from typing import Annotated
 
 from dependency_injector.wiring import Provide, inject
 from fastapi import Depends, HTTPException, Request
@@ -14,16 +14,16 @@ from app.exceptions.auth import NotAuthenticated
 from app.models.enums import Role
 from app.schemas.auth import JwtAccessToken
 from app.schemas.users import UserOut
-from app.services.users import UserService
+from app.services.auth import AuthService
 
 
 class JwtBearer(HTTPBearer):
     def __init__(
         self,
         *,
-        bearerFormat: Optional[str] = None,
-        scheme_name: Optional[str] = None,
-        description: Optional[str] = None,
+        bearerFormat: str | None = None,
+        scheme_name: str | None = None,
+        description: str | None = None,
     ):
         super().__init__(
             bearerFormat=bearerFormat,
@@ -48,7 +48,7 @@ jwt_bearer = JwtBearer()
 @inject
 async def get_current_user(
     access_token: Annotated[str, Depends(jwt_bearer)],
-    service: UserService = Depends(Provide[Container.user_service]),
+    service: AuthService = Depends(Provide[Container.auth_service]),
 ) -> UserOut:
     schema = JwtAccessToken(access_token=access_token)
     return await service.verify(schema=schema)
@@ -68,6 +68,18 @@ AdminAuthDeps = Depends(get_admin_user)
 PasswordOAuthDeps = Depends(
     OAuth2PasswordBearer(
         tokenUrl=oauth_endpoints.PASSWORD, scheme_name="Password OAuth"
+    )
+)
+GoogleOAuthDeps = Depends(
+    OAuth2AuthorizationCodeBearer(
+        authorizationUrl=f"https://accounts.google.com/o/oauth2/v2/auth?client_id={configs.GOOGLE_OAUTH_CLIENT_ID}",
+        tokenUrl=oauth_endpoints.GOOGLE,
+        refreshUrl=None,
+        scheme_name="Google OAuth",
+        scopes={
+            "email": "Google Email",
+            "profile": "Google Profile",
+        },
     )
 )
 GitHubOAuthDeps = Depends(

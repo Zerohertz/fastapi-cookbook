@@ -4,7 +4,28 @@ from typing import Annotated
 from fastapi import Form
 from pydantic import BaseModel
 
-from app.schemas.base import BaseRequest
+from app.models.enums import OAuthProvider
+from app.schemas.base import BaseRequest, BaseResponse
+
+
+class AuthRequest(BaseRequest): ...
+
+
+class AuthResponse(BaseResponse):
+    provider: OAuthProvider
+
+
+class AuthIn(AuthRequest):
+    provider: OAuthProvider
+    password: str | None
+    oauth_id: str | None = None
+    oauth_token: str | None = None
+
+
+class AuthOut(AuthResponse):
+    password: str | None
+    oauth_id: str | None = None
+    oauth_token: str | None = None
 
 
 class OAuthRequest(BaseRequest):
@@ -17,7 +38,8 @@ class RefreshOAuthRequest(OAuthRequest):
 
 
 class PasswordOAuthRequest(OAuthRequest):
-    grant_type: Annotated[str, Form(pattern="password")]
+    grant_type: Annotated[str, Form(pattern=OAuthProvider.PASSWORD.value)]
+    # NOTE: username is email
     username: Annotated[
         str,
         Form(
@@ -33,13 +55,57 @@ class PasswordOAuthReigsterRequest(PasswordOAuthRequest):
     name: Annotated[str, Form(min_length=3, max_length=30)]
 
 
+class GoogleOAuthRequest(OAuthRequest):
+    grant_type: Annotated[str, Form(pattern="authorization_code")]
+    code: Annotated[str, Form(...)]
+    redirect_uri: Annotated[str, Form("")]
+
+
+class GoogleOAuthToken(BaseModel):
+    access_token: str
+    expires_in: int
+    scope: str
+    token_type: str
+    id_token: str
+
+
+class GoogleOAuthUser(BaseModel):
+    id: str
+    email: str
+    verified_email: bool
+    name: str
+    given_name: str
+    family_name: str
+    picture: str
+
+
 class GitHubOAuthRequest(OAuthRequest):
     grant_type: Annotated[str, Form(pattern="authorization_code")]
     code: Annotated[str, Form(...)]
     redirect_uri: Annotated[str, Form("")]
 
 
-class GitHubOAuthResponse(BaseModel):
+class GitHubOAuthToken(BaseModel):
+    access_token: str
+    token_type: str
+    scope: str
+
+
+class GitHubOAuthUser(BaseModel):
+    id: str
+    login: str
+    avatar_url: str
+    gravatar_id: str
+    html_url: str
+    name: str
+    company: str
+    blog: str
+    location: str
+    email: str
+
+
+class OAuthResponse(BaseModel):
+    id: str
     token: str
     name: str
     email: str

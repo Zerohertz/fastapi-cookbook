@@ -7,7 +7,7 @@ from app.schemas.responses import APIResponse
 
 
 async def global_exception_handler(request: Request, exc: Exception) -> JSONResponse:
-    logger.error(f"{request=}, {exc=}")
+    logger.exception(f"{request=}, {exc=}")
     name = exc.__class__.__name__
     return JSONResponse(
         content=APIResponse.error(

@@ -6,8 +6,7 @@ from loguru import logger
 
 from app.core.container import Container
 from app.exceptions.database import DatabaseException, EntityNotFound
-from app.models.enums import OAuthProvider, Role
-from app.schemas.auth import AuthIn
+from app.models.enums import Role
 from app.schemas.users import UserIn, UserRequest
 
 pytestmark = pytest.mark.anyio
@@ -19,7 +18,6 @@ def get_mock_user() -> UserIn:
         name=fake.name(),
         email=fake.email(),
         role=Role.USER,
-        oauth=[AuthIn(provider=OAuthProvider.PASSWORD, password=fake.password())],
     )
 
 

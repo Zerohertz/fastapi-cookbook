@@ -266,8 +266,9 @@ class AuthService(BaseService[OAuth, AuthIn, AuthOut]):
         oauth = await self.repository.read_by_user_id_and_password(
             user_id=user_id, eager=True
         )
-        if oauth is None:
+        if oauth is None or oauth.password is None:
             raise NotRegistered
+        password_new: str
         if isinstance(schema, UserPasswordRequest):
             # TODO: 비밀번호 변경 전, 후 같으면 예외 발생
             if not self.crypt_service.verify(schema.password_old, oauth.password):
@@ -285,7 +286,7 @@ class AuthService(BaseService[OAuth, AuthIn, AuthOut]):
             email=user.email,
             role=user.role,
             refresh_token=user.refresh_token,
-            oauth=[oauth],
+            oauth=[self.mapper(oauth)],
         )
 
     @database.transactional

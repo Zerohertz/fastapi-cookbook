@@ -12,7 +12,7 @@ fake = Faker()
 
 def get_mock_request() -> PasswordOAuthReigsterRequest:
     return PasswordOAuthReigsterRequest(
-        grant_type=OAuthProvider.PASSWORD,
+        grant_type=OAuthProvider.PASSWORD.value,
         username=fake.email(),
         password=fake.password(),
         name=fake.name(),
@@ -76,9 +76,9 @@ class MockUser:
         assert data["role"] == Role.USER.value
         assert data["name"] == self.request.name
         assert data["email"] == self.request.username
-        return data["id"]
         assert data["oauth"][0]["provider"] == OAuthProvider.PASSWORD.value
         assert data["oauth"][0]["provider"] != self.request.password
+        return data["id"]
 
 
 def register_and_log_in(sync_client: TestClient) -> tuple[MockUser, str]:

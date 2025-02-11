@@ -17,7 +17,7 @@ def log_in_admin(sync_client: TestClient) -> tuple[MockUser, str]:
     admin_user = MockUser(
         sync_client=sync_client,
         request=PasswordOAuthReigsterRequest(
-            grant_type=OAuthProvider.PASSWORD,
+            grant_type=OAuthProvider.PASSWORD.value,
             username=configs.ADMIN_EMAIL,
             password=configs.ADMIN_PASSWORD,
             name=configs.ADMIN_NAME,

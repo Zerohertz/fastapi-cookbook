@@ -20,7 +20,7 @@ dependencies = [
     "pytz>=2024.2",
     "sqlalchemy>=2.0.38",
     "uv>=0.5.21",
-    "uvicorn>=0.34.0",
+    "uvicorn[standard]>=0.34.0",
 ]
 
 [dependency-groups]

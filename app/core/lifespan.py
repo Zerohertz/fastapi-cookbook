@@ -1,3 +1,4 @@
+import asyncio
 import logging
 import sys
 import time
@@ -32,6 +33,7 @@ async def lifespan(app: FastAPI):  # pylint: disable=unused-argument
     # logging.getLogger("uvicorn.error").addHandler(LoguruHandler())
 
     logger.info(f"{configs.ENV=}")
+    logger.info(f"Event loop: {asyncio.get_event_loop().__class__}")
     if configs.DB_TABLE_CREATE:
         await database.create_all()
     app.container = Container()  # type: ignore[attr-defined]

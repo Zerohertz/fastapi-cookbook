@@ -25,6 +25,7 @@ dev:
 	export DESCRIPTION=$$(cat README.md) && \
 		source ./envs/dev.env && \
 		uv run uvicorn app.main:app --host 0.0.0.0 --port $${PORT} \
+		--loop uvloop --http httptools \
 		--env-file ./envs/dev.env \
 		--proxy-headers --forwarded-allow-ips='*' \
 		--reload

@@ -3,7 +3,7 @@ from functools import wraps
 from typing import Awaitable, Callable
 
 from loguru import logger
-from sqlalchemy import select
+from sqlalchemy import AsyncAdaptedQueuePool, StaticPool, select
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
     async_scoped_session,
@@ -41,11 +41,27 @@ class Context:
 class Database:
     def __init__(self) -> None:
         self.context = Context()
-        async_engine_kwargs = {
-            "url": configs.DATABASE_URI,
-            "echo": configs.DB_ECHO,
-        }
-        self.engine = create_async_engine(**async_engine_kwargs)  # type: ignore[arg-type]
+        if configs.DB_TYPE == "sqlite":
+            self.engine = create_async_engine(
+                url=configs.DATABASE_URI,
+                echo=configs.DB_ECHO,
+                echo_pool=configs.DB_ECHO,
+                poolclass=StaticPool,
+                pool_pre_ping=True,
+                pool_recycle=3600,
+            )
+        else:
+            self.engine = create_async_engine(
+                url=configs.DATABASE_URI,
+                echo=configs.DB_ECHO,
+                echo_pool=configs.DB_ECHO,
+                max_overflow=10,
+                poolclass=AsyncAdaptedQueuePool,
+                pool_pre_ping=True,
+                pool_size=5,
+                pool_recycle=3600,
+                pool_timeout=30.0,
+            )
         self.sessionmaker = async_sessionmaker(
             bind=self.engine,
             class_=AsyncSession,

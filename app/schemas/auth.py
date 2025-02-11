@@ -1,8 +1,8 @@
 from datetime import datetime
-from typing import Annotated, Optional
+from typing import Annotated
 
 from fastapi import Form
-from pydantic import BaseModel
+from pydantic import BaseModel, StringConstraints
 
 from app.models.enums import OAuthProvider
 from app.schemas.base import BaseRequest, BaseResponse
@@ -15,10 +15,21 @@ class AuthResponse(BaseResponse):
     provider: OAuthProvider
 
 
+class AuthIn(AuthRequest):
+    provider: OAuthProvider
+    password: Annotated[str | None, StringConstraints(min_length=3, max_length=30)] = (
+        None
+    )
+    oauth_id: str | None = None
+    oauth_token: str | None = None
+
+
 class AuthOut(AuthResponse):
-    password: Optional[str] = None
-    oauth_id: Optional[str] = None
-    oauth_token: Optional[str] = None
+    password: Annotated[str | None, StringConstraints(min_length=3, max_length=30)] = (
+        None
+    )
+    oauth_id: str | None = None
+    oauth_token: str | None = None
 
 
 class OAuthRequest(BaseRequest):

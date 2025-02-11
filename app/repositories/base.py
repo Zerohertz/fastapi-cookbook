@@ -12,14 +12,11 @@ from app.exceptions.database import (
 )
 from app.models.base import BaseModel
 
-T = TypeVar("T", bound=BaseModel)
+Model = TypeVar("Model", bound=BaseModel)
 
 
-class BaseRepository(Generic[T]):
-    def __init__(
-        self,
-        model: Type[T],
-    ) -> None:
+class BaseRepository(Generic[Model]):
+    def __init__(self, model: Type[Model]) -> None:
         self.model = model
 
     def _eager(self, *, stmt: Select) -> Select:
@@ -27,7 +24,7 @@ class BaseRepository(Generic[T]):
             stmt = stmt.options(joinedload(getattr(self.model, _eager)))
         return stmt
 
-    async def create(self, entity: T) -> T:
+    async def create(self, entity: Model) -> Model:
         session = database.scoped_session()
         session.add(entity)
         try:
@@ -39,7 +36,7 @@ class BaseRepository(Generic[T]):
         await session.refresh(instance=entity)
         return entity
 
-    async def read_by_id(self, id: int, eager: bool = False) -> T:
+    async def read_by_id(self, id: int, eager: bool = False) -> Model:
         stmt = select(self.model)
         if eager:
             stmt = self._eager(stmt=stmt)
@@ -51,7 +48,7 @@ class BaseRepository(Generic[T]):
             raise EntityNotFound
         return entity
 
-    async def update_by_id(self, id: int, data: dict) -> T:
+    async def update_by_id(self, id: int, data: dict) -> Model:
         stmt = select(self.model).where(self.model.id == id)
         session = database.scoped_session()
         result = await session.execute(stmt)
@@ -67,7 +64,7 @@ class BaseRepository(Generic[T]):
         await session.refresh(entity)
         return entity
 
-    async def update_attr_by_id(self, id: int, column: str, value: Any) -> T:
+    async def update_attr_by_id(self, id: int, column: str, value: Any) -> Model:
         stmt = select(self.model).where(self.model.id == id)
         session = database.scoped_session()
         result = await session.execute(stmt)
@@ -82,7 +79,7 @@ class BaseRepository(Generic[T]):
         await session.refresh(entity)
         return entity
 
-    async def delete_by_id(self, id: int, eager: bool = False) -> T:
+    async def delete_by_id(self, id: int, eager: bool = False) -> Model:
         stmt = select(self.model).where(self.model.id == id)
         if eager:
             stmt = self._eager(stmt=stmt)

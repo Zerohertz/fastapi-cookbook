@@ -1,4 +1,4 @@
-from typing import Annotated, Optional
+from typing import Annotated
 
 from dependency_injector.wiring import Provide, inject
 from fastapi import Depends, HTTPException, Request
@@ -21,9 +21,9 @@ class JwtBearer(HTTPBearer):
     def __init__(
         self,
         *,
-        bearerFormat: Optional[str] = None,
-        scheme_name: Optional[str] = None,
-        description: Optional[str] = None,
+        bearerFormat: str | None = None,
+        scheme_name: str | None = None,
+        description: str | None = None,
     ):
         super().__init__(
             bearerFormat=bearerFormat,

@@ -1,6 +1,5 @@
 import logging
 from enum import Enum
-from typing import Optional
 
 from loguru import logger
 
@@ -11,7 +10,7 @@ def remove_handler(_logger: logging.Logger) -> None:
 
 
 def update_logger_format():
-    for logger_name, _logger in logging.Logger.manager.loggerDict.items():
+    for _, _logger in logging.Logger.manager.loggerDict.items():
         if isinstance(_logger, logging.Logger):
             if not _logger.handlers:
                 continue
@@ -79,9 +78,9 @@ class ANSI_BG_COLOR(Enum):
 def ansi_format(
     text: str | int,
     *,
-    fg_color: Optional[ANSI_FG_COLOR] = None,
-    bg_color: Optional[ANSI_BG_COLOR] = None,
-    style: Optional[ANSI_STYLE | list[ANSI_STYLE]] = None,
+    fg_color: ANSI_FG_COLOR | None = None,
+    bg_color: ANSI_BG_COLOR | None = None,
+    style: ANSI_STYLE | list[ANSI_STYLE] | None = None,
 ) -> str:
     args = []
     if fg_color:

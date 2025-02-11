@@ -1,6 +1,6 @@
 from contextvars import ContextVar, Token
 from functools import wraps
-from typing import Awaitable, Callable, Optional
+from typing import Awaitable, Callable
 
 from loguru import logger
 from sqlalchemy import select
@@ -21,7 +21,7 @@ from app.services.security import CryptService
 
 class Context:
     def __init__(self) -> None:
-        self.context: ContextVar[Optional[int]] = ContextVar(
+        self.context: ContextVar[int | None] = ContextVar(
             "session_context", default=None
         )
 

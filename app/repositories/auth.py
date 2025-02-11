@@ -1,5 +1,3 @@
-from typing import Optional
-
 from sqlalchemy import select
 
 from app.core.database import database
@@ -14,7 +12,7 @@ class AuthRepository(BaseRepository[OAuth]):
 
     async def read_by_oauth_id_and_provider(
         self, oauth_id: str, provider: OAuthProvider
-    ) -> Optional[OAuth]:
+    ) -> OAuth | None:
         stmt = select(self.model)
         stmt = stmt.where(
             self.model.oauth_id == oauth_id, self.model.provider == provider

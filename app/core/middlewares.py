@@ -1,5 +1,4 @@
 import time
-from typing import Optional
 
 from fastapi import Request, Response
 from loguru import logger
@@ -22,8 +21,8 @@ class LoggingMiddleware(BaseHTTPMiddleware):
         ip: str,
         url: str,
         method: str,
-        status: Optional[int] = None,
-        elapsed_time: Optional[str] = None,
+        status: int | None = None,
+        elapsed_time: str | None = None,
     ) -> None:
         ip = osc_format(ip, href=f"https://db-ip.com/{ip}")
         ip = ansi_format(

@@ -28,6 +28,8 @@ from app.models.users import User
 from app.repositories.auth import AuthRepository
 from app.repositories.users import UserRepository
 from app.schemas.auth import (
+    AuthIn,
+    AuthOut,
     GitHubOAuthRequest,
     GitHubOAuthToken,
     GitHubOAuthUser,
@@ -42,8 +44,8 @@ from app.schemas.auth import (
     PasswordOAuthRequest,
     RefreshOAuthRequest,
 )
-from app.schemas.users import UserOut
-from app.services.base import BaseService
+from app.schemas.users import UserIn, UserOut
+from app.services.base import BaseMapper, BaseService
 from app.services.security import CryptService
 
 
@@ -220,7 +222,7 @@ class GitHubService:
         )
 
 
-class AuthService(BaseService[OAuth]):
+class AuthService(BaseService[OAuth, AuthIn, AuthOut]):
     def __init__(
         self,
         auth_repository: AuthRepository,
@@ -228,9 +230,10 @@ class AuthService(BaseService[OAuth]):
         jwt_service: JwtService,
         crypt_service: CryptService,
     ):
-        super().__init__(repository=auth_repository, schema=UserOut)
+        super().__init__(repository=auth_repository, schema=AuthOut)
         self.repository: AuthRepository
         self.user_repository = user_repository
+        self.user_mapper = BaseMapper[User, UserIn, UserOut](model=User, schema=UserOut)
         self.jwt_service = jwt_service
         self.crypt_service = crypt_service
         self.google_service = GoogleService()
@@ -261,7 +264,7 @@ class AuthService(BaseService[OAuth]):
                 name=schema.name, email=schema.email, role=Role.USER, refresh_token=None
             )
         user.oauth.append(oauth)
-        oauth = await self.user_repository.create(entity=oauth)
+        user = await self.user_repository.create(entity=user)
         return self._create_token(user=user)
 
     @database.transactional
@@ -291,7 +294,7 @@ class AuthService(BaseService[OAuth]):
             )
         user.oauth.append(oauth)
         user = await self.user_repository.create(entity=user)
-        return self.mapper(user)
+        return self.user_mapper(user)
 
     @database.transactional
     async def log_in_password(self, schema: PasswordOAuthRequest) -> JwtToken:
@@ -338,7 +341,7 @@ class AuthService(BaseService[OAuth]):
         except EntityNotFound as error:
             raise NotAuthenticated from error
         user.refresh_token = self.jwt_service.create_refresh_token(user)
-        return self.mapper(user)
+        return self.user_mapper(user)
 
     async def refresh(self, schema: RefreshOAuthRequest) -> JwtToken:
         if schema.grant_type != "refresh_token":
@@ -347,7 +350,7 @@ class AuthService(BaseService[OAuth]):
         if ".refresh" not in sub:
             raise TokenDecodeError
         user_id = int(sub.split(".")[0])
-        user = await self.repository.read_by_id(user_id)
+        user = await self.user_repository.read_by_id(user_id)
         return JwtToken(
             access_token=self.jwt_service.create_access_token(user),
             refresh_token=schema.refresh_token,

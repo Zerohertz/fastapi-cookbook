@@ -1,4 +1,4 @@
-from typing import Optional, Sequence
+from typing import Sequence
 
 from sqlalchemy import select
 
@@ -21,7 +21,7 @@ class UserRepository(BaseRepository[User]):
             raise EntityNotFound
         return entity
 
-    async def read_by_email(self, email: str) -> Optional[User]:
+    async def read_by_email(self, email: str) -> User | None:
         stmt = select(self.model)
         stmt = stmt.where(self.model.email == email)
         session = database.scoped_session()

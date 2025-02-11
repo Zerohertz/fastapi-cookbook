@@ -1,12 +1,12 @@
 from app.core.database import database
 from app.models.users import User
 from app.repositories.users import UserRepository
-from app.schemas.users import UserOut, UserPatchRequest
+from app.schemas.users import UserIn, UserOut, UserPatchRequest
 from app.services.base import BaseService
 from app.services.security import CryptService
 
 
-class UserService(BaseService[User]):
+class UserService(BaseService[User, UserIn, UserOut]):
     def __init__(self, user_repository: UserRepository, crypt_service: CryptService):
         super().__init__(repository=user_repository, schema=UserOut)
         self.repository: UserRepository
@@ -23,7 +23,4 @@ class UserService(BaseService[User]):
     async def patch_by_id(self, id: int, schema: UserPatchRequest) -> UserOut:
         if schema.password:
             schema.password = self.crypt_service.hash(schema.password)
-        user = await self.repository.update_by_id(
-            id=id, data=schema.model_dump(exclude_none=True)
-        )
-        return self.mapper(user)
+        return await super().patch_by_id(id=id, schema=schema)

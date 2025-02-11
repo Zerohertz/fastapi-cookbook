@@ -29,7 +29,7 @@ lint = [
     "mypy>=1.14.1",
     "pylint>=3.3.3",
     "ruff>=0.9.2",
-    "sqlalchemy[mypy]>=2.0.37",
+    "sqlalchemy[mypy]>=2.0.38",
     "types-passlib>=1.7.7.20241221",
     "types-python-jose>=3.3.4.20240106",
     "types-pytz>=2024.2.0.20241221",
@@ -64,6 +64,7 @@ disable = [
     "W0511",
     "W0622",
     "W0718",
+    "E1136",
 ]
 # C0103: Class name "*" doesn't conform to PascalCase naming style (invalid-name)
 # C0114: Missing module docstring (missing-module-docstring)
@@ -80,6 +81,9 @@ disable = [
 # W0511: TODO, FIXME
 # W0622: Redefining built-in '*' (redefined-builtin)
 # W0718: Catching too general exception Exception (broad-exception-caught)
+# FIXME: GitHub Actions에서 local과 다르게 아래 오류가 자꾸 발생함...
+# https://github.com/Zerohertz/fastapi-cookbook/actions/runs/13266710505/job/37035854489
+# E1136: Value 'Mapped' is unsubscriptable (unsubscriptable-object)
 
 [tool.isort]
 profile = "black"

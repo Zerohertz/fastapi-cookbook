@@ -42,7 +42,7 @@ test = [
     "aiomysql>=0.2.0",
     "aiosqlite>=0.20.0",
     "cryptography>=44.0.0",
-    "pytest-asyncio>=0.25.2",
+    "pytest-asyncio>=0.25.3",
     "faker>=35.0.0",
 ]
 
@@ -94,3 +94,5 @@ target-version = ["py312"]
 
 [tool.pytest.ini_options]
 env_files = ["envs/test.env"]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"

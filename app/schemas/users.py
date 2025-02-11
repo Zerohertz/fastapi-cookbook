@@ -11,11 +11,13 @@ class UserRequest(BaseRequest):
     name: Annotated[str, StringConstraints(min_length=3, max_length=30)]
 
 
-class UserPatchRequest(BaseRequest):
-    name: Annotated[str | None, StringConstraints(min_length=3, max_length=30)] = None
-    password: Annotated[str | None, StringConstraints(min_length=3, max_length=30)] = (
-        None
-    )
+class UserPasswordRequest(BaseRequest):
+    password_old: Annotated[str, StringConstraints(min_length=8, max_length=30)]
+    password_new: Annotated[str, StringConstraints(min_length=8, max_length=30)]
+
+
+class UserPasswordAdminRequest(BaseRequest):
+    password: Annotated[str, StringConstraints(min_length=8, max_length=30)]
 
 
 class UserResponse(BaseResponse):

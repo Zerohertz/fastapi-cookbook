@@ -1,4 +1,7 @@
 from passlib.context import CryptContext
+from passlib.exc import UnknownHashError
+
+from app.exceptions.auth import PasswordOAuthFailed
 
 
 class CryptService(CryptContext):
@@ -9,4 +12,8 @@ class CryptService(CryptContext):
         return super().hash(secret=secret)
 
     def verify(self, secret: str, hash: str) -> bool:  # type: ignore[override]
-        return super().verify(secret=secret, hash=hash)
+        try:
+            return super().verify(secret=secret, hash=hash)
+        except UnknownHashError as error:
+            # TODO: 언제 UnknownHashError가 발생하는지 확인
+            raise PasswordOAuthFailed from error

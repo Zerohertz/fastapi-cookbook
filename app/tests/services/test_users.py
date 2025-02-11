@@ -6,8 +6,9 @@ from loguru import logger
 
 from app.core.container import Container
 from app.exceptions.database import DatabaseException, EntityNotFound
-from app.models.enums import Role
-from app.schemas.users import UserIn, UserPatchRequest, UserRequest
+from app.models.enums import OAuthProvider, Role
+from app.schemas.auth import AuthIn
+from app.schemas.users import UserIn, UserRequest
 
 pytestmark = pytest.mark.anyio
 fake = Faker()
@@ -18,6 +19,7 @@ def get_mock_user() -> UserIn:
         name=fake.name(),
         email=fake.email(),
         role=Role.USER,
+        oauth=[AuthIn(provider=OAuthProvider.PASSWORD, password=fake.password())],
     )
 
 
@@ -61,31 +63,6 @@ async def test_put_user(container: Container, context: Token) -> None:
     with pytest.raises(EntityNotFound):
         user = await user_service.put_by_id(
             id=99999, schema=UserRequest(name=fake.name())
-        )
-
-
-async def test_patch_user(container: Container, context: Token) -> None:
-    logger.warning(f"{context=}")
-    user_service = container.user_service()
-    for _ in range(10):
-        schema = get_mock_user()
-        user = await user_service.create(schema=schema)
-        schema.email = fake.email()
-        user = await user_service.patch_by_id(
-            id=user.id, schema=UserPatchRequest.model_validate(schema.model_dump())
-        )
-        assert user.name == schema.name
-        _name = fake.name()
-        user = await user_service.patch_attr_by_id(id=user.id, attr="name", value=_name)
-        assert user.name == _name
-    with pytest.raises(EntityNotFound):
-        user = await user_service.patch_by_id(
-            id=99999,
-            schema=UserPatchRequest(name=fake.name()),
-        )
-    with pytest.raises(EntityNotFound):
-        user = await user_service.patch_attr_by_id(
-            id=99999, attr="name", value=fake.name()
         )
 
 

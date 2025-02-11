@@ -12,7 +12,8 @@ from app.core.auth import (
 )
 from app.core.container import Container
 from app.core.router import CoreAPIRouter
-from app.schemas.users import UserOut, UserPatchRequest, UserRequest, UserResponse
+from app.schemas.users import UserOut, UserPasswordRequest, UserRequest, UserResponse
+from app.services.auth import AuthService
 from app.services.users import UserService
 
 router = CoreAPIRouter(prefix="/user", tags=["user"])
@@ -47,12 +48,11 @@ async def put_user(
 )
 @inject
 async def patch_user(
-    # FIXME: 비밀번호 변경 안되고 있음
-    schema: UserPatchRequest,
+    schema: UserPasswordRequest,
     user: Annotated[UserOut, UserAuthDeps],
-    service: UserService = Depends(Provide[Container.user_service]),
+    service: AuthService = Depends(Provide[Container.auth_service]),
 ):
-    return await service.patch_by_id(id=user.id, schema=schema)
+    return await service.patch_password_by_id(user_id=user.id, schema=schema)
 
 
 @router.delete(

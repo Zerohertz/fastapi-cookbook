@@ -7,7 +7,7 @@ from loguru import logger
 from app.core.configs import configs
 from app.models.enums import OAuthProvider
 from app.schemas.auth import PasswordOAuthReigsterRequest
-from app.schemas.users import UserPatchRequest, UserRequest
+from app.schemas.users import UserPasswordAdminRequest, UserRequest
 from app.tests.api.v1.test_auth import MockUser, register_and_log_in
 
 fake = Faker()
@@ -67,7 +67,7 @@ def test_get_user_name(sync_client: TestClient) -> None:
 def test_patch_user_password(sync_client: TestClient) -> None:
     _, admin_access_token = log_in_admin(sync_client)
     mock_user, user_access_token = register_and_log_in(sync_client)
-    request = UserPatchRequest(password=fake.password())
+    request = UserPasswordAdminRequest(password=fake.password())
     response = sync_client.patch(
         f"{configs.PREFIX}/v1/user/{mock_user.get_me(user_access_token)}",
         headers={"Authorization": f"Bearer {admin_access_token}"},

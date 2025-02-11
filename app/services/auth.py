@@ -1,11 +1,11 @@
 from datetime import datetime, timedelta
+from typing import overload
 
 import httpx
 import pytz
 from jose import jwt
 from jose.exceptions import ExpiredSignatureError, JWTError
 from loguru import logger
-from passlib.exc import UnknownHashError
 from pydantic import ValidationError
 
 from app.core.configs import configs
@@ -44,7 +44,12 @@ from app.schemas.auth import (
     PasswordOAuthRequest,
     RefreshOAuthRequest,
 )
-from app.schemas.users import UserIn, UserOut
+from app.schemas.users import (
+    UserIn,
+    UserOut,
+    UserPasswordAdminRequest,
+    UserPasswordRequest,
+)
 from app.services.base import BaseMapper, BaseService
 from app.services.security import CryptService
 
@@ -244,12 +249,51 @@ class AuthService(BaseService[OAuth, AuthIn, AuthOut]):
         user.refresh_token = jwt_token.refresh_token
         return jwt_token
 
+    @overload
+    async def patch_password_by_id(
+        self, user_id: int, schema: UserPasswordRequest
+    ) -> UserOut: ...
+
+    @overload
+    async def patch_password_by_id(
+        self, user_id: int, schema: UserPasswordAdminRequest
+    ) -> UserOut: ...
+
+    @database.transactional
+    async def patch_password_by_id(
+        self, user_id: int, schema: UserPasswordRequest | UserPasswordAdminRequest
+    ) -> UserOut:
+        oauth = await self.repository.read_by_user_id_and_password(
+            user_id=user_id, eager=True
+        )
+        if oauth is None:
+            raise NotRegistered
+        if isinstance(schema, UserPasswordRequest):
+            # TODO: 비밀번호 변경 전, 후 같으면 예외 발생
+            if not self.crypt_service.verify(schema.password_old, oauth.password):
+                raise PasswordOAuthFailed
+            password_new = schema.password_new
+        elif isinstance(schema, UserPasswordAdminRequest):
+            password_new = schema.password
+        oauth.password = self.crypt_service.hash(password_new)
+        user = oauth.user
+        return self.user_mapper.schema(
+            id=user.id,
+            created_at=user.created_at,
+            updated_at=user.updated_at,
+            name=user.name,
+            email=user.email,
+            role=user.role,
+            refresh_token=user.refresh_token,
+            oauth=[oauth],
+        )
+
     @database.transactional
     async def _log_in_oauth(
         self, schema: OAuthResponse, provider: OAuthProvider
     ) -> JwtToken:
         oauth = await self.repository.read_by_oauth_id_and_provider(
-            oauth_id=schema.id, provider=provider
+            oauth_id=schema.id, provider=provider, eager=True
         )
         if oauth:
             return self._create_token(user=oauth.user)
@@ -312,12 +356,7 @@ class AuthService(BaseService[OAuth, AuthIn, AuthOut]):
         if not oauth:
             # TODO: 다른 OAuth로 등록 되어 있음을 밝혀야함
             raise NotRegistered
-        try:
-            is_verified = self.crypt_service.verify(schema.password, oauth.password)
-        except UnknownHashError as error:
-            # TODO: 언제 UnknownHashError가 발생하는지 확인
-            raise PasswordOAuthFailed from error
-        if not is_verified:
+        if not self.crypt_service.verify(schema.password, oauth.password):
             raise PasswordOAuthFailed
         jwt_token = self.jwt_service.create_token(user)
         user.refresh_token = jwt_token.refresh_token

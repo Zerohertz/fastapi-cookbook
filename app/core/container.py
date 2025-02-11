@@ -23,9 +23,7 @@ class Container(DeclarativeContainer):
 
     jwt_service = Factory(JwtService)
     crypt_service = Factory(CryptService)
-    user_service = Factory(
-        UserService, user_repository=user_repository, crypt_service=crypt_service
-    )
+    user_service = Factory(UserService, user_repository=user_repository)
     auth_service = Factory(
         AuthService,
         auth_repository=auth_repository,

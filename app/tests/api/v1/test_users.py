@@ -46,7 +46,7 @@ def test_patch_user_password(sync_client: TestClient) -> None:
 
 def test_put_user(sync_client: TestClient) -> None:
     mock_user, access_token = register_and_log_in(sync_client)
-    request = UserRequest(name=fake.name(), email=fake.email())
+    request = UserRequest(name=fake.name())
     response = sync_client.put(
         f"{configs.PREFIX}/v1/user/",
         headers={"Authorization": f"Bearer {access_token}"},
@@ -56,9 +56,7 @@ def test_put_user(sync_client: TestClient) -> None:
     assert response.status_code == status.HTTP_200_OK
     data = response.json()["data"]
     assert data["name"] != mock_user.request.name
-    assert data["email"] != mock_user.request.username
     assert data["name"] == request.name
-    assert data["email"] == request.email
 
 
 def test_delete_user(sync_client: TestClient) -> None:

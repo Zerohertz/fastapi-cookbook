@@ -269,7 +269,7 @@ class AuthService(BaseService[OAuth, AuthIn, AuthOut]):
 
     @database.transactional
     async def register(self, schema: PasswordOAuthReigsterRequest) -> UserOut:
-        if schema.grant_type != "password":
+        if schema.grant_type != OAuthProvider.PASSWORD.value:
             raise OAuthFormDataInvalid
         user = await self.user_repository.read_by_email(email=schema.username)
         oauth = None
@@ -298,7 +298,7 @@ class AuthService(BaseService[OAuth, AuthIn, AuthOut]):
 
     @database.transactional
     async def log_in_password(self, schema: PasswordOAuthRequest) -> JwtToken:
-        if schema.grant_type != "password":
+        if schema.grant_type != OAuthProvider.PASSWORD.value:
             raise OAuthFormDataInvalid
         user = await self.user_repository.read_by_email(schema.username)
         if not user:

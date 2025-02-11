@@ -47,6 +47,7 @@ async def put_user(
 )
 @inject
 async def patch_user(
+    # FIXME: 비밀번호 변경 안되고 있음
     schema: UserPatchRequest,
     user: Annotated[UserOut, UserAuthDeps],
     service: UserService = Depends(Provide[Container.user_service]),

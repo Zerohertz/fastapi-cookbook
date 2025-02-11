@@ -79,6 +79,7 @@ async def put_user(
 @inject
 async def patch_user(
     id: int,
+    # FIXME: 비밀번호 변경 안되고 있음
     user: UserPatchRequest,
     service: UserService = Depends(Provide[Container.user_service]),
 ):

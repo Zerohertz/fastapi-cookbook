@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Annotated
 
 from fastapi import Form
-from pydantic import BaseModel, StringConstraints
+from pydantic import BaseModel
 
 from app.models.enums import OAuthProvider
 from app.schemas.base import BaseRequest, BaseResponse
@@ -17,17 +17,13 @@ class AuthResponse(BaseResponse):
 
 class AuthIn(AuthRequest):
     provider: OAuthProvider
-    password: Annotated[str | None, StringConstraints(min_length=3, max_length=30)] = (
-        None
-    )
+    password: str | None
     oauth_id: str | None = None
     oauth_token: str | None = None
 
 
 class AuthOut(AuthResponse):
-    password: Annotated[str | None, StringConstraints(min_length=3, max_length=30)] = (
-        None
-    )
+    password: str | None
     oauth_id: str | None = None
     oauth_token: str | None = None
 
@@ -42,7 +38,7 @@ class RefreshOAuthRequest(OAuthRequest):
 
 
 class PasswordOAuthRequest(OAuthRequest):
-    grant_type: Annotated[str, Form(pattern="password")]
+    grant_type: Annotated[str, Form(pattern=OAuthProvider.PASSWORD.value)]
     # NOTE: username is email
     username: Annotated[
         str,

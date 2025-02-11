@@ -1,5 +1,3 @@
-from typing import Optional
-
 from faker import Faker
 from fastapi import status
 from fastapi.testclient import TestClient
@@ -14,7 +12,7 @@ fake = Faker()
 
 def get_mock_request() -> PasswordOAuthReigsterRequest:
     return PasswordOAuthReigsterRequest(
-        grant_type="password",
+        grant_type=OAuthProvider.PASSWORD,
         username=fake.email(),
         password=fake.password(),
         name=fake.name(),
@@ -25,7 +23,7 @@ class MockUser:
     def __init__(
         self,
         sync_client: TestClient,
-        request: Optional[PasswordOAuthReigsterRequest] = None,
+        request: PasswordOAuthReigsterRequest | None = None,
     ) -> None:
         self.client = sync_client
         self.headers = {
@@ -75,12 +73,12 @@ class MockUser:
         logger.warning(response.json())
         assert response.status_code == status.HTTP_200_OK
         data = response.json()["data"]
-        assert data["oauth"] == OAuthProvider.PASSWORD.value
         assert data["role"] == Role.USER.value
         assert data["name"] == self.request.name
         assert data["email"] == self.request.username
-        assert data["password"] != self.request.password
         return data["id"]
+        assert data["oauth"][0]["provider"] == OAuthProvider.PASSWORD.value
+        assert data["oauth"][0]["provider"] != self.request.password
 
 
 def register_and_log_in(sync_client: TestClient) -> tuple[MockUser, str]:

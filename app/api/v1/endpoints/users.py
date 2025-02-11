@@ -20,7 +20,7 @@ router = CoreAPIRouter(prefix="/user", tags=["user"])
 
 
 @router.put(
-    "/",
+    "",
     response_model=UserResponse,
     response_class=JSONResponse,
     status_code=status.HTTP_200_OK,
@@ -38,7 +38,7 @@ async def put_user(
 
 
 @router.patch(
-    "/",
+    "",
     response_model=UserResponse,
     response_class=JSONResponse,
     status_code=status.HTTP_200_OK,
@@ -56,7 +56,7 @@ async def patch_user(
 
 
 @router.delete(
-    "/",
+    "",
     response_model=UserResponse,
     response_class=JSONResponse,
     status_code=status.HTTP_200_OK,

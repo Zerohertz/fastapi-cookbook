@@ -22,7 +22,7 @@ router = CoreAPIRouter(
 
 
 @router.get(
-    "/",
+    "",
     response_model=list[UserOut],
     response_class=JSONResponse,
     status_code=status.HTTP_200_OK,

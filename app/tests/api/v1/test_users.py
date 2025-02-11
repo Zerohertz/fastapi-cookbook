@@ -15,7 +15,7 @@ def test_put_user(sync_client: TestClient) -> None:
     mock_user, access_token = register_and_log_in(sync_client)
     request = UserRequest(name=fake.name())
     response = sync_client.put(
-        f"{configs.PREFIX}/v1/user/",
+        f"{configs.PREFIX}/v1/user",
         headers={"Authorization": f"Bearer {access_token}"},
         json=request.model_dump(),
     )
@@ -32,7 +32,7 @@ def test_patch_user(sync_client: TestClient) -> None:
         password_old=mock_user.request.password, password_new=fake.password()
     )
     response = sync_client.patch(
-        f"{configs.PREFIX}/v1/user/",
+        f"{configs.PREFIX}/v1/user",
         headers={"Authorization": f"Bearer {access_token}"},
         json=request.model_dump(),
     )
@@ -47,7 +47,7 @@ def test_patch_user(sync_client: TestClient) -> None:
 def test_delete_user(sync_client: TestClient) -> None:
     mock_user, access_token = register_and_log_in(sync_client)
     response = sync_client.delete(
-        f"{configs.PREFIX}/v1/user/",
+        f"{configs.PREFIX}/v1/user",
         headers={"Authorization": f"Bearer {access_token}"},
     )
     logger.warning(response)

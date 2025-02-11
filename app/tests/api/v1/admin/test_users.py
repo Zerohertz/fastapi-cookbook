@@ -31,7 +31,7 @@ def test_get_user_name(sync_client: TestClient) -> None:
     _, admin_access_token = log_in_admin(sync_client)
     _, user_access_token = register_and_log_in(sync_client)
     response = sync_client.get(
-        f"{configs.PREFIX}/v1/user/",
+        f"{configs.PREFIX}/v1/user",
         headers={"Authorization": f"Bearer {admin_access_token}"},
     )
     logger.warning(response)
@@ -40,7 +40,7 @@ def test_get_user_name(sync_client: TestClient) -> None:
     assert isinstance(data, list)
     assert 1 < len(data)
     response = sync_client.get(
-        f"{configs.PREFIX}/v1/user/",
+        f"{configs.PREFIX}/v1/user",
         headers={"Authorization": f"Bearer {user_access_token}"},
     )
     logger.warning(response)

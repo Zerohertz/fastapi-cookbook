@@ -37,7 +37,7 @@ class MockUser:
 
     def register(self) -> None:
         response = self.client.post(
-            f"{configs.PREFIX}/v1/auth/register/password/",
+            f"{configs.PREFIX}/v1/auth/register/password",
             headers=self.headers,
             data=self.request.model_dump(),
         )
@@ -50,7 +50,7 @@ class MockUser:
     def log_in(self) -> str:
         request = PasswordOAuthRequest.model_validate(self.request.model_dump())
         response = self.client.post(
-            f"{configs.PREFIX}/v1/auth/token/password/",
+            f"{configs.PREFIX}/v1/auth/token/password",
             headers=self.headers,
             data=request.model_dump(),
         )
@@ -66,7 +66,7 @@ class MockUser:
     def get_me(self, access_token: str) -> int:
         logger.warning(access_token)
         response = self.client.get(
-            f"{configs.PREFIX}/v1/auth/me/",
+            f"{configs.PREFIX}/v1/auth/me",
             headers={"Authorization": f"Bearer {access_token}"},
         )
         logger.warning(response)
@@ -93,7 +93,7 @@ def test_register_and_log_in(sync_client: TestClient):
         mock_user, access_token = register_and_log_in(sync_client)
         mock_user.get_me(access_token)
     response = sync_client.post(
-        f"{configs.PREFIX}/v1/auth/register/password/",
+        f"{configs.PREFIX}/v1/auth/register/password",
         headers=mock_user.headers,
         data=mock_user.request.model_dump(),
     )

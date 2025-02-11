@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from fastapi.responses import JSONResponse
+from fastapi.responses import ORJSONResponse
 
 from app.core.router import CoreAPIRouter
 from app.schemas.shields import Shields
@@ -12,7 +12,7 @@ router = CoreAPIRouter(prefix="/shields", tags=["shields.io"])
 @router.get(
     "/jmy",
     response_model=Shields,
-    response_class=JSONResponse,
+    response_class=ORJSONResponse,
     status_code=200,
     summary="",
     description="",

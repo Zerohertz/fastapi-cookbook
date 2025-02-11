@@ -1,6 +1,6 @@
 from dependency_injector.wiring import Provide, inject
 from fastapi import Depends, status
-from fastapi.responses import JSONResponse
+from fastapi.responses import ORJSONResponse
 
 from app.core.auth import (
     AdminAuthDeps,
@@ -24,7 +24,7 @@ router = CoreAPIRouter(
 @router.get(
     "",
     response_model=list[UserOut],
-    response_class=JSONResponse,
+    response_class=ORJSONResponse,
     status_code=status.HTTP_200_OK,
     summary="",
     description="",
@@ -39,7 +39,7 @@ async def get_users(
 @router.get(
     "/{id}",
     response_model=UserOut,
-    response_class=JSONResponse,
+    response_class=ORJSONResponse,
     status_code=status.HTTP_200_OK,
     summary="",
     description="",
@@ -55,7 +55,7 @@ async def get_user(
 @router.put(
     "/{id}",
     response_model=UserOut,
-    response_class=JSONResponse,
+    response_class=ORJSONResponse,
     status_code=status.HTTP_200_OK,
     summary="",
     description="",
@@ -72,7 +72,7 @@ async def put_user(
 @router.patch(
     "/{id}",
     response_model=UserOut,
-    response_class=JSONResponse,
+    response_class=ORJSONResponse,
     status_code=status.HTTP_200_OK,
     summary="",
     description="",
@@ -89,7 +89,7 @@ async def patch_user(
 @router.delete(
     "/{id}",
     response_model=UserOut,
-    response_class=JSONResponse,
+    response_class=ORJSONResponse,
     status_code=status.HTTP_200_OK,
     summary="",
     description="",

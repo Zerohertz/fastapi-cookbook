@@ -12,7 +12,7 @@ class ENVIRONMENT(Enum):
 
 
 class Configs(BaseSettings):
-    ENV: ENVIRONMENT
+    ENV: ENVIRONMENT = ENVIRONMENT.TEST
 
     # --------- APP SETTINGS --------- #
     PROJECT_NAME: str

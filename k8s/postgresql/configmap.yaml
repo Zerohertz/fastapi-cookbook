@@ -4,7 +4,6 @@ metadata:
   name: fastapi-env
 data:
   dev.env: |
-    ENV="DEV"
     PORT="8000"
     PROJECT_NAME="Zerohertz's FastAPI Cookbook (dev)"
     VERSION="v0.1.1"
@@ -13,7 +12,6 @@ data:
     DB_ECHO=true
     DB_TABLE_CREATE=true
   prod.env: |
-    ENV="PROD"
     PORT="8000"
     PROJECT_NAME="Zerohertz's FastAPI Cookbook (prod)"
     VERSION="v0.1.1"

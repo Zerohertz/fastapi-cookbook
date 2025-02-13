@@ -16,6 +16,8 @@ spec:
         - name: fastapi
           image: zerohertzkr/fastapi-cookbook:v0.1.2
           env:
+            - name: ENV
+              value: "PROD"
             - name: DB_TYPE
               valueFrom:
                 configMapKeyRef:

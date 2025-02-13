@@ -12,6 +12,21 @@ lint:
 	uv run isort app --check-only
 	uv run black app --check
 
+.PHONY: alembic
+alembic:
+	@uv sync
+	@export DESCRIPTION=$$(cat README.md) && \
+		set -o allexport && \
+		source envs/$${ENV,,}.env && \
+		set +o allexport && \
+		if [ "$(revision)" = "downgrade" ]; then \
+			uv run alembic downgrade base; \
+		elif [ -z "$(revision)" ]; then \
+			uv run alembic upgrade head; \
+		else \
+			uv run alembic revision --autogenerate -m "$(revision)"; \
+		fi
+
 .PHONY: test
 test:
 	uv sync --group test
@@ -59,6 +74,9 @@ swagger:
 
 .PHONY: deploy
 deploy:
+ifndef tag
+	$(error tag is not set.)
+endif
 	echo $(tag)
 	sed -i 's|zerohertzkr/fastapi-cookbook:[^ ]*|zerohertzkr/fastapi-cookbook:$(tag)|' k8s/postgresql/fastapi.yaml
 	git add k8s/postgresql/fastapi.yaml

@@ -1,9 +1,11 @@
+import asyncio
 from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config, pool
 
 from alembic import context
 from app.core.configs import configs
+from app.core.database import database
 from app.models.base import BaseModel
 
 # this is the Alembic Config object, which provides
@@ -52,7 +54,7 @@ def run_migrations_offline() -> None:
         context.run_migrations()
 
 
-def run_migrations_online() -> None:
+def run_migrations_online_sync() -> None:
     """Run migrations in 'online' mode.
 
     In this scenario we need to create an Engine
@@ -72,7 +74,20 @@ def run_migrations_online() -> None:
             context.run_migrations()
 
 
+async def run_migrations_online_async() -> None:
+    connectable = database.engine
+
+    def run_migrations(connection):
+        context.configure(connection=connection, target_metadata=target_metadata)
+        with context.begin_transaction():
+            context.run_migrations()
+
+    async with connectable.connect() as connection:
+        await connection.run_sync(run_migrations)
+    await connectable.dispose()
+
+
 if context.is_offline_mode():
     run_migrations_offline()
 else:
-    run_migrations_online()
+    asyncio.run(run_migrations_online_async())

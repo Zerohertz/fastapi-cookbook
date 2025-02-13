@@ -21,6 +21,7 @@ $ alembic init alembic
 $ sed -i '1i\from app.core.configs import configs\nfrom app.models.base import BaseModel\n' alembic/env.py
 $ sed -i 's|target_metadata = None|target_metadata = BaseModel.metadata|g' alembic/env.py
 $ sed -i '19i\config.set_main_option("sqlalchemy.url", configs.DATABASE_URI)' alembic/env.py
+$ isort alembic && black alembic
 ```
 
 <!-- markdownlint-enable -->

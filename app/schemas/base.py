@@ -1,7 +1,7 @@
 import abc
 from datetime import datetime
+from zoneinfo import ZoneInfo
 
-import pytz
 from pydantic import BaseModel, ConfigDict, model_validator
 from typing_extensions import Self
 
@@ -20,6 +20,6 @@ class BaseResponse(BaseModel, abc.ABC):
 
     @model_validator(mode="after")
     def set_timezone(self) -> Self:
-        self.created_at = self.created_at.astimezone(pytz.timezone(configs.TZ))
-        self.updated_at = self.updated_at.astimezone(pytz.timezone(configs.TZ))
+        self.created_at = self.created_at.astimezone(ZoneInfo(configs.TZ))
+        self.updated_at = self.updated_at.astimezone(ZoneInfo(configs.TZ))
         return self

@@ -17,7 +17,6 @@ dependencies = [
     "pydantic[email]>=2.10.5",
     "python-jose>=3.3.0",
     "python-multipart>=0.0.20",
-    "pytz>=2024.2",
     "sqlalchemy>=2.0.38",
     "uv>=0.5.21",
     "uvicorn[standard]>=0.34.0",
@@ -33,7 +32,6 @@ lint = [
     "sqlalchemy[mypy]>=2.0.38",
     "types-passlib>=1.7.7.20241221",
     "types-python-jose>=3.3.4.20240106",
-    "types-pytz>=2024.2.0.20241221",
 ]
 test = [
     "pytest>=8.3.4",

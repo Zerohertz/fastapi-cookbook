@@ -1,8 +1,8 @@
 from datetime import datetime, timedelta
 from typing import overload
+from zoneinfo import ZoneInfo
 
 import httpx
-import pytz
 from jose import jwt
 from jose.exceptions import ExpiredSignatureError, JWTError
 from loguru import logger
@@ -64,8 +64,8 @@ class JwtService:
     def _encode(self, *, sub: str, exp: timedelta) -> str:
         payload = JwtPayload(
             sub=sub,
-            iat=datetime.now().astimezone(pytz.timezone(configs.TZ)),
-            exp=datetime.now().astimezone(pytz.timezone(configs.TZ)) + exp,
+            iat=datetime.now().astimezone(ZoneInfo(configs.TZ)),
+            exp=datetime.now().astimezone(ZoneInfo(configs.TZ)) + exp,
         )
         return jwt.encode(
             claims=payload.model_dump(), key=self.secret, algorithm=self.algorithm

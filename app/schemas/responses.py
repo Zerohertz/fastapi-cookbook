@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Generic, TypeVar
+from zoneinfo import ZoneInfo
 
-import pytz
 from pydantic import BaseModel
 
 from app.core.configs import configs
@@ -40,7 +40,7 @@ class APIResponse(BaseModel, Generic[T]):
             status=status,
             message="The request has been successfully processed.",
             data=data,
-            timestamp=datetime.now().astimezone(pytz.timezone(configs.TZ)),
+            timestamp=datetime.now().astimezone(ZoneInfo(configs.TZ)),
         )
 
     @classmethod
@@ -49,5 +49,5 @@ class APIResponse(BaseModel, Generic[T]):
             status=status,
             message=message,
             data=None,
-            timestamp=datetime.now().astimezone(pytz.timezone(configs.TZ)),
+            timestamp=datetime.now().astimezone(ZoneInfo(configs.TZ)),
         )

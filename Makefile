@@ -75,11 +75,19 @@ swagger:
 .PHONY: deploy
 deploy:
 ifndef tag
-	$(error tag is not set.)
+	$(error tag is not set)
 endif
 	echo $(tag)
+	sed -i 's|version = [^ ]*|version = "$(shell echo $(tag) | sed 's/^v//')"|' pyproject.toml
+	uv sync
+	git add pyproject.toml
+	git add uv.lock
 	sed -i 's|zerohertzkr/fastapi-cookbook:[^ ]*|zerohertzkr/fastapi-cookbook:$(tag)|' k8s/postgresql/fastapi.yaml
 	git add k8s/postgresql/fastapi.yaml
+	sed -i 's|VERSION=[^ ]*|VERSION="$(tag)"|' k8s/postgresql/configmap.yaml
+	git add k8s/postgresql/configmap.yaml
+	sed -i 's|VERSION=[^ ]*|VERSION="$(tag)"|' envs/test.env
+	git add envs/test.env
 	git commit -m ":ship: release: $(tag)"
 	git tag -a $(tag) -m ":ship: release: $(tag)"
 	git push origin main

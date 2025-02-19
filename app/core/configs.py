@@ -1,8 +1,9 @@
 from enum import Enum
+from typing import Annotated, List
 
-from pydantic import computed_field
+from pydantic import computed_field, field_validator
 from pydantic_core import MultiHostUrl
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, NoDecode
 
 
 class ENVIRONMENT(Enum):
@@ -33,16 +34,27 @@ class Configs(BaseSettings):
     DB_TABLE_CREATE: bool = True
 
     # --------- AUTH SETTINGS --------- #
+    ALLOW_ORIGINS: Annotated[List[str], NoDecode] = []
+
+    @field_validator("ALLOW_ORIGINS", mode="before")
+    @classmethod
+    def allow_origins(cls, value: str) -> List[str]:
+        if value:
+            return value.split(",")
+        return []
+
+    # openssl rand -hex 32
+    JWT_SECRET_KEY: str
+    JWT_ALGORITHM: str
+
+    ADMIN_NAME: str
+    ADMIN_EMAIL: str
+    ADMIN_PASSWORD: str
+
     GOOGLE_OAUTH_CLIENT_ID: str
     GOOGLE_OAUTH_CLIENT_SECRET: str
     GITHUB_OAUTH_CLIENT_ID: str
     GITHUB_OAUTH_CLIENT_SECRET: str
-    # openssl rand -hex 32
-    JWT_SECRET_KEY: str
-    JWT_ALGORITHM: str
-    ADMIN_NAME: str
-    ADMIN_EMAIL: str
-    ADMIN_PASSWORD: str
 
     @property
     def DB_SCHEME(self) -> str:

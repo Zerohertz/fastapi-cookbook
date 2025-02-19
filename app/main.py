@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.docs import (
     get_swagger_ui_html,
     get_swagger_ui_oauth2_redirect_html,
@@ -32,8 +33,20 @@ app = FastAPI(
 app.mount("/static", StaticFiles(directory="static"), name="static")
 for routers in [v1_routers]:
     app.include_router(routers)
-for middleware in [SessionMiddleware, LoggingMiddleware]:
-    app.add_middleware(middleware)
+for middleware, kwargs in [
+    (SessionMiddleware, {}),
+    (
+        CORSMiddleware,
+        dict(
+            allow_origins=configs.ALLOW_ORIGINS,
+            allow_methods=("GET", "POST", "PUT", "DELETE", "OPTIONS"),
+            allow_headers=("Authorization", "Content-Type"),
+            allow_credentials=True,
+        ),
+    ),
+    (LoggingMiddleware, {}),
+]:
+    app.add_middleware(middleware, **kwargs)
 
 
 @app.get("/docs", include_in_schema=False)

@@ -37,16 +37,16 @@ for middleware, kwargs in [
     (SessionMiddleware, {}),
     (
         CORSMiddleware,
-        dict(
-            allow_origins=configs.ALLOW_ORIGINS,
-            allow_methods=("GET", "POST", "PUT", "DELETE", "OPTIONS"),
-            allow_headers=("Authorization", "Content-Type"),
-            allow_credentials=True,
-        ),
+        {
+            "allow_origins": configs.ALLOW_ORIGINS,
+            "allow_methods": ("GET", "POST", "PUT", "DELETE", "OPTIONS"),
+            "allow_headers": ("Authorization", "Content-Type"),
+            "allow_credentials": True,
+        },
     ),
     (LoggingMiddleware, {}),
 ]:
-    app.add_middleware(middleware, **kwargs)
+    app.add_middleware(middleware, **kwargs)  # type: ignore[arg-type]
 
 
 @app.get("/docs", include_in_schema=False)

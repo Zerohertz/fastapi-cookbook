@@ -11,7 +11,7 @@ data:
     TZ="Asia/Seoul"
     DB_ECHO=true
     DB_TABLE_CREATE=true
-    ALLOW_ORIGINS=http://localhost:5173,https://svelte-cookbook.vercel.app
+    ALLOW_ORIGINS=http://localhost:5173,https://zerohertz.vercel.app
   prod.env: |
     PORT="8000"
     PROJECT_NAME="Zerohertz's FastAPI Cookbook (prod)"
@@ -20,6 +20,7 @@ data:
     TZ="Asia/Seoul"
     DB_ECHO=false
     DB_TABLE_CREATE=false
+    ALLOW_ORIGINS=http://localhost:5173,https://zerohertz.vercel.app
 ---
 apiVersion: v1
 kind: ConfigMap

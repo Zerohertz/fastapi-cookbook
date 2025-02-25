@@ -6,7 +6,7 @@ data:
   dev.env: |
     PORT="8000"
     PROJECT_NAME="Zerohertz's FastAPI Cookbook (dev)"
-    VERSION="v0.1.3"
+    VERSION="v0.1.4"
     PREFIX="/api"
     TZ="Asia/Seoul"
     DB_ECHO=true
@@ -15,7 +15,7 @@ data:
   prod.env: |
     PORT="8000"
     PROJECT_NAME="Zerohertz's FastAPI Cookbook (prod)"
-    VERSION="v0.1.3"
+    VERSION="v0.1.4"
     PREFIX=""
     TZ="Asia/Seoul"
     DB_ECHO=false

@@ -70,12 +70,12 @@ async def register_password(
     "- This token can be used for subsequent API requests.",
 )
 @inject
-async def log_in_password(
+async def token_password(
     # NOTE: OAuth2PasswordRequestForm
     request: Annotated[PasswordOAuthRequest, Form(...)],
     service: AuthService = Depends(Provide[Container.auth_service]),
 ):
-    return await service.log_in_password(schema=request)
+    return await service.token_password(schema=request)
 
 
 @router.post(
@@ -88,11 +88,11 @@ async def log_in_password(
     "- The client must provide an authorization code obtained from Google.",
 )
 @inject
-async def log_in_google(
+async def token_google(
     request: Annotated[GoogleOAuthRequest, Form()],
     service: AuthService = Depends(Provide[Container.auth_service]),
 ):
-    return await service.log_in_google(request)
+    return await service.token_google(request)
 
 
 @router.post(
@@ -105,11 +105,11 @@ async def log_in_google(
     "- The client must provide an authorization code obtained from GitHub.",
 )
 @inject
-async def log_in_github(
+async def token_github(
     request: Annotated[GitHubOAuthRequest, Form()],
     service: AuthService = Depends(Provide[Container.auth_service]),
 ):
-    return await service.log_in_github(request)
+    return await service.token_github(request)
 
 
 @router.get(

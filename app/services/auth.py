@@ -290,7 +290,7 @@ class AuthService(BaseService[OAuth, AuthIn, AuthOut]):
         )
 
     @database.transactional
-    async def _log_in_oauth(
+    async def _token_oauth(
         self, schema: OAuthResponse, provider: OAuthProvider
     ) -> JwtToken:
         oauth = await self.repository.read_by_oauth_id_and_provider(
@@ -342,7 +342,7 @@ class AuthService(BaseService[OAuth, AuthIn, AuthOut]):
         return self.user_mapper(user)
 
     @database.transactional
-    async def log_in_password(self, schema: PasswordOAuthRequest) -> JwtToken:
+    async def token_password(self, schema: PasswordOAuthRequest) -> JwtToken:
         if schema.grant_type != OAuthProvider.PASSWORD.value:
             raise OAuthFormDataInvalid
         user = await self.user_repository.read_by_email(schema.username)
@@ -364,14 +364,14 @@ class AuthService(BaseService[OAuth, AuthIn, AuthOut]):
         return jwt_token
 
     @database.transactional
-    async def log_in_google(self, schema: GoogleOAuthRequest) -> JwtToken:
+    async def token_google(self, schema: GoogleOAuthRequest) -> JwtToken:
         oauth_response = await self.google_service.get_token_and_user(schema=schema)
-        return await self._log_in_oauth(oauth_response, OAuthProvider.GOOGLE)
+        return await self._token_oauth(oauth_response, OAuthProvider.GOOGLE)
 
     @database.transactional
-    async def log_in_github(self, schema: GitHubOAuthRequest) -> JwtToken:
+    async def token_github(self, schema: GitHubOAuthRequest) -> JwtToken:
         oauth_response = await self.github_service.get_token_and_user(schema=schema)
-        return await self._log_in_oauth(oauth_response, OAuthProvider.GITHUB)
+        return await self._token_oauth(oauth_response, OAuthProvider.GITHUB)
 
     @database.transactional
     async def verify(self, schema: JwtAccessToken) -> UserOut:

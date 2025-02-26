@@ -7,6 +7,8 @@ data:
     PORT="8000"
     PROJECT_NAME="Zerohertz's FastAPI Cookbook (dev)"
     VERSION="v0.1.4"
+    BACKEND_URL="https://dev.zerohertz.xyz"
+    FRONTEND_URL="http://localhost:5173"
     PREFIX="/api"
     TZ="Asia/Seoul"
     DB_ECHO=true
@@ -16,6 +18,8 @@ data:
     PORT="8000"
     PROJECT_NAME="Zerohertz's FastAPI Cookbook (prod)"
     VERSION="v0.1.4"
+    BACKEND_URL="https://api.zerohertz.xyz"
+    FRONTEND_URL="https://zerohertz.vercel.app"
     PREFIX=""
     TZ="Asia/Seoul"
     DB_ECHO=false

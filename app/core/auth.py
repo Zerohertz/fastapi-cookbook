@@ -67,13 +67,13 @@ AdminAuthDeps = Depends(get_admin_user)
 
 PasswordOAuthDeps = Depends(
     OAuth2PasswordBearer(
-        tokenUrl=oauth_endpoints.PASSWORD, scheme_name="Password OAuth"
+        tokenUrl=oauth_endpoints.PASSWORD_TOKEN, scheme_name="Password OAuth"
     )
 )
 GoogleOAuthDeps = Depends(
     OAuth2AuthorizationCodeBearer(
         authorizationUrl=f"https://accounts.google.com/o/oauth2/v2/auth?client_id={configs.GOOGLE_OAUTH_CLIENT_ID}",
-        tokenUrl=oauth_endpoints.GOOGLE,
+        tokenUrl=oauth_endpoints.GOOGLE_TOKEN,
         refreshUrl=None,
         scheme_name="Google OAuth",
         scopes={
@@ -85,7 +85,7 @@ GoogleOAuthDeps = Depends(
 GitHubOAuthDeps = Depends(
     OAuth2AuthorizationCodeBearer(
         authorizationUrl=f"https://github.com/login/oauth/authorize?client_id={configs.GITHUB_OAUTH_CLIENT_ID}",
-        tokenUrl=oauth_endpoints.GITHUB,
+        tokenUrl=oauth_endpoints.GITHUB_TOKEN,
         # NOTE: https://github.com/Zerohertz/fastapi-cookbook/issues/33#issuecomment-2627994536
         refreshUrl=None,
         scheme_name="GitHub OAuth",

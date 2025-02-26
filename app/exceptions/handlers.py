@@ -21,7 +21,7 @@ async def global_exception_handler(request: Request, exc: Exception) -> ORJSONRe
 async def core_exception_handler(
     request: Request, exc: CoreException  # pylint: disable=unused-argument
 ) -> ORJSONResponse:
-    logger.error(exc)
+    logger.exception(exc)
     return ORJSONResponse(
         content=APIResponse.error(status=exc.status, message=repr(exc)).model_dump(
             mode="json"

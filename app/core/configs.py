@@ -19,6 +19,8 @@ class Configs(BaseSettings):
     PROJECT_NAME: str
     DESCRIPTION: str
     VERSION: str
+    BACKEND_URL: str
+    FRONTEND_URL: str
     PREFIX: str
     TZ: str = "Asia/Seoul"
 
@@ -46,6 +48,8 @@ class Configs(BaseSettings):
     # openssl rand -hex 32
     JWT_SECRET_KEY: str
     JWT_ALGORITHM: str
+
+    TOKEN_URLSAFE_NBYTES: int = 128
 
     ADMIN_NAME: str
     ADMIN_EMAIL: str
@@ -85,9 +89,12 @@ configs = Configs()  # type: ignore[call-arg]
 
 
 class OAuthEndpoints(BaseSettings):
-    PASSWORD: str = f"{configs.PREFIX}/v1/auth/token/password"
-    GOOGLE: str = f"{configs.PREFIX}/v1/auth/token/google"
-    GITHUB: str = f"{configs.PREFIX}/v1/auth/token/github"
+    PASSWORD_TOKEN: str = f"{configs.PREFIX}/v1/auth/password/token"
+    GOOGLE_TOKEN: str = f"{configs.PREFIX}/v1/auth/google/token"
+    GITHUB_TOKEN: str = f"{configs.PREFIX}/v1/auth/github/token"
+
+    GOOGLE_CALLBACK: str = f"{configs.PREFIX}/v1/auth/google/callback"
+    GITHUB_CALLBACK: str = f"{configs.PREFIX}/v1/auth/github/callback"
 
 
 oauth_endpoints = OAuthEndpoints()

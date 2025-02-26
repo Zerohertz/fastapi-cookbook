@@ -1,8 +1,9 @@
+import secrets
 from typing import Annotated
 
 from dependency_injector.wiring import Provide, inject
-from fastapi import Depends, Form, status
-from fastapi.responses import ORJSONResponse
+from fastapi import Depends, Form, Request, status
+from fastapi.responses import ORJSONResponse, RedirectResponse
 
 from app.core.auth import (
     GitHubOAuthDeps,
@@ -10,8 +11,10 @@ from app.core.auth import (
     PasswordOAuthDeps,
     UserAuthDeps,
 )
+from app.core.configs import configs, oauth_endpoints
 from app.core.container import Container
 from app.core.router import CoreAPIRouter
+from app.exceptions.auth import GitHubOAuthFailed
 from app.schemas.auth import (
     GitHubOAuthRequest,
     GoogleOAuthRequest,
@@ -44,7 +47,7 @@ async def refresh(
 
 
 @router.post(
-    "/register/password",
+    "/password/register",
     response_model=UserResponse,
     response_class=ORJSONResponse,
     status_code=status.HTTP_201_CREATED,
@@ -61,7 +64,7 @@ async def register_password(
 
 
 @router.post(
-    "/token/password",
+    "/password/token",
     response_model=JwtToken,
     response_class=ORJSONResponse,
     status_code=status.HTTP_200_OK,
@@ -78,8 +81,69 @@ async def token_password(
     return await service.token_password(schema=request)
 
 
+@router.get(
+    "/google/login",
+    response_model=None,
+    response_class=RedirectResponse,
+    status_code=status.HTTP_307_TEMPORARY_REDIRECT,
+    summary="",
+    description="",
+)
+async def log_in_google():
+    state = secrets.token_urlsafe(nbytes=configs.TOKEN_URLSAFE_NBYTES)
+    response = RedirectResponse(
+        url="https://accounts.google.com/o/oauth2/v2/auth?"
+        f"client_id={configs.GOOGLE_OAUTH_CLIENT_ID}"
+        "&response_type=code"
+        f"&redirect_uri={configs.BACKEND_URL}{oauth_endpoints.GOOGLE_CALLBACK}"
+        f"&state={state}"
+        "&scope=email profile",
+        status_code=status.HTTP_307_TEMPORARY_REDIRECT,
+    )
+    response.set_cookie(key="oauth_google_state", value=state, httponly=True)
+    return response
+
+
+@router.get(
+    "/google/callback",
+    response_model=JwtToken,
+    response_class=RedirectResponse,
+    status_code=status.HTTP_302_FOUND,
+    summary="Obtain an access token via Google OAuth",
+    description="- Authenticate using Google OAuth and receive an access token.<br/>\n"
+    "- The client must provide an authorization code obtained from Google.",
+)
+@inject
+async def callback_google(
+    code: str,
+    state: str,
+    request: Request,
+    service: AuthService = Depends(Provide[Container.auth_service]),
+):
+    # NOTE: /?code=***&state=***
+    # /?state=***&code=***&scope=***&authuser=***&prompt=***
+
+    if state != request.cookies.get("oauth_google_state"):
+        raise GitHubOAuthFailed
+    jwt_token = await service.token_google(
+        GoogleOAuthRequest(
+            grant_type="authorization_code",
+            code=code,
+            redirect_uri=f"{configs.BACKEND_URL}{oauth_endpoints.GOOGLE_CALLBACK}",
+        )
+    )
+    return RedirectResponse(
+        url=f"{configs.FRONTEND_URL}/login"
+        f"?access_token={jwt_token.access_token}"
+        f"&refresh_token={jwt_token.refresh_token}"
+        f"&token_type={jwt_token.token_type}"
+        f"&expires_in={jwt_token.expires_in}",
+        status_code=status.HTTP_302_FOUND,
+    )
+
+
 @router.post(
-    "/token/google",
+    "/google/token",
     response_model=JwtToken,
     response_class=ORJSONResponse,
     status_code=status.HTTP_200_OK,
@@ -95,8 +159,64 @@ async def token_google(
     return await service.token_google(request)
 
 
+@router.get(
+    "/github/login",
+    response_model=None,
+    response_class=RedirectResponse,
+    status_code=status.HTTP_307_TEMPORARY_REDIRECT,
+    summary="",
+    description="",
+)
+async def log_in_github():
+    state = secrets.token_urlsafe(nbytes=configs.TOKEN_URLSAFE_NBYTES)
+    response = RedirectResponse(
+        url="https://github.com/login/oauth/authorize?"
+        f"client_id={configs.GITHUB_OAUTH_CLIENT_ID}"
+        "&response_type=code"
+        f"&redirect_uri={configs.BACKEND_URL}{oauth_endpoints.GITHUB_CALLBACK}"
+        f"&state={state}",
+        status_code=status.HTTP_307_TEMPORARY_REDIRECT,
+    )
+    response.set_cookie(key="oauth_github_state", value=state, httponly=True)
+    return response
+
+
+@router.get(
+    "/github/callback",
+    response_model=JwtToken,
+    response_class=RedirectResponse,
+    status_code=status.HTTP_302_FOUND,
+    summary="Obtain an access token via GitHub OAuth",
+    description="- Authenticate using GitHub OAuth and receive an access token.<br/>\n"
+    "- The client must provide an authorization code obtained from GitHub.",
+)
+@inject
+async def callback_github(
+    code: str,
+    state: str,
+    request: Request,
+    service: AuthService = Depends(Provide[Container.auth_service]),
+):
+    # NOTE: /?code=***&state=***
+    if state != request.cookies.get("oauth_github_state"):
+        raise GitHubOAuthFailed
+    jwt_token = await service.token_github(
+        GitHubOAuthRequest(
+            grant_type="authorization_code", code=code, redirect_uri=configs.BACKEND_URL
+        )
+    )
+    return RedirectResponse(
+        url=f"{configs.FRONTEND_URL}/login"
+        f"?access_token={jwt_token.access_token}"
+        f"&refresh_token={jwt_token.refresh_token}"
+        f"&token_type={jwt_token.token_type}"
+        f"&expires_in={jwt_token.expires_in}",
+        status_code=status.HTTP_302_FOUND,
+    )
+
+
 @router.post(
-    "/token/github",
+    "/github/token",
     response_model=JwtToken,
     response_class=ORJSONResponse,
     status_code=status.HTTP_200_OK,

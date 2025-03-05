@@ -8,7 +8,7 @@ from app.services.base import BaseService
 class JmyService(BaseService[JmyCompany, JmyCompanyRequest, JmyCompanyOut]):
     def __init__(self, jmy_repository: JmyRepository):
         super().__init__(repository=jmy_repository, schema=JmyCompanyOut)
-        self.repository: jmy_repository
+        self.repository: JmyRepository
 
     @database.transactional
     async def create(self, schema: JmyCompanyRequest) -> JmyCompanyOut:

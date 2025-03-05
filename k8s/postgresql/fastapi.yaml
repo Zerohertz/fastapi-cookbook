@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: fastapi
-          image: zerohertzkr/fastapi-cookbook:v0.1.5
+          image: zerohertzkr/fastapi-cookbook:v0.1.6
           env:
             - name: ENV
               value: "PROD"

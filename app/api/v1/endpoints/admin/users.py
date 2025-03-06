@@ -16,7 +16,7 @@ from app.services.users import UserService
 
 router = CoreAPIRouter(
     prefix="/user",
-    tags=["admin"],
+    tags=["admin", "user"],
     dependencies=[AdminAuthDeps, PasswordOAuthDeps, GoogleOAuthDeps, GitHubOAuthDeps],
 )
 

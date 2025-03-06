@@ -15,7 +15,7 @@ from app.services.jmy import JmyService
 
 router = CoreAPIRouter(
     prefix="/jmy",
-    tags=["admin"],
+    tags=["admin", "jmy"],
     dependencies=[AdminAuthDeps, PasswordOAuthDeps, GoogleOAuthDeps, GitHubOAuthDeps],
 )
 
@@ -34,20 +34,3 @@ async def create_jmy(
     service: JmyService = Depends(Provide[Container.jmy_service]),
 ):
     return await service.create(schema)
-
-
-# TODO: 회사 명을 통해 데이터 조회
-# @router.get(
-#     "",
-#     response_model=JmyCompanyOut,
-#     response_class=ORJSONResponse,
-#     status_code=status.HTTP_200_OK,
-#     summary="",
-#     description="",
-# )
-# @inject
-# async def get_jmy(
-#     name: str,
-#     service: JmyService = Depends(Provide[Container.jmy_service]),
-# ):
-#     return await service.get_by_id(name)

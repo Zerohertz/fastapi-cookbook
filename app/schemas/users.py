@@ -4,7 +4,7 @@ from pydantic import EmailStr, StringConstraints
 
 from app.models.enums import Role
 from app.schemas.auth import AuthOut, AuthResponse
-from app.schemas.base import BaseRequest, BaseResponse
+from app.schemas.base import BaseDBResponse, BaseRequest
 
 
 class UserRequest(BaseRequest):
@@ -20,7 +20,7 @@ class UserPasswordAdminRequest(BaseRequest):
     password: Annotated[str, StringConstraints(min_length=8, max_length=30)]
 
 
-class UserResponse(BaseResponse):
+class UserResponse(BaseDBResponse):
     name: Annotated[str, StringConstraints(min_length=3, max_length=30)]
     email: EmailStr
     role: Role

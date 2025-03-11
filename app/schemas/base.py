@@ -14,6 +14,9 @@ class BaseRequest(BaseModel, abc.ABC):
 
 class BaseResponse(BaseModel, abc.ABC):
     model_config = ConfigDict(from_attributes=True)
+
+
+class BaseDBResponse(BaseResponse):
     id: int
     created_at: datetime
     updated_at: datetime

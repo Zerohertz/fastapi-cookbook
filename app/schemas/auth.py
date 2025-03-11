@@ -5,13 +5,13 @@ from fastapi import Form
 from pydantic import BaseModel
 
 from app.models.enums import OAuthProvider
-from app.schemas.base import BaseRequest, BaseResponse
+from app.schemas.base import BaseDBResponse, BaseRequest
 
 
 class AuthRequest(BaseRequest): ...
 
 
-class AuthResponse(BaseResponse):
+class AuthResponse(BaseDBResponse):
     provider: OAuthProvider
 
 

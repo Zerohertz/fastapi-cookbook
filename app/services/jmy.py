@@ -1,7 +1,14 @@
+from typing import Literal
+
 from app.core.database import database
 from app.models.jmy import JmyCompany, JmyTimeSeries
 from app.repositories.jmy import JmyRepository
-from app.schemas.jmy import JmyCompanyOut, JmyCompanyRequest
+from app.schemas.jmy import (
+    JmyCompanyInfo,
+    JmyCompanyOut,
+    JmyCompanyRequest,
+    JmyPageResponse,
+)
 from app.services.base import BaseService
 
 
@@ -36,3 +43,40 @@ class JmyService(BaseService[JmyCompany, JmyCompanyRequest, JmyCompanyOut]):
         )
         entity = await self.repository.create(entity=jmy_company)
         return self.mapper(entity)
+
+    @database.transactional
+    async def get_page(
+        self,
+        page: int,
+        size: int,
+        sort_by: Literal["old", "new"],
+        filter_by: Literal["ms", "phd", "all"],
+    ) -> JmyPageResponse:
+        entities, total_pages = await self.repository.read_page(
+            page=page, size=size, sort_by=sort_by, filter_by=filter_by
+        )
+        jmy_company_info = []
+        for entity in entities:
+            time_series = entity.time_series[-1]
+            jmy_company_info.append(
+                JmyCompanyInfo(
+                    id=entity.id,
+                    created_at=entity.created_at,
+                    updated_at=entity.updated_at,
+                    name=entity.name,
+                    year=entity.year,
+                    location=entity.location,
+                    address=entity.address,
+                    type_=entity.type_,
+                    size=entity.size,
+                    research=entity.research,
+                    date=time_series.date,
+                    b_assigned=time_series.b_assigned,
+                    b_new=time_series.b_new,
+                    b_old=time_series.b_old,
+                    a_assigned=time_series.a_assigned,
+                    a_new=time_series.a_new,
+                    a_old=time_series.a_old,
+                )
+            )
+        return JmyPageResponse(info=jmy_company_info, total_pages=total_pages)

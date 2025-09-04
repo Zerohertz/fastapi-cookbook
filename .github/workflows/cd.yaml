@@ -47,17 +47,6 @@ jobs:
             ghcr.io/${{ secrets.GH_USERNAME }}/fastapi-cookbook:latest,
             ghcr.io/${{ secrets.GH_USERNAME }}/fastapi-cookbook:${{ env.tag_name }}
 
-      - name: Slack webhook
-        uses: 8398a7/action-slack@v3
-        with:
-          status: ${{ job.status }}
-          author_name: fastapi-cookbook
-          fields: repo,message,commit,author,action,eventName,ref,workflow,job,took
-          if_mention: failure,cancelled
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_CHECK }}
-        if: always()
-
   # argo-cd:
   #   name: Argo CD
   #   needs: image-build
@@ -82,14 +71,3 @@ jobs:
   #         git fetch origin
   #         git checkout -b main origin/main
   #         git push origin main
-  #
-  #     - name: Slack webhook
-  #       uses: 8398a7/action-slack@v3
-  #       with:
-  #         status: ${{ job.status }}
-  #         author_name: fastapi-cookbook
-  #         fields: repo,message,commit,author,action,eventName,ref,workflow,job,took
-  #         if_mention: failure,cancelled
-  #       env:
-  #         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_CHECK }}
-  #       if: always()

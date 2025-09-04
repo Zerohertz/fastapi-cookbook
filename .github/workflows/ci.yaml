@@ -44,17 +44,6 @@ jobs:
           uv sync --all-groups
           uv pip install uv
 
-      - name: Slack webhook
-        uses: 8398a7/action-slack@v3
-        with:
-          status: ${{ job.status }}
-          author_name: fastapi-cookbook
-          fields: repo,message,commit,author,action,eventName,ref,workflow,job,took
-          if_mention: failure,cancelled
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_CHECK }}
-        if: always()
-
   lint:
     name: Lint
     needs: setup
@@ -75,17 +64,6 @@ jobs:
         run: |
           source .venv/bin/activate
           make lint
-
-      - name: Slack webhook
-        uses: 8398a7/action-slack@v3
-        with:
-          status: ${{ job.status }}
-          author_name: fastapi-cookbook
-          fields: repo,message,commit,author,action,eventName,ref,workflow,job,took
-          if_mention: failure,cancelled
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_CHECK }}
-        if: always()
 
   test-sqlite:
     name: Test SQLite
@@ -119,17 +97,6 @@ jobs:
         with:
           flags: sqlite
           token: ${{ secrets.CODECOV_TOKEN }}
-
-      - name: Slack webhook
-        uses: 8398a7/action-slack@v3
-        with:
-          status: ${{ job.status }}
-          author_name: fastapi-cookbook
-          fields: repo,message,commit,author,action,eventName,ref,workflow,job,took
-          if_mention: failure,cancelled
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_CHECK }}
-        if: always()
 
   test-mysql:
     env:
@@ -199,17 +166,6 @@ jobs:
           flags: mysql
           token: ${{ secrets.CODECOV_TOKEN }}
 
-      - name: Slack webhook
-        uses: 8398a7/action-slack@v3
-        with:
-          status: ${{ job.status }}
-          author_name: fastapi-cookbook
-          fields: repo,message,commit,author,action,eventName,ref,workflow,job,took
-          if_mention: failure,cancelled
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_CHECK }}
-        if: always()
-
   test-postgresql:
     env:
       DB_TYPE: "postgresql"
@@ -267,14 +223,3 @@ jobs:
         with:
           flags: postgresql
           token: ${{ secrets.CODECOV_TOKEN }}
-
-      - name: Slack webhook
-        uses: 8398a7/action-slack@v3
-        with:
-          status: ${{ job.status }}
-          author_name: fastapi-cookbook
-          fields: repo,message,commit,author,action,eventName,ref,workflow,job,took
-          if_mention: failure,cancelled
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_CHECK }}
-        if: always()
